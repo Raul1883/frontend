@@ -1,12 +1,10 @@
-import Footer from "../components/Footer";
 import Header from "../components/Header";
 
 export default () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <p className="">Главная страница</p>
-      <Footer />
+      <p className="">Неавторизован страница</p>
     </div>
   );
 };
