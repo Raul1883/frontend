@@ -20,7 +20,6 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getAccessToken();
-
     if (token) {
       if (!config.headers) {
         config.headers = new AxiosHeaders();
@@ -37,9 +36,10 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    
+    
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
       try {
         const response = await axios.post(
           `${API_BASE_URL}/auth/refresh`,

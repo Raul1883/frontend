@@ -22,7 +22,6 @@ export const AuthButton: React.FC = () => {
   if (isAuthenticated) {
     return (
       <div className="auth-info">
-        <p>логин {user?.login}</p>
         <button onClick={handleLogout} className="logout-btn">
           Выйти
         </button>

@@ -5,7 +5,6 @@ export type SessionPost = {
   genre_id: number;
   company_id?: number;
   scheduled_at: string;
-  master_id: number;
 };
 
 export type SessionGet = {

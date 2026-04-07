@@ -27,7 +27,6 @@ export default ({ mode }: SessionFormProps) => {
     genre_id: 0,
     company_id: undefined,
     scheduled_at: "",
-    master_id: Number(sessionStorage.getItem("user_id")) || 1,
   });
 
   const [formData, setFormData] = useState<SessionPost>(getInitialFormData());
@@ -45,7 +44,6 @@ export default ({ mode }: SessionFormProps) => {
         genre_id: data.genre.id,
         company_id: data.company?.id,
         scheduled_at: data.scheduled_at,
-        master_id: data.master.id,
       });
     }
   }, [isEditMode, data]);
@@ -83,9 +81,7 @@ export default ({ mode }: SessionFormProps) => {
     if (!formData.genre_id) {
       newErrors.genre_id = "Выберите жанр";
     }
-    if (!formData.master_id) {
-      newErrors.master_id = "Выберите мастера";
-    }
+
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;

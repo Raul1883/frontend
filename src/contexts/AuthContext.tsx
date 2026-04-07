@@ -20,31 +20,38 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAuthenticated = !!user;
   const userRole = user?.role || null;
   
-  // Проверка аутентификации при загрузке
-  useEffect(() => {
-    const checkAuth = async () => {
-      const token = getAccessToken();
-      
-      if (!token) {
+useEffect(() => {
+  const initAuth = async () => {
+    let token = getAccessToken();
+
+    // Если токена нет — пробуем обновить через refresh
+    if (!token) {
+      try {
+        await authAPI.refresh(); // внутри setAccessToken(новый_токен)
+        token = getAccessToken();
+      } catch (refreshError) {
+        // Не удалось обновить — пользователь не авторизован
         setIsLoading(false);
         return;
       }
-      
+    }
+
+    // Если токен есть (новый или старый) — получаем профиль
+    if (token) {
       try {
-        // Пытаемся получить профиль с текущим токеном
         const profile = await authAPI.getProfile();
         setUser(profile);
       } catch (error) {
-        // Токен невалидный
         clearAccessToken();
         setUser(null);
-      } finally {
-        setIsLoading(false);
       }
-    };
-    
-    checkAuth();
-  }, []);
+    }
+
+    setIsLoading(false);
+  };
+
+  initAuth();
+}, []);
   
   const login = async (login: string, password: string) => {
     const response = await authAPI.login({ login, password });

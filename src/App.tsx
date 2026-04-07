@@ -7,7 +7,7 @@ import Sessions from "./pages/Sessions";
 import MasterPanel from "./pages/MasterPanel";
 import ManageSessions from "./pages/ManageSessions";
 import SessionsEditorV2 from "./pages/SessionsEditor";
-import SessionInfo from "./components/SessionInfo";
+import SessionInfo from "./pages/Session";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
@@ -25,11 +25,7 @@ function App() {
             <Route
               path="/sessions/:id"
               element={
-                <PrivateRoute>
-                  <RoleGuard allowedRoles={["player", "master"]}>
                     <SessionInfo />
-                  </RoleGuard>
-                </PrivateRoute>
               }
             />
 
