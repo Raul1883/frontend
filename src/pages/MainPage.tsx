@@ -1,11 +1,13 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import SessionInfo from "../components/SessionInfo";
 
 export default () => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="">
       <Header />
-      <p className="">Главная страница</p>
+      <SessionInfo/>
+
       <Footer />
     </div>
   );
