@@ -16,33 +16,35 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   const isAuthenticated = !!user;
-  const userRole = user?.role || null;
+  //const userRole = user?.role || null;
+  
+
   
 useEffect(() => {
   const initAuth = async () => {
     let token = getAccessToken();
 
-    // Если токена нет — пробуем обновить через refresh
     if (!token) {
       try {
-        await authAPI.refresh(); // внутри setAccessToken(новый_токен)
+        await authAPI.refresh(); 
         token = getAccessToken();
       } catch (refreshError) {
-        // Не удалось обновить — пользователь не авторизован
         setIsLoading(false);
         return;
       }
     }
 
-    // Если токен есть (новый или старый) — получаем профиль
     if (token) {
       try {
         const profile = await authAPI.getProfile();
         setUser(profile);
+        setUserRole(profile.role)
       } catch (error) {
         clearAccessToken();
+        setUserRole(null)
         setUser(null);
       }
     }
@@ -56,11 +58,13 @@ useEffect(() => {
   const login = async (login: string, password: string) => {
     const response = await authAPI.login({ login, password });
     setUser(response.user);
+    setUserRole(response.user.role);
   };
   
   const logout = async () => {
     await authAPI.logout();
     setUser(null);
+    setUserRole(null);
   };
   
   return (
