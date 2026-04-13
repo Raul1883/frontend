@@ -11,6 +11,7 @@ import SessionInfo from "./pages/Session";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
+import Characters from "./pages/Characters";
 
 function App() {
   return (
@@ -22,18 +23,13 @@ function App() {
             <Route path="/login" element={<Login />} />
 
             <Route path="/sessions" element={<Sessions />} />
-            <Route
-              path="/sessions/:id"
-              element={
-                    <SessionInfo />
-              }
-            />
+            <Route path="/sessions/:id" element={<SessionInfo />} />
 
             <Route
-              path="/manage"
+              path="/characters"
               element={
                 <PrivateRoute>
-                  <MasterPanel />
+                  <Characters />
                 </PrivateRoute>
               }
             />
@@ -42,7 +38,12 @@ function App() {
               path="/manage/sessions"
               element={
                 <PrivateRoute>
-                  <ManageSessions />
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <ManageSessions />
+                  </RoleGuard>
                 </PrivateRoute>
               }
             />
@@ -50,15 +51,37 @@ function App() {
               path="/manage/sessions/:id"
               element={
                 <PrivateRoute>
-                  <SessionsEditorV2 mode="edit" />
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <SessionsEditorV2 mode="edit" />
+                  </RoleGuard>
                 </PrivateRoute>
               }
             />
             <Route
               path="/manage/sessions/new"
               element={
-                <PrivateRoute>
+                <RoleGuard
+                  allowedRoles={["master"]}
+                  fallback={<UnauthorizedPage />}
+                >
                   <SessionsEditorV2 mode="create" />
+                </RoleGuard>
+              }
+            />
+
+            <Route
+              path="/manage"
+              element={
+                <PrivateRoute>
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <MasterPanel />
+                  </RoleGuard>
                 </PrivateRoute>
               }
             />

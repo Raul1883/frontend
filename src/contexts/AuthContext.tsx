@@ -1,6 +1,16 @@
-import React, { createContext, useState, useEffect, type ReactNode } from 'react';
-import { authAPI, type User } from '../API/auth';
-import { getAccessToken, clearAccessToken, getUserRoleFromToken } from '../utils/token';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  type ReactNode,
+  useLayoutEffect,
+} from "react";
+import { authAPI, type User } from "../API/auth";
+import {
+  getAccessToken,
+  clearAccessToken,
+  getUserRoleFromToken,
+} from "../utils/token";
 
 interface AuthContextType {
   user: User | null;
@@ -11,62 +21,53 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined,
+);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
-  
+
   const isAuthenticated = !!user;
   //const userRole = user?.role || null;
-  
 
-  
-useEffect(() => {
+  useEffect(() => {
   const initAuth = async () => {
-    let token = getAccessToken();
-
-    if (!token) {
-      try {
-        await authAPI.refresh(); 
-        token = getAccessToken();
-      } catch (refreshError) {
-        setIsLoading(false);
-        return;
-      }
-    }
-
+    const token = getAccessToken();
     if (token) {
       try {
         const profile = await authAPI.getProfile();
         setUser(profile);
-        setUserRole(profile.role)
+        setUserRole(profile.role);
       } catch (error) {
+        // Интерцептор уже обработает 401 и сделает редирект,
+        // но на всякий случай сбросим состояние
         clearAccessToken();
-        setUserRole(null)
         setUser(null);
+        setUserRole(null);
       }
     }
-
     setIsLoading(false);
   };
-
   initAuth();
 }, []);
-  
+
   const login = async (login: string, password: string) => {
     const response = await authAPI.login({ login, password });
     setUser(response.user);
     setUserRole(response.user.role);
   };
-  
+
   const logout = async () => {
     await authAPI.logout();
     setUser(null);
     setUserRole(null);
   };
-  
+
   return (
     <AuthContext.Provider
       value={{
