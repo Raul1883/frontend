@@ -18,7 +18,7 @@ export default () => {
             <Link to="/sessions">Игры</Link>
           </li>
           <li className={liStyle}>
-            <Link to="/">Персонажи</Link>
+            <Link to="/characters">Персонажи</Link>
           </li>
           <RoleGuard allowedRoles={["master"]}>
             <li className={liStyle}>

@@ -12,6 +12,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
 import Characters from "./pages/Characters";
+import CharacterEditor from "./pages/CharacterEditor";
+import Users from "./pages/Users";
 
 function App() {
   return (
@@ -30,6 +32,15 @@ function App() {
               element={
                 <PrivateRoute>
                   <Characters />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/characters/:id"
+              element={
+                <PrivateRoute>
+                  <CharacterEditor />
                 </PrivateRoute>
               }
             />
@@ -81,6 +92,20 @@ function App() {
                     fallback={<UnauthorizedPage />}
                   >
                     <MasterPanel />
+                  </RoleGuard>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/manage/users"
+              element={
+                <PrivateRoute>
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <Users />
                   </RoleGuard>
                 </PrivateRoute>
               }

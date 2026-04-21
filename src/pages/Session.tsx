@@ -1,30 +1,82 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { getById } from "../API/Fetcher";
+import { getAll, getById } from "../API/Fetcher";
 import type { SessionGet } from "../types/Session";
 import Header from "../components/Header";
+import Modal from "../components/Modal";
+import type { CharacterGet } from "../types/Character";
+import { createApplications } from "../API/Applications";
 
 export default () => {
   const { id } = useParams<{ id: string }>();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [commentText, setCommentText] = useState<string>("");
+  const [selectedCharacterId, setSelectedCharacterId] = useState<number>(0);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
 
   // Загрузка данных сессии
-  const { data, error, isLoading } = useSWR<SessionGet>(
-    id ? ["/sessions", id] : null,
-    ([url, targetId]) => getById<SessionGet>(url as string, Number(targetId)),
+  const {
+    data: sessionData,
+    error: sessionError,
+    isLoading: isSessionLoading,
+  } = useSWR<SessionGet>(id ? ["/sessions", id] : null, ([url, targetId]) =>
+    getById<SessionGet>(url as string, Number(targetId)),
   );
 
-  if (error || isLoading || !data) {
+  const { data: characterData, isLoading: isCharacterLoading } = useSWR<
+    CharacterGet[]
+  >("/characters", getAll);
+
+  if (sessionError || isSessionLoading || !sessionData) {
     return <div>Загрузка или ошибка или хз попробуйте позже</div>;
   }
 
-  const handleApplication = () => {
-    console.log(1111);
+  const handleCommentText = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setCommentText(e.target.value);
+  };
+
+  const handleCharacterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCharacterId(Number(e.target.value));
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedCharacterId) {
+      setError("Выберите персонажа");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const applicationData = {
+        session_id: Number(id),
+        character_id: selectedCharacterId,
+        comment: commentText || "",
+      };
+
+      await createApplications(applicationData);
+
+      // Успешная отправка
+      setIsModalOpen(false);
+      setCommentText("");
+      setSelectedCharacterId(0);
+      alert("Заявка успешно отправлена!");
+    } catch (err) {
+      setError("Ошибка при отправке заявки. Попробуйте позже.");
+      console.error(err);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div>
-      <Header></Header>
+      <Header />
       <div className="relative">
         <div className="p-4 absolute top-0 z-10">
           <Link
@@ -43,32 +95,34 @@ export default () => {
               <div>
                 <p className="text-sm text-gray-500 mb-1">Система</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {data.system.text}
+                  {sessionData.system.text}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Жанр</p>
-                <p className="text-sm text-gray-600 mt-1">{data.genre.text}</p>
+                <p className="text-sm text-gray-600 mt-1">
+                  {sessionData.genre.text}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Дата и время</p>
                 <p className="text-lg font-semibold text-gray-900">
-                  {data.scheduled_at}
+                  {sessionData.scheduled_at}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Мастер</p>
                 <div className="flex items-center gap-2">
                   <p className="text-lg font-semibold text-gray-900">
-                    {data.master.login}
+                    {sessionData.master.login}
                   </p>
                 </div>
               </div>
-              {data.company && (
+              {sessionData.company && (
                 <div className="md:col-span-2">
                   <p className="text-sm text-gray-500 mb-1">Компания</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    {data.company.title}
+                    {sessionData.company.title}
                   </p>
                 </div>
               )}
@@ -79,27 +133,126 @@ export default () => {
               <h2 className="text-xl font-semibold text-gray-900 mb-3">
                 Описание сессии
               </h2>
-              {data.description ? (
+              {sessionData.description ? (
                 <div className="prose max-w-none">
                   <p className="text-gray-700 whitespace-pre-wrap">
-                    {data.description}
+                    {sessionData.description}
                   </p>
                 </div>
               ) : (
                 <p className="text-gray-500 italic">Описание отсутствует</p>
               )}
             </div>
-
-            {/* Дополнительная информация */}
           </div>
 
-          {/* Кнопка регистрации (если нужно) */}
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => {
+              setIsModalOpen(false);
+              setError("");
+              setSelectedCharacterId(0);
+              setCommentText("");
+            }}
+          >
+            <div className="space-y-4">
+              <h2 className="text-xl font-bold mb-4">
+                Подача заявки на сессию
+              </h2>
+
+              {/* Селект персонажа */}
+
+              {characterData?.length == 0 ? (
+                <div className="text-center">
+                  <p>Упс... Кажется у вас ещё нет персонажей</p>
+                </div>
+              ) : (
+                <div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Выберите персонажа *
+                    </label>
+                    <select
+                      value={selectedCharacterId}
+                      onChange={handleCharacterChange}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                      disabled={isCharacterLoading}
+                    >
+                      <option value={0}>-- Выберите персонажа --</option>
+                      {characterData?.map((character) => (
+                        <option key={character.id} value={character.id}>
+                          {character.name}
+                        </option>
+                      ))}
+                    </select>
+                    {isCharacterLoading && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        Загрузка персонажей...
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Комментарий */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Комментарий (необязательно)
+                    </label>
+                    <textarea
+                      name="comment"
+                      value={commentText}
+                      onChange={handleCommentText}
+                      rows={4}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                      placeholder="Оставьте комментарий к заявке..."
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Ошибка */}
+              {error && (
+                <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
+                  {error}
+                </div>
+              )}
+
+              {/* Кнопки */}
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setError("");
+                    setSelectedCharacterId(0);
+                    setCommentText("");
+                  }}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                  Отмена
+                </button>
+                {characterData?.length == 0 ? (
+                  <Link
+                    to="/characters"
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Создать нового
+                  </Link>
+                ) : (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !selectedCharacterId}
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? "Отправка..." : "Отправить заявку"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </Modal>
+
+          {/* Кнопка регистрации */}
           <div className="mt-6 flex justify-center">
             <button
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
-              onClick={() =>
-                alert("Функция регистрации на сессию будет добавлена позже")
-              }
+              onClick={() => setIsModalOpen(true)}
             >
               Записаться на сессию
             </button>

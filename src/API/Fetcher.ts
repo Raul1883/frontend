@@ -18,14 +18,24 @@ export const getById = async <T>(url: string, id: number): Promise<T> => {
   return response.data;
 };
 
-export const update = async <P, R>(
+export const updateByPath = async <P, R>(
   url: string,
   id: number,
-  sessionData: Partial<P>,
+  data: Partial<P>,
 ): Promise<R> => {
-  const response = await axiosInstance.patch<R>(`${url}/${id}`, sessionData);
+  const response = await axiosInstance.patch<R>(`${url}/${id}`, data);
   return response.data;
 };
+
+export const updateByBody = async <P, R>(
+  url: string,
+  data: Partial<P>,
+): Promise<R> => {
+  const response = await axiosInstance.patch<R>(`${url}`, data);
+  return response.data;
+};
+
+
 
 export const deleteById = async (url: string, id: number): Promise<void> => {
   await axiosInstance.delete(`${url}/${id}`);

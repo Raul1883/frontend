@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { getById, update, create } from "../API/Fetcher";
+import { getById, updateByPath, create } from "../API/Fetcher";
 import type { SessionGet, SessionPost } from "../types/Session";
 import AttributeEditor from "../components/AttributeEditor";
 
@@ -97,7 +97,7 @@ export default ({ mode }: SessionFormProps) => {
 
     try {
       if (isEditMode && id) {
-        const response = await update<SessionPost, SessionGet>(
+        const response = await updateByPath<SessionPost, SessionGet>(
           "/sessions",
           Number(id),
           formData,

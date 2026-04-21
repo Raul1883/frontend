@@ -6,7 +6,7 @@ export default () => {
     <div className="">
       <div className="flex flex-row">
 
-        <Link to="/" className="flex items-center gap-2 transition-colors pl-4">
+        <Link to="/manage" className="flex items-center gap-2 transition-colors pl-4">
           <span>←</span> Назад на главную
         </Link>
 

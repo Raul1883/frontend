@@ -2,6 +2,10 @@ import { Link } from "react-router-dom";
 import type { SessionGet } from "../types/Session";
 import type { JSX } from "react";
 import Modal from "./Modal";
+import useSWR from "swr";
+import { getById } from "../API/Fetcher";
+import { getApplicationsCount } from "../API/Applications";
+import type { ApplicationCount } from "../types/Application";
 
 type previewProps = {
   session: SessionGet;
@@ -9,8 +13,16 @@ type previewProps = {
   handleDelete?: (id: number) => void;
 };
 
+
 export default (props: previewProps) => {
-  const number = 3;
+  const { data, isLoading, error } = useSWR<ApplicationCount>(
+    props.session.id.toString(),
+    getApplicationsCount,
+  );
+
+  if (isLoading || error || !data) return <></>;
+
+  const number = data.count.toString();
 
   const masterButtons: JSX.Element = (
     <div>
@@ -34,7 +46,7 @@ export default (props: previewProps) => {
   const userButtons: JSX.Element = (
     <div className="flex w-full">
       <Link
-      to={`${props.session.id}`}
+        to={`${props.session.id}`}
         className="text-xl w-[95%] font-bold mt-2 border-2 px-4 py-2"
       >
         Узнать больше

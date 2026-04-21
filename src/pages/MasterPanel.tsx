@@ -9,7 +9,7 @@ const MainMenu = () => {
     },
     {
       title: "Игроки",
-      path: "/manage/players",
+      path: "/manage/users",
       description: "Список пользователей и статистика",
     },
     {
