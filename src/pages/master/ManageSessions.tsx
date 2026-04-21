@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import SessionsList from "../components/SessionsList";
+import SessionsList from "../../components/SessionsList";
 
 export default () => {
   return (

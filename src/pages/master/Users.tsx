@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { getAll, updateByBody, updateByPath } from "../API/Fetcher";
+import { getAll, updateByBody, updateByPath } from "../../API/Fetcher";
 import { Link } from "react-router-dom";
 
 // Типы согласно заданию

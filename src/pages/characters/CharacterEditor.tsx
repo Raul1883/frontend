@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useSWR from "swr";
-import type { CharacterGet, CharacterPost } from "../types/Character";
-import { create, getById, updateByPath } from "../API/Fetcher";
+import type { CharacterGet, CharacterPost } from "../../types/Character";
+import { create, getById, updateByPath } from "../../API/Fetcher";
+
 // Предполагаемый путь к настроенному экземпляру axios
 
 export default () => {

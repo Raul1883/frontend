@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
-import { getAll } from "../API/Fetcher";
-import type { CharacterGet } from "../types/Character";
+import { getAll } from "../../API/Fetcher";
+import type { CharacterGet } from "../../types/Character";
 
 export default function CharacterList() {
   const navigate = useNavigate();

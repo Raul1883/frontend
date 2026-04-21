@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { getById, updateByPath, create } from "../API/Fetcher";
-import type { SessionGet, SessionPost } from "../types/Session";
-import AttributeEditor from "../components/AttributeEditor";
+import { getById, updateByPath, create } from "../../API/Fetcher";
+import type { SessionGet, SessionPost } from "../../types/Session";
+import AttributeEditor from "../../components/AttributeEditor";
 
 interface SessionFormProps {
   mode: "create" | "edit";

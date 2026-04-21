@@ -4,16 +4,17 @@ import MainPage from "./pages/MainPage";
 import { PrivateRoute } from "./utils/PrivateRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import Sessions from "./pages/Sessions";
-import MasterPanel from "./pages/MasterPanel";
-import ManageSessions from "./pages/ManageSessions";
-import SessionsEditorV2 from "./pages/SessionsEditor";
+import MasterPanel from "./pages/master/MasterPanel";
+import ManageSessions from "./pages/master/ManageSessions";
+import SessionsEditorV2 from "./pages/master/SessionsEditor";
 import SessionInfo from "./pages/Session";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
-import Characters from "./pages/Characters";
-import CharacterEditor from "./pages/CharacterEditor";
-import Users from "./pages/Users";
+import Characters from "./pages/characters/Characters";
+ 
+import Users from "./pages/master/Users";
+import CharacterEditor from "./pages/characters/CharacterEditor";
 
 function App() {
   return (
