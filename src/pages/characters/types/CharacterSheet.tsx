@@ -1,9 +1,3 @@
-import {
-  useFieldArray,
-  type Control,
-  type UseFormRegister,
-} from "react-hook-form";
-
 type BaseField = {
   key: string;
   label: string;

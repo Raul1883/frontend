@@ -4,7 +4,6 @@ import { type Field } from "../types/CharacterSheet";
 export function FieldRenderer({
   field,
   register,
-  control,
 }: {
   field: Field;
   register: UseFormRegister<any>;

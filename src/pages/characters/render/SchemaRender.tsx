@@ -1,7 +1,7 @@
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import { useNavigate, useParams } from "react-router-dom";
@@ -117,7 +117,7 @@ export function CharacterForm() {
         data_fields: values,
       };
 
-      const res = await updateByPath<CharacterPost, CharacterGet>(
+      await updateByPath<CharacterPost, CharacterGet>(
         "/characters",
         numericId,
         payload,

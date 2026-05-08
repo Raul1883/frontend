@@ -5,7 +5,6 @@ import "react-resizable/css/styles.css";
 import type { CharacterSchema, Section } from "../types/CharacterSheet";
 import { WidthProvider } from "react-grid-layout/legacy";
 import { useState } from "react";
-import Modal from "../../../components/Modal";
 
 const STORAGE_KEY = "character-layout";
 const colsCount = 4;
@@ -74,7 +73,7 @@ export default ({
 const calcLayout = (schema: CharacterSchema): Layout => {
   let x = 0;
   let y = Infinity;
-  return schema.sections.map((section, index): LayoutItem => {
+  return schema.sections.map((section): LayoutItem => {
     console.log("SECTION", section.title, section.fields.length);
     const w = getSectionColsCount(section);
     console.log("COL COUNT", w, section.title);
