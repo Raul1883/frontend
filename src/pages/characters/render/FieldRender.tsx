@@ -1,5 +1,5 @@
 import type { Control, UseFormRegister } from "react-hook-form";
-import { ArrayField, type Field } from "../systems/types/Form";
+import { type Field } from "../types/CharacterSheet";
 
 export function FieldRenderer({
   field,
@@ -103,7 +103,8 @@ export function FieldRenderer({
     case "array":
       return (
         <div className="col-span-full">
-          <ArrayField field={field} control={control} register={register} />
+          <p>NOT IMPLEMENTED</p>
+          {/* <ArrayField field={field} control={control} register={register} /> */}
         </div>
       );
 
@@ -111,3 +112,58 @@ export function FieldRenderer({
       return null;
   }
 }
+
+// export function ArrayField({
+//   field,
+//   control,
+//   register,
+// }: {
+//   field: any;
+//   control: Control<any>;
+//   register: UseFormRegister<any>;
+// }) {
+//   const { fields, append, remove } = useFieldArray({
+//     control,
+//     name: field.key,
+//   });
+
+//   return (
+//     <div className="space-y-3 text-amber-50">
+//       <h4>{field.label}</h4>
+
+//       {fields.map((item, index) => (
+//         <div key={item.id} className="rounded-xl border border-zinc-800 p-3">
+//           {field.itemSchema.map((subField: any) => {
+//             const fullKey = `${field.key}.${index}.${subField.key}`;
+
+//             return (
+//               <div
+//                 key={fullKey}
+//                 className="grid grid-cols-1 gap-3 md:grid-cols-2"
+//               >
+//                 <label>{subField.label}</label>
+//                 <input {...register(fullKey)} />
+//               </div>
+//             );
+//           })}
+
+//           <button
+//             type="button"
+//             onClick={() => remove(index)}
+//             className="mt-2 text-xs text-red-400 hover:text-red-300"
+//           >
+//             Удалить
+//           </button>
+//         </div>
+//       ))}
+
+//       <button
+//         type="button"
+//         className="text-sm text-indigo-400 hover:text-indigo-300"
+//         onClick={() => append({})}
+//       >
+//         Добавить
+//       </button>
+//     </div>
+//   );
+// }

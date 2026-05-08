@@ -2,7 +2,7 @@ import GridLayout, { type Layout, type LayoutItem } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import type { CharacterSchema, Section } from "../systems/types/Form";
+import type { CharacterSchema, Section } from "../types/CharacterSheet";
 import { WidthProvider } from "react-grid-layout/legacy";
 import { useState } from "react";
 import Modal from "../../../components/Modal";

@@ -6,15 +6,13 @@ import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { witcherSchema } from "./SchemaUtils";
 import { FieldRenderer } from "./FieldRender";
 import SheetLayout from "./SheetLayout";
 
 import { create, getById, updateByPath } from "../../../API/Fetcher";
 
-import type { CharacterSchema, Section } from "../systems/types/Form";
+import type { CharacterSchema, Section } from "../types/CharacterSheet";
 import type { CharacterGet, CharacterPost } from "../../../types/Character";
-import type { CharacterSheet } from "../systems/types/TypesDND5";
 import Modal from "../../../components/Modal";
 import SchemaSelector from "./SchemaSelector";
 
@@ -95,7 +93,7 @@ export function CharacterForm() {
         reset({
           name: char.name,
           ...char.data_fields,
-        } as CharacterSheet);
+        });
       },
     },
   );
@@ -170,10 +168,7 @@ export function CharacterForm() {
     <div className="">
       <form onSubmit={handleSubmit(onSubmit)} className="">
         <div className="flex gap-4 pl-4 mt-2">
-          <button
-            type="submit"
-            className="relative inline-flex items-center"
-          >
+          <button type="submit" className="relative inline-flex items-center">
             <img
               className="w-7"
               src="/src/assets/save-floppy-svgrepo-com.svg"
@@ -184,15 +179,19 @@ export function CharacterForm() {
               </div>
             )}
           </button>
-          <button
-            type="button"
-            onClick={() => setIsModal(true)}
-            className=""
-          >
+          <button type="button" onClick={() => setIsModal(true)} className="">
             <img
               className="w-8"
               src="/src/assets/info-circle-svgrepo-com.svg"
             />
+          </button>
+          <button
+            onClick={() => {
+              navigate("/characters");
+            }}
+            className="ml-auto mr-10"
+          >
+            <img className="w-8" src="/src/assets/house-water-svgrepo-com.svg"/>
           </button>
         </div>
         <SheetLayout schema={schema}>

@@ -14,8 +14,7 @@ import { RoleGuard } from "./utils/RoleGuard";
 import Characters from "./pages/characters/Characters";
  
 import Users from "./pages/master/Users";
-import ViewDND5 from "./pages/characters/systems/views/DND5/ViewDND5";
-import { CharacterForm } from "./pages/characters/schemas/SchemaRender";
+import { CharacterForm } from "./pages/characters/render/SchemaRender";
 
 function App() {
   return (

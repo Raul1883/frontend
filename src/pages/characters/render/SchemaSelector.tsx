@@ -1,4 +1,4 @@
-import { witcherSchema } from "./SchemaUtils"
+import { witcherSchema } from "../schemas/Witcher";
 
 
 export default () => {

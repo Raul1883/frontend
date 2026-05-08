@@ -9,13 +9,10 @@ export default function DiceBoxComponent() {
   useEffect(() => {
     if (!containerRef.current) return;
 
-    diceRef.current = new DiceBox(
-      "#dice-box", // ← ВАЖНО: первый аргумент
-      {
-        assetPath: "/assets/",
-        throwForce: 9,
-      }
-    );
+    diceRef.current = new DiceBox("#dice-box", {
+      assetPath: "/assets/",
+      throwForce: 9,
+    });
 
     diceRef.current.init();
 
@@ -31,18 +28,15 @@ export default function DiceBoxComponent() {
   };
 
   return (
-    <div id="dice-box">
-      <div
-        ref={containerRef}
-        style={{ width: "400px", height: "300px" }}
-      />
+    <div id="dice-box" className="">
+      <div className="" ref={containerRef} />
 
-      <form onSubmit={handleRoll}>
+      <form onSubmit={handleRoll} className="">
         <input type="text" placeholder="3d6" />
         <button type="submit">Roll</button>
       </form>
 
-      <div>Result: {rollResult}</div>
+      <div className="">Result: {rollResult}</div>
     </div>
   );
 }
