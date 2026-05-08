@@ -21,6 +21,14 @@ export default ({ tab }: { tab: Tab }) => {
   }
 
   if (tab == "notes") {
-    return <Notes/>
+    return <Notes />;
   }
+
+  return (
+    <div className="flex flex-wrap gap-2 justify-between">
+      <MainInfo />
+      <CombatInfo />
+      <StatsInfo />
+    </div>
+  );
 };

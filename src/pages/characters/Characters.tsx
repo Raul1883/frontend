@@ -1,11 +1,12 @@
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
-import { getAll } from "../../API/Fetcher";
+import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
+import Header from "../../components/Header";
 
 export default function CharacterList() {
   const navigate = useNavigate();
-  const { data, isLoading, error } = useSWR<CharacterGet[]>(
+  const { data, isLoading, error, mutate } = useSWR<CharacterGet[]>(
     "/characters",
     getAll,
   );
@@ -24,10 +25,23 @@ export default function CharacterList() {
       </div>
     );
 
+  if (!Array.isArray(data)) {
+    console.log(data)
+    return <div>Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу</div>;
+  }
+
+  const deleteChar = async (id: number) => {
+    const confirmDelete = window.confirm(`Точно?`);
+    if (!confirmDelete) return;
+
+    await deleteById(`/characters`, id);
+    await mutate();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-900 filter grayscale">
+    <div className="min-h-screen  text-gray-900 filter grayscale">
+      <Header />
       <div className="container mx-auto px-4 py-8">
-        {/* Кнопка создания */}
         <div className="flex justify-end mb-8">
           <button
             onClick={() => navigate("new")}
@@ -39,7 +53,8 @@ export default function CharacterList() {
           </button>
         </div>
 
-        {/* Состояние пустого списка */}
+        {!Array.isArray(data) ? <div>Ошибка формата данных</div> : <div />}
+
         {data?.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
             Пока нет ни одного персонажа
@@ -68,12 +83,12 @@ export default function CharacterList() {
                     Подробнее
                   </button>
                   <button
-                    onClick={() => navigate(`${character.id}`)}
+                    onClick={() => deleteChar(character.id)}
                     className="px-4 py-1.5 bg-gray-600 text-white rounded-md 
                              hover:bg-gray-500 transition-colors duration-200 
                              focus:outline-none focus:ring-2 focus:ring-gray-400"
                   >
-                    Редактировать
+                    Удалить
                   </button>
                 </div>
               </div>

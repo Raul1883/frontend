@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@3d-dice/dice-box": "^1.1.4",
     "@tailwindcss/vite": "^4.2.0",
     "axios": "^1.13.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-grid-layout": "^2.2.3",
     "react-hook-form": "^7.73.1",
     "react-router-dom": "^7.13.0",
     "swr": "^2.4.0",

@@ -14,7 +14,8 @@ import { RoleGuard } from "./utils/RoleGuard";
 import Characters from "./pages/characters/Characters";
  
 import Users from "./pages/master/Users";
-import CharacterEditor from "./pages/characters/CharacterEditor";
+import ViewDND5 from "./pages/characters/systems/views/DND5/ViewDND5";
+import { CharacterForm } from "./pages/characters/schemas/SchemaRender";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
 
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/sessions/:id" element={<SessionInfo />} />
+            <Route path="/test" element={<CharacterForm />} />
 
             <Route
               path="/characters"
@@ -41,7 +43,7 @@ function App() {
               path="/characters/:id"
               element={
                 <PrivateRoute>
-                  <CharacterEditor />
+                  <CharacterForm />
                 </PrivateRoute>
               }
             />

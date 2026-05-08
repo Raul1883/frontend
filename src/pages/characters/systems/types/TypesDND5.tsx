@@ -48,19 +48,7 @@ export interface ClassInfo {
   subclass?: string;
 }
 
-export interface Spell {
-  name: string;
-  level: number;
-  school?: string;
-  castingTime?: string;
-  range?: string;
-  components?: string;
-  duration?: string;
-  description: string;
-  prepared?: boolean;
-  ritual?: boolean;
-  concentration?: boolean;
-}
+
 
 export interface CharacterSheet {
   name: string;
@@ -111,6 +99,22 @@ export interface CharacterSheet {
       pp: number;
     };
   };
+}
+
+
+export interface Spell {
+  name: string;
+  level: number;
+  school?: string;
+  castingTime?: string;
+  range?: string;
+  components?: string;
+  duration?: string;
+  description: string;
+  prepared?: boolean;
+  ritual?: boolean;
+  concentration?: boolean;
+}
 
   // spellcasting?: {
   //   spellcastingAbility: AbilityName;
@@ -119,4 +123,3 @@ export interface CharacterSheet {
   //   slots: Record<number, { total: number; used: number }>;
   //   spells: Spell[];
   // };
-}
