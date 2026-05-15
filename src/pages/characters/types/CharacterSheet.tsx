@@ -11,22 +11,22 @@ type HeaderField = BaseField & {
   type: "header";
 };
 
-type NumberField = BaseField & {
+export type NumberField = BaseField & {
   type: "number";
   defaultValue?: number;
 };
 
-type MinMaxField = BaseField & {
+export type MinMaxField = BaseField & {
   type: "minmax";
   defaultValue?: number;
 };
 
-type TextField = BaseField & {
+export type TextField = BaseField & {
   type: "text";
   defaultValue?: string;
 };
 
-type TextareaField = BaseField & {
+export  type TextareaField = BaseField & {
   type: "textarea";
   defaultValue?: string;
 };
@@ -37,7 +37,7 @@ export type SelectField = BaseField & {
   defaultValue?: string;
 };
 
-type CheckboxField = BaseField & {
+export type CheckboxField = BaseField & {
   type: "checkbox";
   defaultValue?: boolean;
 };

@@ -13,9 +13,9 @@ import { create, getById, updateByPath } from "../../../API/Fetcher";
 
 import type { CharacterSchema, Section } from "../types/CharacterSheet";
 import type { CharacterGet, CharacterPost } from "../../../types/Character";
-import Modal from "../../../components/Modal";
-import HelpChar from "./HelpChar";
 import { getSchema } from "./SchemaSelector";
+import SchemaHeader from "./SchemaHeader";
+import SectionRender from "./SectionRender";
 
 function canBeNumber(str: string): boolean {
   const num = Number(str);
@@ -25,8 +25,6 @@ function canBeNumber(str: string): boolean {
 export function CharacterForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-
-  const [isModal, setIsModal] = useState<boolean>(false);
 
   const isNew = !canBeNumber(id ? id : "1");
   const numericId = !isNew && id ? Number(id) : null;
@@ -41,9 +39,7 @@ export function CharacterForm() {
 
   const { reset, handleSubmit, getValues, register, control } = methods;
 
-  /*
-   * CREATE NEW CHARACTER
-   */
+  // CREATE NEW CHARACTER
   useEffect(() => {
     if (!isNew) return;
     if (creationStarted.current) return;
@@ -81,9 +77,8 @@ export function CharacterForm() {
     void createCharacter();
   }, [isNew, navigate]);
 
-  /*
-   * LOAD CHARACTER
-   */
+  //LOAD CHARACTER
+
   const {
     data: character,
     error,
@@ -103,6 +98,7 @@ export function CharacterForm() {
       },
     },
   );
+
   /*
    * SAVE
    */
@@ -166,117 +162,23 @@ export function CharacterForm() {
 
   if (!schema) return <div>Не найдена схема персонажа</div>;
 
-  /*
-   * buttons
-   */
-
-  /*
-   * RENDER
-   */
-
-  const getVerticalGridStyle = (section: Section) => {
-    const fieldsCount = section.fields.length;
-    const columns = section.columns || 1;
-    const rows = Math.ceil(fieldsCount / columns);
-
-    
-    return {
-      display: "grid",
-      gridAutoFlow: "column",
-      gridTemplateColumns: `repeat(${columns}, minmax(200px, auto))`,
-      gridTemplateRows: `repeat(${rows}, auto)`,
-      gap: "0.5rem", // соответствует gap-2
-    };
-  };
   return (
     <div className="">
       <form onSubmit={handleSubmit(onSubmit)} className="">
-        <div className="flex gap-4 pl-4 mt-2">
-          <button type="submit" className="relative inline-flex items-center">
-            <img
-              className="w-7"
-              src="/src/assets/save-floppy-svgrepo-com.svg"
-            />
-            {saved && (
-              <div className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs bg-green-500 text-white rounded-full">
-                ✓
-              </div>
-            )}
-          </button>
-          <button type="button" onClick={() => setIsModal(true)} className="">
-            <img
-              className="w-8"
-              src="/src/assets/info-circle-svgrepo-com.svg"
-            />
-          </button>
-          <button onClick={() => {downloadJSON(getValues())}}>JSON</button>
-          <button
-            onClick={() => {
-              navigate("/characters");
-            }}
-            className="ml-auto mr-10"
-          >
-            <img
-              className="w-8"
-              src="/src/assets/house-water-svgrepo-com.svg"
-            />
-          </button>
-        </div>
+        <SchemaHeader saved={saved} getValues={getValues} />
+
         <SheetLayout schema={schema}>
           {schema.sections.map((section) => (
-            <div key={section.title} className=" p-2 h-full">
-              <div className="flex items-center gap-x-2 dragable cursor-grab active:cursor-grabbing">
-                <img
-                  src="/src/assets/hand-svgrepo-com.svg"
-                  className="w-4 h-4"
-                />
-
-                <h3 className="text-lg font-semibold">{section.title}</h3>
-              </div>
-
-              <div
-              
-                style={getVerticalGridStyle(section)}
-                className="gap-2" // gap можно оставить отдельно
-              >
-                {section.fields.map((field) => (
-                  <FieldRenderer
-                    key={field.key}
-                    field={field}
-                    register={register}
-                    control={control}
-                  />
-                ))}
-              </div>
+            <div key={section.title} className="">
+              <SectionRender
+                section={section}
+                register={register}
+                control={control}
+              />
             </div>
           ))}
         </SheetLayout>
       </form>
-
-      <Modal
-        isOpen={isModal}
-        onClose={() => {
-          setIsModal(false);
-        }}
-        className="w-[50%]"
-      >
-        <HelpChar />
-      </Modal>
     </div>
   );
-}
-
-function downloadJSON(data: any) {
-  const jsonStr = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonStr], { type: "application/json" });
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-
-  link.href = url;
-  link.download = `export_${new Date().toISOString().slice(0, 19)}.json`;
-  document.body.appendChild(link);
-  link.click();
-
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }

@@ -59,9 +59,6 @@ const uploadCharacter = async (data: any, mutate: any) => {
     data_fields: data,
   };
 
-  const newCharacter = await create<CharacterPost, CharacterGet>(
-    "/characters",
-    payload,
-  );
+  await create<CharacterPost, CharacterGet>("/characters", payload);
   mutate();
 };

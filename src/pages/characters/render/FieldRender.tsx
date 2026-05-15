@@ -1,10 +1,5 @@
-import {
-  type Control,
-  type UseFormRegister,
-} from "react-hook-form";
-import {
-  type Field,
-} from "../types/CharacterSheet";
+import { type Control, type UseFormRegister } from "react-hook-form";
+import { type Field } from "../types/CharacterSheet";
 import { InventoryTableField } from "./ArrayField";
 
 export function FieldRenderer({
@@ -73,7 +68,7 @@ export function FieldRenderer({
       return (
         <div className={wrapper}>
           <label className={labelClass}>{field.label}</label>
-          <input type="text" className={baseInput} {...register(field.key)} />
+          <input type="text" className={`${baseInput} w-full`} {...register(field.key)} />
         </div>
       );
 
