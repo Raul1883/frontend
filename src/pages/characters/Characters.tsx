@@ -3,13 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
 import Header from "../../components/Header";
+import Modal from "../../components/Modal";
+import { useState } from "react";
+import CharacterExport from "./CharacterExport";
 
 export default function CharacterList() {
   const navigate = useNavigate();
+  const [modal, setModal] = useState<boolean>(false);
   const { data, isLoading, error, mutate } = useSWR<CharacterGet[]>(
     "/characters",
     getAll,
   );
+
+  const schemaNames: string[] = ["Witcher"];
 
   if (isLoading)
     return (
@@ -26,8 +32,12 @@ export default function CharacterList() {
     );
 
   if (!Array.isArray(data)) {
-    console.log(data)
-    return <div>Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу</div>;
+    console.log(data);
+    return (
+      <div>
+        Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу
+      </div>
+    );
   }
 
   const deleteChar = async (id: number) => {
@@ -37,14 +47,19 @@ export default function CharacterList() {
     await deleteById(`/characters`, id);
     await mutate();
   };
+  const btnStyle =
+    "bg-gray-200 px-3 py-2 font-bold  rounded-md hover:bg-gray-300";
 
   return (
     <div className="min-h-screen  text-gray-900 filter grayscale">
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-end mb-8">
+        <div className="flex justify-end mb-8 gap-2">
+          <CharacterExport mutate={mutate}/>
           <button
-            onClick={() => navigate("new")}
+            onClick={() => {
+              setModal(true);
+            }}
             className="px-5 py-2 bg-gray-800 text-white rounded-md shadow-sm 
                        hover:bg-gray-700 transition-colors duration-200 
                        focus:outline-none focus:ring-2 focus:ring-gray-500"
@@ -96,6 +111,23 @@ export default function CharacterList() {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={modal}
+        className="w-[40%]"
+        onClose={() => {
+          setModal(false);
+        }}
+      >
+        <h1 className="text-center text-2xl p-3">Выберите систему</h1>
+        <div>
+          {schemaNames.map((name) => (
+            <button onClick={() => navigate(name)} className={btnStyle}>
+              {name}
+            </button>
+          ))}
+        </div>
+      </Modal>
     </div>
   );
 }

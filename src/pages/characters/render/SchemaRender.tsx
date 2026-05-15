@@ -14,7 +14,13 @@ import { create, getById, updateByPath } from "../../../API/Fetcher";
 import type { CharacterSchema, Section } from "../types/CharacterSheet";
 import type { CharacterGet, CharacterPost } from "../../../types/Character";
 import Modal from "../../../components/Modal";
-import SchemaSelector from "./SchemaSelector";
+import HelpChar from "./HelpChar";
+import { getSchema } from "./SchemaSelector";
+
+function canBeNumber(str: string): boolean {
+  const num = Number(str);
+  return !isNaN(num) && str.trim() !== "";
+}
 
 export function CharacterForm() {
   const { id } = useParams<{ id: string }>();
@@ -22,9 +28,7 @@ export function CharacterForm() {
 
   const [isModal, setIsModal] = useState<boolean>(false);
 
-  const schema: CharacterSchema = SchemaSelector();
-
-  const isNew = id === "new";
+  const isNew = !canBeNumber(id ? id : "1");
   const numericId = !isNew && id ? Number(id) : null;
 
   const creationStarted = useRef(false);
@@ -51,7 +55,9 @@ export function CharacterForm() {
         const payload: CharacterPost = {
           name: "Новый персонаж",
           description: "",
-          data_fields: {},
+          data_fields: {
+            system_name: id,
+          },
         };
 
         const newCharacter = await create<CharacterPost, CharacterGet>(
@@ -97,12 +103,10 @@ export function CharacterForm() {
       },
     },
   );
-
   /*
    * SAVE
    */
   const onSubmit = async () => {
-    console.log(1111);
     if (!numericId) {
       console.warn("Нет ID персонажа");
       return;
@@ -131,7 +135,6 @@ export function CharacterForm() {
   };
 
   const saveOk = async () => {
-    console.log(1);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -157,6 +160,12 @@ export function CharacterForm() {
     return <div className="p-6">Персонаж не найден</div>;
   }
 
+  const schema: CharacterSchema | null = getSchema(
+    character?.data_fields.system_name,
+  );
+
+  if (!schema) return <div>Не найдена схема персонажа</div>;
+
   /*
    * buttons
    */
@@ -164,6 +173,21 @@ export function CharacterForm() {
   /*
    * RENDER
    */
+
+  const getVerticalGridStyle = (section: Section) => {
+    const fieldsCount = section.fields.length;
+    const columns = section.columns || 1;
+    const rows = Math.ceil(fieldsCount / columns);
+
+    
+    return {
+      display: "grid",
+      gridAutoFlow: "column",
+      gridTemplateColumns: `repeat(${columns}, minmax(200px, auto))`,
+      gridTemplateRows: `repeat(${rows}, auto)`,
+      gap: "0.5rem", // соответствует gap-2
+    };
+  };
   return (
     <div className="">
       <form onSubmit={handleSubmit(onSubmit)} className="">
@@ -185,18 +209,22 @@ export function CharacterForm() {
               src="/src/assets/info-circle-svgrepo-com.svg"
             />
           </button>
+          <button onClick={() => {downloadJSON(getValues())}}>JSON</button>
           <button
             onClick={() => {
               navigate("/characters");
             }}
             className="ml-auto mr-10"
           >
-            <img className="w-8" src="/src/assets/house-water-svgrepo-com.svg"/>
+            <img
+              className="w-8"
+              src="/src/assets/house-water-svgrepo-com.svg"
+            />
           </button>
         </div>
         <SheetLayout schema={schema}>
           {schema.sections.map((section) => (
-            <div key={section.title} className="border p-2 bg-white">
+            <div key={section.title} className=" p-2 h-full">
               <div className="flex items-center gap-x-2 dragable cursor-grab active:cursor-grabbing">
                 <img
                   src="/src/assets/hand-svgrepo-com.svg"
@@ -206,7 +234,11 @@ export function CharacterForm() {
                 <h3 className="text-lg font-semibold">{section.title}</h3>
               </div>
 
-              <div className={getGrid(section)}>
+              <div
+              
+                style={getVerticalGridStyle(section)}
+                className="gap-2" // gap можно оставить отдельно
+              >
                 {section.fields.map((field) => (
                   <FieldRenderer
                     key={field.key}
@@ -228,36 +260,23 @@ export function CharacterForm() {
         }}
         className="w-[50%]"
       >
-        <h1 className="text-2xl mb-4">Информация</h1>
-        <p>
-          Это тестовая версия листа персонажа, в отображении могут возникать
-          ошибки, но это не очень страшно, потому что вы можете изменять размер
-          каждого из окон, а также перемещать их внутри листа.
-        </p>
-        <p className="font-bold">
-          Сохраняй лист персонажа, авто сейва пока нет!
-        </p>
-        <p>
-          Если что-то пошло не так, можно нажать на круглик и блоки
-          перерасчитают свое положение.
-        </p>
+        <HelpChar />
       </Modal>
     </div>
   );
 }
 
-const getSectionColsCount = (section: Section) => {
-  if (section.fields.length <= 6) return 1;
-  if (section.fields.length <= 12) return 2;
-  return 3;
-};
+function downloadJSON(data: any) {
+  const jsonStr = JSON.stringify(data, null, 2);
+  const blob = new Blob([jsonStr], { type: "application/json" });
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
 
-const getGrid = (section: Section) => {
-  const gridCols = {
-    1: "grid-cols-1",
-    2: "grid-cols-2",
-    3: "grid-cols-3",
-  };
+  link.href = url;
+  link.download = `export_${new Date().toISOString().slice(0, 19)}.json`;
+  document.body.appendChild(link);
+  link.click();
 
-  return `grid gap-2 ${gridCols[getSectionColsCount(section)]}`;
-};
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}

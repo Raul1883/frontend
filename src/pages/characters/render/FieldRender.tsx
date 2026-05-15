@@ -1,19 +1,26 @@
-import type { Control, UseFormRegister } from "react-hook-form";
-import { type Field } from "../types/CharacterSheet";
+import {
+  type Control,
+  type UseFormRegister,
+} from "react-hook-form";
+import {
+  type Field,
+} from "../types/CharacterSheet";
+import { InventoryTableField } from "./ArrayField";
 
 export function FieldRenderer({
   field,
   register,
+  control,
 }: {
   field: Field;
   register: UseFormRegister<any>;
   control: Control<any, any, any>;
 }) {
-  const baseInput = "border-b"; //"border px-2 p-1 outline-none focus:ring-1 ";
+  const baseInput = "border-b";
 
-  const labelClass = ""; //"block text-xs font-medium text-zinc-400 w-max ";
+  const labelClass = "";
 
-  const wrapper = "flex gap-2 items-start px-2"; //"flex flex-col gap-1 mb-3";
+  const wrapper = "flex gap-2 items-start px-2 ";
 
   switch (field.type) {
     case "number":
@@ -27,7 +34,7 @@ export function FieldRenderer({
           <label className={labelClass}>{field.label}</label>
           <input
             type="number"
-            className={`${baseInput} w-8`}
+            className={`${baseInput} w-8 `}
             {...register(field.key, {
               valueAsNumber: true,
             })}
@@ -39,16 +46,17 @@ export function FieldRenderer({
       return (
         <div className={`${wrapper} `}>
           <label className={labelClass}>{field.label}</label>
-          <div>
+          <div className="flex">
             <input
               type="number"
-              className={`${baseInput} w-8 border`}
+              className={`${baseInput} w-8 border text-center`}
               {...register(field.key, { valueAsNumber: true })}
             />
+
             <input
               type="number"
-              className={`${baseInput} w-8 border border-l-0`}
-              {...register(field.maxKey, { valueAsNumber: true })}
+              className={`${baseInput} w-8 border border-l-0 text-center`}
+              {...register(`${field.key}_max`, { valueAsNumber: true })}
             />
           </div>
         </div>
@@ -57,7 +65,7 @@ export function FieldRenderer({
     case "header":
       return (
         <div className={wrapper}>
-          <h3>{field.label}</h3>
+          <h3 className="font-bold">{field.label}</h3>
         </div>
       );
 
@@ -71,9 +79,16 @@ export function FieldRenderer({
 
     case "textarea":
       return (
-        <div className={wrapper}>
+        <div className={`${wrapper} flex flex-col`}>
           <label className={labelClass}>{field.label}</label>
-          <textarea className={`${baseInput}`} {...register(field.key)} />
+          <textarea
+            className={`${baseInput} w-full border p-2`}
+            onInput={(e) => {
+              e.currentTarget.style.height = "auto";
+              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+            }}
+            {...register(field.key)}
+          />
         </div>
       );
 
@@ -102,8 +117,11 @@ export function FieldRenderer({
     case "array":
       return (
         <div className="col-span-full">
-          <p>NOT IMPLEMENTED</p>
-          {/* <ArrayField field={field} control={control} register={register} /> */}
+          <InventoryTableField
+            field={field}
+            control={control}
+            register={register}
+          />
         </div>
       );
 
@@ -111,58 +129,3 @@ export function FieldRenderer({
       return null;
   }
 }
-
-// export function ArrayField({
-//   field,
-//   control,
-//   register,
-// }: {
-//   field: any;
-//   control: Control<any>;
-//   register: UseFormRegister<any>;
-// }) {
-//   const { fields, append, remove } = useFieldArray({
-//     control,
-//     name: field.key,
-//   });
-
-//   return (
-//     <div className="space-y-3 text-amber-50">
-//       <h4>{field.label}</h4>
-
-//       {fields.map((item, index) => (
-//         <div key={item.id} className="rounded-xl border border-zinc-800 p-3">
-//           {field.itemSchema.map((subField: any) => {
-//             const fullKey = `${field.key}.${index}.${subField.key}`;
-
-//             return (
-//               <div
-//                 key={fullKey}
-//                 className="grid grid-cols-1 gap-3 md:grid-cols-2"
-//               >
-//                 <label>{subField.label}</label>
-//                 <input {...register(fullKey)} />
-//               </div>
-//             );
-//           })}
-
-//           <button
-//             type="button"
-//             onClick={() => remove(index)}
-//             className="mt-2 text-xs text-red-400 hover:text-red-300"
-//           >
-//             Удалить
-//           </button>
-//         </div>
-//       ))}
-
-//       <button
-//         type="button"
-//         className="text-sm text-indigo-400 hover:text-indigo-300"
-//         onClick={() => append({})}
-//       >
-//         Добавить
-//       </button>
-//     </div>
-//   );
-// }

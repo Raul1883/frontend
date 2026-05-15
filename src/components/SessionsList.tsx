@@ -2,7 +2,6 @@ import useSWR from "swr";
 import type { SessionGet } from "../types/Session";
 import SessionPreview from "./SessionPreview";
 import { deleteById, getAll } from "../API/Fetcher";
-import { Link } from "react-router-dom";
 
 export default ({ master = false }: { master: boolean }) => {
   const { data, error, isLoading, mutate } = useSWR<SessionGet[]>("/sessions", getAll);

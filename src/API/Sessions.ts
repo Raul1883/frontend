@@ -1,4 +1,3 @@
-import config from "../config";
 import type { SessionGet, SessionPost } from "../types/Session";
 import axiosInstance from "./AxiosInstance";
 

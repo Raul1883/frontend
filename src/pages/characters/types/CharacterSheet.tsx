@@ -1,7 +1,10 @@
+import type { Layout } from "react-grid-layout";
+
 type BaseField = {
   key: string;
   label: string;
   ui?: "row" | "column" | "compact";
+  array_col?: number; // Кол-во колонок, которое занимает элемент в массиве (12 - полная ширина)
 };
 
 type HeaderField = BaseField & {
@@ -14,7 +17,6 @@ type NumberField = BaseField & {
 };
 
 type MinMaxField = BaseField & {
-  maxKey: string;
   type: "minmax";
   defaultValue?: number;
 };
@@ -29,7 +31,7 @@ type TextareaField = BaseField & {
   defaultValue?: string;
 };
 
-type SelectField = BaseField & {
+export type SelectField = BaseField & {
   type: "select";
   options: string[];
   defaultValue?: string;
@@ -40,10 +42,10 @@ type CheckboxField = BaseField & {
   defaultValue?: boolean;
 };
 
-type ArrayField = BaseField & {
+export type ArrayField = BaseField & {
   type: "array";
   itemSchema: Field[];
-  defaultValue?: any[]; // или unknown[], если хочешь строже
+  defaultValue?: any[]; 
 };
 
 export type Field =
@@ -65,5 +67,6 @@ export type Section = {
 
 export type CharacterSchema = {
   sections: Section[];
+  layout?: Layout;
 };
 

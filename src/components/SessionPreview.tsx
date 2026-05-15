@@ -1,9 +1,7 @@
 import { Link } from "react-router-dom";
 import type { SessionGet } from "../types/Session";
 import type { JSX } from "react";
-import Modal from "./Modal";
 import useSWR from "swr";
-import { getById } from "../API/Fetcher";
 import { getApplicationsCount } from "../API/Applications";
 import type { ApplicationCount } from "../types/Application";
 

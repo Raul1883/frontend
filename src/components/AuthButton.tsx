@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 export const AuthButton: React.FC = () => {
-  const { isAuthenticated, user, logout, isLoading } = useAuth();
+  const { isAuthenticated, logout, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {

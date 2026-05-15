@@ -1,8 +1,6 @@
-import useSWR from "swr";
 import Header from "../components/Header";
 import SelectSection from "../components/SelectSection";
 import SessionsList from "../components/SessionsList";
-import { getAll } from "../API/Fetcher";
 
 export default () => {
   return (

@@ -3,13 +3,11 @@ import React, {
   useState,
   useEffect,
   type ReactNode,
-  useLayoutEffect,
 } from "react";
 import { authAPI, type User } from "../API/auth";
 import {
   getAccessToken,
   clearAccessToken,
-  getUserRoleFromToken,
 } from "../utils/token";
 
 interface AuthContextType {

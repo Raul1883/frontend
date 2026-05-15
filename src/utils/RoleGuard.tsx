@@ -1,5 +1,4 @@
 import { useAuth } from "../hooks/useAuth";
-import UnauthorizedPage from "../pages/UnauthorizedPage";
 
 interface RoleGuardProps {
   children: React.ReactNode;

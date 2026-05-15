@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import useSWR, { mutate } from "swr";
-import { getAll, updateByBody, updateByPath } from "../../API/Fetcher";
+import { getAll, updateByBody } from "../../API/Fetcher";
 import { Link } from "react-router-dom";
 
 // Типы согласно заданию
@@ -11,10 +11,6 @@ interface UserRead {
   role: string;
 }
 
-interface UserSetRole {
-  id: number;
-  role: "master" | "player";
-}
 
 // Компонент управления пользователями
 export default () => {

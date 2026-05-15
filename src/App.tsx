@@ -15,6 +15,7 @@ import Characters from "./pages/characters/Characters";
  
 import Users from "./pages/master/Users";
 import { CharacterForm } from "./pages/characters/render/SchemaRender";
+import Reg from "./pages/Reg";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MainPage />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/reg" element={<Reg />} />
 
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/sessions/:id" element={<SessionInfo />} />

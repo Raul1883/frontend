@@ -1,5 +1,4 @@
 import Header from "../components/Header";
-import DiceBoxComponent from "./characters/DiceRoller";
 
 export default () => {
 
@@ -10,7 +9,6 @@ export default () => {
     <div className="">
       <Header />
       {/* <Fight/> */}
-      <DiceBoxComponent />
     </div>
   );
 };
