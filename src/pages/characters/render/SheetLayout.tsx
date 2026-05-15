@@ -1,4 +1,10 @@
-import { useMemo, useRef, useState } from "react";
+import {
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from "react";
 
 import {
   ReactGridLayout,
@@ -10,7 +16,7 @@ import {
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import type { CharacterSchema, Section } from "../types/CharacterSheet";
+import type { CharacterSchema } from "../types/CharacterSheet";
 import React from "react";
 
 const STORAGE_KEY = "character-layout";
@@ -25,6 +31,8 @@ export default function CharacterGrid({
   children: React.ReactNode;
   schema: CharacterSchema;
 }) {
+  // разметка
+
   // функциональность
   const childrenArray = useMemo(
     () => React.Children.toArray(children),
@@ -65,7 +73,6 @@ export default function CharacterGrid({
         layout={layout}
         gridConfig={{ cols: colsCount, rowHeight: rowHeight, margin: [12, 12] }}
         dragConfig={{ handle: ".dragable" }}
-
         onLayoutChange={onLayoutChange}
       >
         {childrenArray.map((child, index) => {
@@ -77,7 +84,7 @@ export default function CharacterGrid({
                 ref={(el) => {
                   refs.current[section.title] = el;
                 }}
-                className=""
+                className="relative "
               >
                 {child}
               </div>
@@ -93,7 +100,7 @@ export default function CharacterGrid({
 
             setLayout(calcLayout(schema));
           }}
-          className="bg-red-200"
+          className=""
         >
           <img
             className="w-8"
@@ -127,12 +134,4 @@ const calcLayout = (schema: CharacterSchema): Layout => {
 
     return item;
   });
-};
-
-const getSectionColsCount = (section: Section) => {
-  if (section.fields.length <= 6) return 2;
-
-  if (section.fields.length <= 12) return 4;
-
-  return 6;
 };

@@ -26,7 +26,7 @@ export type TextField = BaseField & {
   defaultValue?: string;
 };
 
-export  type TextareaField = BaseField & {
+export type TextareaField = BaseField & {
   type: "textarea";
   defaultValue?: string;
 };
@@ -45,7 +45,7 @@ export type CheckboxField = BaseField & {
 export type ArrayField = BaseField & {
   type: "array";
   itemSchema: Field[];
-  defaultValue?: any[]; 
+  defaultValue?: any[];
 };
 
 export type Field =

@@ -41,6 +41,7 @@ export default (props: SchemaHeaderProps) => {
         JSON
       </button>
       <button
+        type="button"
         onClick={() => {
           navigate("/characters");
         }}

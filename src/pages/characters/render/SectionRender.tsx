@@ -17,7 +17,7 @@ export default function SectionRenderer(props: SectionProps) {
     return saved ? parseInt(saved, 10) : props.section.columns || 1;
   };
 
-  const [columns, setColumns] = useState(getColsCount());
+  const [columns, setColumns] = useState<number>(getColsCount());
 
   const getGridStyle = () => {
     return {

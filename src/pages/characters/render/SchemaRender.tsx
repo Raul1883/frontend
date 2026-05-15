@@ -11,7 +11,7 @@ import SheetLayout from "./SheetLayout";
 
 import { create, getById, updateByPath } from "../../../API/Fetcher";
 
-import type { CharacterSchema, Section } from "../types/CharacterSheet";
+import type { CharacterSchema } from "../types/CharacterSheet";
 import type { CharacterGet, CharacterPost } from "../../../types/Character";
 import { getSchema } from "./SchemaSelector";
 import SchemaHeader from "./SchemaHeader";
