@@ -1,6 +1,5 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import MainPage from "./pages/MainPage";
 import { PrivateRoute } from "./utils/PrivateRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import Sessions from "./pages/Sessions";
@@ -12,10 +11,12 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
 import Characters from "./pages/characters/Characters";
- 
+
 import Users from "./pages/master/Users";
 import { CharacterForm } from "./pages/characters/render/SchemaRender";
 import Reg from "./pages/Reg";
+import CharacterSchemas from "./pages/master/CharacterSchemas";
+import CharacterSchemasEditor from "./pages/master/CharacterSchemasEditor";
 
 function App() {
   return (
@@ -23,7 +24,7 @@ function App() {
       <BrowserRouter basename="/">
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<MainPage />} />
+            <Route path="/" element={<Sessions />} />
             <Route path="/login" element={<Login />} />
             <Route path="/reg" element={<Reg />} />
 
@@ -110,6 +111,34 @@ function App() {
                     fallback={<UnauthorizedPage />}
                   >
                     <Users />
+                  </RoleGuard>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/manage/schemas"
+              element={
+                <PrivateRoute>
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <CharacterSchemas />
+                  </RoleGuard>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path="/manage/schemas/:id"
+              element={
+                <PrivateRoute>
+                  <RoleGuard
+                    allowedRoles={["master"]}
+                    fallback={<UnauthorizedPage />}
+                  >
+                    <CharacterSchemasEditor />
                   </RoleGuard>
                 </PrivateRoute>
               }

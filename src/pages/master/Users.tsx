@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { getAll, updateByBody } from "../../API/Fetcher";
 import { Link } from "react-router-dom";
+import ManageHeader from "./ManageHeader";
 
 // Типы согласно заданию
 interface UserRead {
@@ -10,7 +11,6 @@ interface UserRead {
   contact_info?: string | null;
   role: string;
 }
-
 
 // Компонент управления пользователями
 export default () => {
@@ -64,16 +64,11 @@ export default () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Link to="/manage" className="flex items-center gap-2 transition-colors pl-4">
-        <span>←</span> Назад на главную
-      </Link>
-      <h1 className="text-2xl font-bold mb-4 text-black border-b border-gray-400 pb-2">
-        Управление пользователями
-      </h1>
-
+    <div className="">
+      <ManageHeader title="Управление пользователями" />
+      <div className="h-8"></div>
       {/* Таблица с ч/б стилизацией */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mx-8">
         <table className="min-w-full border border-gray-400 divide-y divide-gray-400">
           <thead className="bg-gray-100">
             <tr>

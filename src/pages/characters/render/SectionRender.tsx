@@ -3,6 +3,8 @@ import type { Control, FieldValues, UseFormRegister } from "react-hook-form";
 import type { Section } from "../types/CharacterSheet";
 import { FieldRenderer } from "./FieldRender";
 
+import hand from "/src/assets/hand-svgrepo-com.svg";
+
 interface SectionProps {
   section: Section;
   register: UseFormRegister<FieldValues>;
@@ -19,10 +21,14 @@ export default function SectionRenderer(props: SectionProps) {
 
   const [columns, setColumns] = useState<number>(getColsCount());
 
+  const rows = Math.ceil(props.section.fields.length / columns);
+
   const getGridStyle = () => {
     return {
       display: "grid",
       gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+      gridTemplateRows: `repeat(${rows}, auto)`,
+      gridAutoFlow: "column",
       gap: "0.75rem",
       width: "100%",
     } as const;
@@ -34,7 +40,7 @@ export default function SectionRenderer(props: SectionProps) {
     if (increase) {
       newCount = Math.min(6, columns + 1);
     } else {
-      newCount = Math.min(1, columns - 1);
+      newCount = Math.max(1, columns - 1);
     }
     setColumns(newCount);
     setColsCount(newCount);
@@ -52,7 +58,7 @@ export default function SectionRenderer(props: SectionProps) {
       {/* Header */}
       <div className="flex items-center justify-between mx-2 my-2">
         <div className="flex items-center gap-x-2 dragable cursor-grab active:cursor-grabbing">
-          <img src="/src/assets/hand-svgrepo-com.svg" className="w-4 h-4" />
+          <img src={hand} className="w-4 h-4" />
 
           <h3 className="text-lg font-semibold">{props.section.title}</h3>
         </div>

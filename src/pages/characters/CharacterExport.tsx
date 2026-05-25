@@ -1,9 +1,8 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import type { CharacterGet, CharacterPost } from "../../types/Character";
 import { create } from "../../API/Fetcher";
 
 export default ({ mutate }: { mutate: any }) => {
-  const [error, setError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +19,7 @@ export default ({ mutate }: { mutate: any }) => {
           fileInputRef.current.value = "";
         }
       } catch (err) {
-        setError("Ошибка парсинга JSON: " + (err as Error).message);
+        console.error("Ошибка парсинга JSON: " + (err as Error).message);
       }
     };
 

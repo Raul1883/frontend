@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { getById, updateByPath, create } from "../../API/Fetcher";
 import type { SessionGet, SessionPost } from "../../types/Session";
 import AttributeEditor from "../../components/AttributeEditor";
+import ManageHeader from "./ManageHeader";
 
 interface SessionFormProps {
   mode: "create" | "edit";
@@ -132,10 +133,8 @@ export default ({ mode }: SessionFormProps) => {
 
   return (
     <div>
-      <Link to="/manage/sessions" className="text-xl p-4">
-        Назад
-      </Link>
-      <div className="max-w-2xl mx-auto p-6 bg-white shadow rounded-lg">
+      <ManageHeader title={isEditMode ? `Редактирование сессии #${id}` : "Создание новой сессии"} />
+      <div className="mx-auto p-6 bg-white max-w-[60%]">
         <h1 className="text-2xl font-bold mb-6">
           {isEditMode ? `Редактор сессии #${id}` : "Создание сессии"}
         </h1>
@@ -167,7 +166,7 @@ export default ({ mode }: SessionFormProps) => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4 text-sm bg-gray-50 p-4 rounded">
+          <div className="grid grid-cols-3 gap-4 text-sm p-4 rounded">
             <div>
               <p className="text-gray-500">
                 Система:
@@ -194,12 +193,7 @@ export default ({ mode }: SessionFormProps) => {
                 defaultId={isEditMode ? data?.genre.id : undefined}
               />
             </div>
-            {isEditMode && (
-              <div>
-                <p className="text-gray-500">Мастер:</p>
-                <p className="font-semibold">{data?.master.login}</p>
-              </div>
-            )}
+
             <div>
               <p className="text-gray-500">
                 Дата{!isEditMode && "*"}:
@@ -220,7 +214,7 @@ export default ({ mode }: SessionFormProps) => {
 
           <button
             onClick={handleSave}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+            className="w-full border py-2 rounded hover:bg-gray-100 transition"
           >
             {isEditMode ? "Сохранить изменения" : "Создать сессию"}
           </button>

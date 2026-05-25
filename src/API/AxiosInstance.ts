@@ -8,8 +8,6 @@ import {
   clearAccessToken,
 } from "../utils/token";
 
-console.log(import.meta.env);
-
 const API_BASE_URL = config.baseApiUrl;
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,

@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@3d-dice/dice-box": "^1.1.4",
+    "@codemirror/lang-json": "^6.0.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/vite": "^4.2.0",
+    "@uiw/react-codemirror": "^4.25.10",
     "axios": "^1.13.5",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

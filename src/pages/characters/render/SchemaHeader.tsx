@@ -5,6 +5,10 @@ import { useState } from "react";
 import Modal from "../../../components/Modal";
 import HelpChar from "./HelpChar";
 
+import save from "/src/assets/save-floppy-svgrepo-com.svg";
+import info from "/src/assets/info-circle-svgrepo-com.svg";
+import home from "/src/assets/house-water-svgrepo-com.svg";
+
 interface SchemaHeaderProps {
   saved: boolean;
   getValues: UseFormGetValues<FieldValues>;
@@ -17,7 +21,7 @@ export default (props: SchemaHeaderProps) => {
   return (
     <div className="flex gap-4 pl-4 mt-2">
       <button type="submit" className="relative inline-flex items-center">
-        <img className="w-7" src="/src/assets/save-floppy-svgrepo-com.svg" />
+        <img className="w-7" src={save} />
         {props.saved && (
           <div className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center text-xs bg-green-500 text-white rounded-full">
             ✓
@@ -31,7 +35,7 @@ export default (props: SchemaHeaderProps) => {
         }}
         className=""
       >
-        <img className="w-8" src="/src/assets/info-circle-svgrepo-com.svg" />
+        <img className="w-8" src={info} />
       </button>
       <button
         onClick={() => {
@@ -47,7 +51,7 @@ export default (props: SchemaHeaderProps) => {
         }}
         className="ml-auto mr-10"
       >
-        <img className="w-8" src="/src/assets/house-water-svgrepo-com.svg" />
+        <img className="w-8" src={home} />
       </button>
       <Modal
         isOpen={isModal}

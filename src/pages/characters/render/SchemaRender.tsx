@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { FieldRenderer } from "./FieldRender";
 import SheetLayout from "./SheetLayout";
 
 import { create, getById, updateByPath } from "../../../API/Fetcher";
@@ -32,6 +31,7 @@ export function CharacterForm() {
   const creationStarted = useRef(false);
 
   const [saved, setSaved] = useState(false);
+  const [schema, setSchema] = useState<CharacterSchema>();
 
   const methods = useForm({
     mode: "onBlur",
@@ -135,6 +135,19 @@ export function CharacterForm() {
     setTimeout(() => setSaved(false), 2000);
   };
 
+  useEffect(() => {
+    async function fetchData() {
+      // Запрос только когда есть system_name
+      if (!character?.data_fields?.system_name) return;
+
+      const res = await getSchema(character.data_fields.system_name);
+      if (!res) return;
+      setSchema(res);
+    }
+
+    fetchData();
+  }, [character]);
+
   /*
    * STATES
    */
@@ -155,10 +168,6 @@ export function CharacterForm() {
   if (!character) {
     return <div className="p-6">Персонаж не найден</div>;
   }
-
-  const schema: CharacterSchema | null = getSchema(
-    character?.data_fields.system_name,
-  );
 
   if (!schema) return <div>Не найдена схема персонажа</div>;
 

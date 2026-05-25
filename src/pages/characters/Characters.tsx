@@ -6,39 +6,48 @@ import Header from "../../components/Header";
 import Modal from "../../components/Modal";
 import { useState } from "react";
 import CharacterExport from "./CharacterExport";
+import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
 
 export default function CharacterList() {
   const navigate = useNavigate();
   const [modal, setModal] = useState<boolean>(false);
-  const { data, isLoading, error, mutate } = useSWR<CharacterGet[]>(
-    "/characters",
-    getAll,
-  );
+  const {
+    data: characterData,
+    isLoading: chrIsLoading,
+    error: chrError,
+    mutate,
+  } = useSWR<CharacterGet[]>("/characters", getAll);
 
-  const schemaNames: string[] = ["Witcher"];
+  const {
+    data: schemaData,
+    isLoading: schemaIsLoading,
+    error: schemaError,
+  } = useSWR<SystemSchemaPreview[]>("systems-schemas", getAll);
 
-  if (isLoading)
+  if (chrIsLoading || schemaIsLoading)
     return (
       <div className="w-full h-full flex items-center justify-center text-gray-600">
         загрузка...
       </div>
     );
 
-  if (error)
+  if (chrError || schemaError)
     return (
       <div className="w-full h-full flex items-center justify-center text-red-700">
         Ошибка загрузки
       </div>
     );
 
-  if (!Array.isArray(data)) {
-    console.log(data);
+  if (!Array.isArray(characterData)) {
+    console.log(characterData);
     return (
       <div>
         Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу
       </div>
     );
   }
+
+  const schemaNames: string[] = schemaData?.map((x) => x.name) || [];
 
   const deleteChar = async (id: number) => {
     const confirmDelete = window.confirm(`Точно?`);
@@ -55,7 +64,7 @@ export default function CharacterList() {
       <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-end mb-8 gap-2">
-          <CharacterExport mutate={mutate}/>
+          <CharacterExport mutate={mutate} />
           <button
             onClick={() => {
               setModal(true);
@@ -68,15 +77,19 @@ export default function CharacterList() {
           </button>
         </div>
 
-        {!Array.isArray(data) ? <div>Ошибка формата данных</div> : <div />}
+        {!Array.isArray(characterData) ? (
+          <div>Ошибка формата данных</div>
+        ) : (
+          <div />
+        )}
 
-        {data?.length === 0 ? (
+        {characterData?.length === 0 ? (
           <p className="text-center text-gray-500 text-lg">
             Пока нет ни одного персонажа
           </p>
         ) : (
           <div className="grid gap-6 ">
-            {data?.map((character) => (
+            {characterData?.map((character) => (
               <div
                 key={character.id}
                 className="bg-white border border-gray-300 rounded-lg p-5 
@@ -120,7 +133,7 @@ export default function CharacterList() {
         }}
       >
         <h1 className="text-center text-2xl p-3">Выберите систему</h1>
-        <div>
+        <div className="flex gap-2">
           {schemaNames.map((name) => (
             <button onClick={() => navigate(name)} className={btnStyle}>
               {name}

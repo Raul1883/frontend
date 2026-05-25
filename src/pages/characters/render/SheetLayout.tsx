@@ -1,10 +1,4 @@
-import {
-  useMemo,
-  useRef,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { useMemo, useRef, useState } from "react";
 
 import {
   ReactGridLayout,
@@ -18,6 +12,8 @@ import "react-resizable/css/styles.css";
 
 import type { CharacterSchema } from "../types/CharacterSheet";
 import React from "react";
+
+import spinner from "/src/assets/spinner-refresh-svgrepo-com.svg";
 
 const STORAGE_KEY = "character-layout";
 
@@ -95,6 +91,7 @@ export default function CharacterGrid({
 
       <div className="flex gap-x-2 mb-2 ">
         <button
+          type="button"
           onClick={() => {
             localStorage.removeItem(STORAGE_KEY);
 
@@ -102,10 +99,7 @@ export default function CharacterGrid({
           }}
           className=""
         >
-          <img
-            className="w-8"
-            src="/src/assets/spinner-refresh-svgrepo-com.svg"
-          />
+          <img className="w-8" src={spinner} />
         </button>
       </div>
     </div>
@@ -128,6 +122,7 @@ const calcLayout = (schema: CharacterSchema): Layout => {
       y,
       w,
       h: 8,
+      minH: 2,
     };
 
     x = (x + w) % colsCount;

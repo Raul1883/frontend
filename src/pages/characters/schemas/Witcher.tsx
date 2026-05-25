@@ -343,7 +343,8 @@ export const witcherSchema: CharacterSchema = {
           key: "armor",
           label: "",
           itemSchema: [
-            { array_col: 10, type: "text", key: "area", label: "Область" },
+            { array_col: 8, type: "text", key: "area", label: "Область" },
+            { array_col: 8, type: "text", key: "label", label: "Название" },
             { array_col: 4, type: "number", key: "protection", label: "ПБ" },
             { array_col: 6, type: "text", key: "effect", label: "Эффект" },
             { array_col: 4, type: "text", key: "sd", label: "СД" },
@@ -382,3 +383,5 @@ export const witcherSchema: CharacterSchema = {
     },
   ],
 };
+
+
