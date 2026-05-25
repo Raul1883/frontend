@@ -15,8 +15,8 @@ import Characters from "./pages/characters/Characters";
 import Users from "./pages/master/Users";
 import { CharacterForm } from "./pages/characters/render/SchemaRender";
 import Reg from "./pages/Reg";
-import CharacterSchemas from "./pages/master/CharacterSchemas";
-import CharacterSchemasEditor from "./pages/master/CharacterSchemasEditor";
+import CharacterSchemas from "./pages/master/SystemSchemaEditor/CharacterSchemas";
+import CharacterSchemasEditor from "./pages/master/SystemSchemaEditor/CharacterSchemasEditor";
 
 function App() {
   return (

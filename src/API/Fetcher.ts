@@ -4,7 +4,6 @@ export const create = async <P, R>(
   url: string,
   sessionData: P,
 ): Promise<R> => {
-  console.log(sessionData)
   const response = await axiosInstance.post<R>(url, sessionData);
   return response.data;
 };

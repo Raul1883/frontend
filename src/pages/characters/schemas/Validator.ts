@@ -25,12 +25,6 @@ export default (schema: CharacterSchema | undefined) => {
     console.error("Дублированные ключи: ", uniqueDuplicates);
 };
 
-interface CharacterUpdate {
-  id: number;
-  name: string;
-  schema: CharacterSchema;
-}
-
 function getDuplicateKeys(schema: CharacterSchema): string[] {
   const keys: string[] = [];
   schema.sections.forEach((section) => {

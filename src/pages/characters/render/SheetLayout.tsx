@@ -101,6 +101,16 @@ export default function CharacterGrid({
         >
           <img className="w-8" src={spinner} />
         </button>
+        <button
+          type="button"
+          onClick={() => {
+            navigator.clipboard.writeText(JSON.stringify(layout));
+            alert("Layout copied to clipboard");
+          }}
+          className=""
+        >
+          json
+        </button>
       </div>
     </div>
   );

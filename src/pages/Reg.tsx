@@ -42,12 +42,11 @@ export default () => {
     setSuccess(null);
 
     try {
-      const response = await axiosInstance.post<RegistrationResponse>(
+      await axiosInstance.post<RegistrationResponse>(
         "/auth/register",
         formData,
       );
       setSuccess("Registration successful! You can now log in.");
-      console.log("Registration response:", response.data);
       // Опционально: очистить форму или перенаправить
       setFormData({
         login: "",

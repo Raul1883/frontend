@@ -39,7 +39,6 @@ export default function CharacterList() {
     );
 
   if (!Array.isArray(characterData)) {
-    console.log(characterData);
     return (
       <div>
         Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу

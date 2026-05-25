@@ -1,16 +1,17 @@
 import useSWR from "swr";
-import { create, deleteById, getAll } from "../../API/Fetcher";
+import { create, deleteById, getAll } from "../../../API/Fetcher";
 import { useState } from "react";
-import Modal from "../../components/Modal";
+import Modal from "../../../components/Modal";
 import { Link } from "react-router-dom";
-import ManageHeader from "./ManageHeader";
+import ManageHeader from "../ManageHeader";
 import type {
   SystemSchemaCreate,
   SystemSchemaPreview,
   SystemSchemaRead,
-} from "../../types/CharacterSchemasTypes";
+} from "../../../types/CharacterSchemasTypes";
+import type { CharacterSchema } from "../../characters/types/CharacterSheet";
 
-const EmptySchema = {
+const EmptySchema: CharacterSchema = {
   sections: [
     {
       title: "Главное",
