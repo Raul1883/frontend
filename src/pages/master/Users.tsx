@@ -1,7 +1,6 @@
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { getAll, updateByBody } from "../../API/Fetcher";
-import { Link } from "react-router-dom";
 import ManageHeader from "./ManageHeader";
 
 // Типы согласно заданию

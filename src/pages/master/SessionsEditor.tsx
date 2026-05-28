@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { getById, updateByPath, create } from "../../API/Fetcher";
 import type { SessionGet, SessionPost } from "../../types/Session";
@@ -83,7 +83,6 @@ export default ({ mode }: SessionFormProps) => {
       newErrors.genre_id = "Выберите жанр";
     }
 
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -133,7 +132,11 @@ export default ({ mode }: SessionFormProps) => {
 
   return (
     <div>
-      <ManageHeader title={isEditMode ? `Редактирование сессии #${id}` : "Создание новой сессии"} />
+      <ManageHeader
+        title={
+          isEditMode ? `Редактирование сессии #${id}` : "Создание новой сессии"
+        }
+      />
       <div className="mx-auto p-6 bg-white max-w-[60%]">
         <h1 className="text-2xl font-bold mb-6">
           {isEditMode ? `Редактор сессии #${id}` : "Создание сессии"}
