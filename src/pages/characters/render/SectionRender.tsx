@@ -1,17 +1,13 @@
 import { useState } from "react";
-import type { Control, FieldValues, UseFormRegister } from "react-hook-form";
-import type { Section } from "../types/CharacterSheet";
+import type { SectionProps } from "../types/CharacterSheet";
 import { FieldRenderer } from "./FieldRender";
 
 import hand from "/src/assets/hand-svgrepo-com.svg";
-
-interface SectionProps {
-  section: Section;
-  register: UseFormRegister<FieldValues>;
-  control: Control<FieldValues>;
-}
+import SelectCustomSection from "./SelectCustomSection";
 
 export default function SectionRenderer(props: SectionProps) {
+  const { register, control } = props.methods;
+
   const getColsCount = () => {
     const saved = localStorage.getItem(
       `section_${props.section.title}_columns`,
@@ -53,6 +49,16 @@ export default function SectionRenderer(props: SectionProps) {
     );
   };
 
+  if (props.section.title.startsWith("SF:"))
+    return (
+      <div>
+        <div className="flex items-center gap-x-2 dragable cursor-grab active:cursor-grabbing">
+          <img src={hand} className="w-4 h-4" />
+          <SelectCustomSection {...props} />
+        </div>
+      </div>
+    );
+
   return (
     <div className="w-full">
       {/* Header */}
@@ -88,8 +94,8 @@ export default function SectionRenderer(props: SectionProps) {
           <div key={field.key} className="min-w-0">
             <FieldRenderer
               field={field}
-              register={props.register}
-              control={props.control}
+              register={register}
+              control={control}
             />
           </div>
         ))}

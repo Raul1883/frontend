@@ -1,4 +1,5 @@
 import type { Layout } from "react-grid-layout";
+import type { FieldValues, UseFormReturn } from "react-hook-form";
 
 type BaseField = {
   key: string;
@@ -70,3 +71,7 @@ export type CharacterSchema = {
   layout?: Layout;
 };
 
+export interface SectionProps {
+  section: Section;
+  methods: UseFormReturn<FieldValues, any, FieldValues>;
+}

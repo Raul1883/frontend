@@ -179,11 +179,7 @@ export function CharacterForm() {
         <SheetLayout schema={schema}>
           {schema.sections.map((section) => (
             <div key={section.title} className="">
-              <SectionRender
-                section={section}
-                register={register}
-                control={control}
-              />
+              <SectionRender section={section} methods={methods} />
             </div>
           ))}
         </SheetLayout>
