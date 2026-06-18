@@ -1,4 +1,3 @@
-import type { FieldValues, UseFormReturn } from "react-hook-form";
 import type { SectionProps } from "../../../types/CharacterSheet";
 
 export default (props: SectionProps) => {

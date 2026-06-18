@@ -37,7 +37,7 @@ export function CharacterForm() {
     mode: "onBlur",
   });
 
-  const { reset, handleSubmit, getValues, register, control } = methods;
+  const { reset, handleSubmit, getValues, } = methods;
 
   // CREATE NEW CHARACTER
   useEffect(() => {

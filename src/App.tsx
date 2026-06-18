@@ -17,6 +17,10 @@ import { CharacterForm } from "./pages/characters/render/SchemaRender";
 import Reg from "./pages/Reg";
 import CharacterSchemas from "./pages/master/SystemSchemaEditor/CharacterSchemas";
 import CharacterSchemasEditor from "./pages/master/SystemSchemaEditor/CharacterSchemasEditor";
+import ToolsMainPage from "./pages/tools/ToolsMainPage";
+import ChapterView from "./pages/tools/dnd-guild/rules/ChapterView";
+import City from "./pages/tools/dnd-guild/City/City";
+import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
 
 function App() {
   return (
@@ -30,7 +34,7 @@ function App() {
 
             <Route path="/sessions" element={<Sessions />} />
             <Route path="/sessions/:id" element={<SessionInfo />} />
-            <Route path="/test" element={<CharacterForm />} />
+            <Route path="/tools" element={<ToolsMainPage />} />
 
             <Route
               path="/characters"
@@ -143,6 +147,12 @@ function App() {
                 </PrivateRoute>
               }
             />
+
+            <Route path="/tools" element={<ToolsMainPage />} />
+            <Route path="/tools/guild" element={<GuildMainPage />} />
+            <Route path="/tools/guild/rules" element={<ChapterView />} />
+            <Route path="/tools/guild/rules/:id" element={<ChapterView />} />
+            <Route path="/tools/guild/city" element={<City />} />
 
             <Route path="/unauthorized" element={<UnauthorizedPage />} />
           </Routes>
