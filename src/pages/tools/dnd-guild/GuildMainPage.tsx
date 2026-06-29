@@ -3,11 +3,6 @@ import Menu, { type menuItem } from "../../../components/Menu";
 
 const items: menuItem[] = [
   {
-    title: "Правила",
-    path: "rules",
-    description: "Основные правила и лор",
-  },
-  {
     title: "Город",
     path: "city",
     description: "Хоумрулы и инструменты для гильдийских ваншотов",

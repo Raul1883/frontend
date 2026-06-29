@@ -7,6 +7,11 @@ const items: menuItem[] = [
     path: "guild",
     description: "Хоумрулы и инструменты для гильдийских ваншотов",
   },
+    {
+    title: "Wiki",
+    path: "wiki",
+    description: "Хоумрулы и лор для различных компаний и сеттингов",
+  },
 ];
 export default () => {
   return (

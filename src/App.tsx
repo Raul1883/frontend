@@ -18,9 +18,9 @@ import Reg from "./pages/Reg";
 import CharacterSchemas from "./pages/master/SystemSchemaEditor/CharacterSchemas";
 import CharacterSchemasEditor from "./pages/master/SystemSchemaEditor/CharacterSchemasEditor";
 import ToolsMainPage from "./pages/tools/ToolsMainPage";
-import ChapterView from "./pages/tools/dnd-guild/rules/ChapterView";
 import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
+import WikiPage from "./pages/tools/wiki/WikiPage";
 
 function App() {
   return (
@@ -149,9 +149,10 @@ function App() {
             />
 
             <Route path="/tools" element={<ToolsMainPage />} />
+            <Route path="/tools/wiki" element={<WikiPage />} />
+            <Route path="/tools/wiki/:id" element={<WikiPage />} />
+
             <Route path="/tools/guild" element={<GuildMainPage />} />
-            <Route path="/tools/guild/rules" element={<ChapterView />} />
-            <Route path="/tools/guild/rules/:id" element={<ChapterView />} />
             <Route path="/tools/guild/city" element={<City />} />
 
             <Route path="/unauthorized" element={<UnauthorizedPage />} />

@@ -11,11 +11,11 @@
     "generate-schema": "node src/utils/generate-schema.js"
   },
   "dependencies": {
-    "@3d-dice/dice-box": "^1.1.4",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lint": "^6.9.6",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tailwindcss/vite": "^4.2.0",
+    "@types/mdast": "^4.0.4",
     "@uiw/react-codemirror": "^4.25.10",
     "ajv": "^8.20.0",
     "axios": "^1.13.5",
@@ -29,7 +29,8 @@
     "react-tooltip": "^6.0.2",
     "remark-gfm": "^4.0.1",
     "swr": "^2.4.0",
-    "tailwindcss": "^4.2.0"
+    "tailwindcss": "^4.2.0",
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
