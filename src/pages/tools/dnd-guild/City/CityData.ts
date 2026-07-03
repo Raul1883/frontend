@@ -1,13 +1,7 @@
-import tavern_img from "../../../../assets/city/town_tavern_level01.sprite.png";
-import blacksmith_img from "../../../../assets/city/town_blacksmith_level01.sprite.png";
-import marker_img from "../../../../assets/city/bazar1.png";
-import library_img from "../../../../assets/city/town_sanitarium_level01.sprite.png";
-import traing_img from "../../../../assets/city/town_guild_level01.sprite.png";
-import church_img from "../../../../assets/city/town_abbey_level01.sprite.png";
-import bank_img from "../../../../assets/city/town_stage_coach_level02.sprite.png";
+
 
 const tavern = {
-  img: tavern_img,
+  img: "/city/town_tavern_level01.sprite.webp",
   name: "Трактир",
   level: 1,
   description: `Трактир только получил первые золотые монеты от гильдии и начал свою реформацию. В нем наконец-то горит свет, столы иногда протирают, а пьянчуг выводят. В благодарность вас будут бесплатно кормить небольшим количеством еды, но её качество оставляет желать лучшего
@@ -40,7 +34,7 @@ const tavern = {
 };
 
 const blacksmith = {
-  img: blacksmith_img,
+  img: "/city/town_blacksmith_level01.sprite.webp",
   name: "Кузница",
   level: 1,
   description:
@@ -48,7 +42,7 @@ const blacksmith = {
 };
 
 const market = {
-  img: marker_img,
+  img: "/city/bazar1.webp",
   name: "Базар",
   level: 1,
   description:
@@ -56,7 +50,7 @@ const market = {
 };
 
 const church = {
-  img: church_img,
+  img: "/city/town_sanitarium_level01.sprite.webp",
   name: "Санктуарий",
   level: 0,
   description: `
@@ -79,7 +73,7 @@ const church = {
 };
 
 const trainingRoom = {
-  img: traing_img,
+  img: "/city/town_guild_level01.sprite.webp",
   name: "Ристалище",
   level: 1,
   description: `Гильдия наняла ремесленников и теперь зал выглядит почти как новый. Дощатый пол, манекены, деревянное оружие - один минус: стоящих инструкторов ещё не наняли
@@ -88,7 +82,7 @@ const trainingRoom = {
 };
 
 const library = {
-  img: library_img,
+  img: "/city/town_sanitarium_level02.sprite.webp",
   name: "Читальня",
   level: 0,
   description:
@@ -96,7 +90,7 @@ const library = {
 };
 
 const bank = {
-  img: bank_img,
+  img: "/city/town_stage_coach_level02.sprite.webp",
   name: "Казначейство",
   level: 1,
   description:

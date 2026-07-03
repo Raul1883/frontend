@@ -1,8 +1,34 @@
+import { useEffect, useState } from "react";
 import Header from "../../../../components/Header";
-import BuildingCard from "./BuildingCard";
-import { cityData } from "./CityData";
+import BuildingCard, { type buildingData } from "./BuildingCard";
+import axios from "axios";
+
+interface CityData {
+  billsCount: number;
+  buildings: buildingData[];
+}
 
 export default () => {
+  const [cityData, setData] = useState<CityData>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("/city/data.json")
+      .then((response) => setData(response.data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <div>загрузко!</div>;
+  }
+
+  if (error) {
+    return <div>Ошибко!</div>;
+  }
+
   return (
     <div className="bg-gray-200 flex flex-col min-h-screen">
       <Header compact={true} />
@@ -27,11 +53,13 @@ export default () => {
           На этой странице вы можете ознакомиться с текущим состоянием города и
           узнать о текущий возможностях зданий.
         </p>
-        <p className="font-bold">Доступно купчих: {cityData.billsCount}</p>
+        <p className="font-bold">
+          Доступно купчих: {cityData ? cityData.billsCount : -1}
+        </p>
       </div>
 
       <div className="w-[90%] mx-auto my-4 flex items-end justify-between  gap-4 flex-wrap">
-        {cityData.buildings.map((x) => (
+        {!cityData ? <div>Ошибка загрузки</div> :  cityData.buildings.map((x) => (
           <BuildingCard data={x} />
         ))}
       </div>

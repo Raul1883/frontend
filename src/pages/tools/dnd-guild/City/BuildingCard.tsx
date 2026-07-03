@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import { useState } from "react";
 import "../../../../css/markdown.css";
 
-interface buildingData {
+export interface buildingData {
   name: string;
   level: number;
   description: string;
@@ -15,6 +15,7 @@ const levelToBills = [1, 3, 5, 7, 9];
 
 export default ({ data }: { data: buildingData }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
   return (
     <div className="bg-gray-300 rounded-md w-70 flex items-center flex-col pb-6">
       <div className="flex gap-4 items-center my-2 text-xl font-bold">
