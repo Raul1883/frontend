@@ -2,6 +2,7 @@ import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { getAll, updateByBody } from "../../API/Fetcher";
 import ManageHeader from "./ManageHeader";
+import axiosInstance from "../../API/AxiosInstance";
 
 // Типы согласно заданию
 interface UserRead {
@@ -16,6 +17,11 @@ export default () => {
   // Состояние для отслеживания процесса обновления роли (id пользователя -> загрузка)
   const [updatingUserId, setUpdatingUserId] = useState<number | null>(null);
 
+  // Состояние для значений паролей (по id пользователя)
+  const [passwordValues, setPasswordValues] = useState<Record<number, string>>(
+    {},
+  );
+
   // Получение списка пользователей через SWR
   const {
     data: users,
@@ -29,9 +35,7 @@ export default () => {
   const updateUserRole = async (id: number, newRole: "master" | "player") => {
     setUpdatingUserId(id);
     try {
-      // Отправляем PATCH запрос на /users/user
       await updateByBody("/users/user", { id, role: newRole });
-      // После успешного обновления — перезапрашиваем список пользователей
       mutate("/users");
     } catch (err) {
       console.error("Ошибка при обновлении роли:", err);
@@ -39,6 +43,31 @@ export default () => {
     } finally {
       setUpdatingUserId(null);
     }
+  };
+
+  // Обработчик изменения пароля для конкретного пользователя
+  const handlePasswordChange = (userId: number, value: string) => {
+    setPasswordValues((prev) => ({
+      ...prev,
+      [userId]: value,
+    }));
+  };
+
+  // Заглушка для сохранения пароля
+  const handleSavePassword = (userId: number) => {
+    const password = passwordValues[userId] || "";
+
+    if (password == "" || password.length < 6 ) {
+      alert("пароль короткий или пустой")
+      return
+    }
+
+    axiosInstance.patch("users/user/pwd", {
+      id: userId,
+      new_pwd: password
+    })
+    alert(`Сохранение пароля для пользователя ${userId}:`);
+
   };
 
   // Обработка состояний загрузки и ошибки
@@ -85,6 +114,9 @@ export default () => {
               </th>
               <th className="px-4 py-2 text-left text-sm font-semibold text-black">
                 Действия
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-semibold text-black border-r border-gray-300">
+                Пароль
               </th>
             </tr>
           </thead>
@@ -146,6 +178,23 @@ export default () => {
                       {updatingUserId === user.id ? "..." : "Назначить player"}
                     </button>
                   </div>
+                </td>
+                <td className="px-4 py-2 text-sm">
+                  <input
+                    className="bg-gray-200 rounded-sm px-2 py-1 w-32"
+                    type="text"
+                    value={passwordValues[user.id] || ""}
+                    onChange={(e) =>
+                      handlePasswordChange(user.id, e.target.value)
+                    }
+                    placeholder="Введите пароль..."
+                  />
+                  <button
+                    className="ml-2 border border-black rounded-sm px-3 py-1 text-xs font-medium bg-white hover:bg-black hover:text-white transition-colors"
+                    onClick={() => handleSavePassword(user.id)}
+                  >
+                    Сохранить
+                  </button>
                 </td>
               </tr>
             ))}
