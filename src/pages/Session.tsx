@@ -81,7 +81,7 @@ export default () => {
         <div className="p-4 absolute top-0 z-10">
           <Link
             to="/sessions"
-            className="font-bold hover:border-b-2 inline-flex items-center gap-2"
+            className="font-bold hover:underline inline-flex items-center gap-2"
           >
             ← Назад к списку сессий
           </Link>
@@ -89,31 +89,31 @@ export default () => {
 
         <div className="max-w-4xl mx-auto p-6">
           {/* Основная информация */}
-          <div className="bg-white shadow rounded-lg overflow-hidden">
+          <div className="bg-white border border-gray-300 overflow-hidden">
             {/* Характеристики сессии */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 border-b bg-gray-50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border-b border-gray-300">
               <div>
                 <p className="text-sm text-gray-500 mb-1">Система</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-black">
                   {sessionData.system.text}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Жанр</p>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-black mt-1">
                   {sessionData.genre.text}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Дата и время</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-black">
                   {sessionData.scheduled_at}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-500 mb-1">Мастер</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-black">
                     {sessionData.master.login}
                   </p>
                 </div>
@@ -121,7 +121,7 @@ export default () => {
               {sessionData.company && (
                 <div className="md:col-span-2">
                   <p className="text-sm text-gray-500 mb-1">Компания</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-black">
                     {sessionData.company.title}
                   </p>
                 </div>
@@ -129,13 +129,13 @@ export default () => {
             </div>
 
             {/* Описание сессии */}
-            <div className="p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-3">
+            <div className="p-4">
+              <h2 className="text-xl font-semibold text-black mb-3">
                 Описание сессии
               </h2>
               {sessionData.description ? (
                 <div className="prose max-w-none">
-                  <p className="text-gray-700 whitespace-pre-wrap">
+                  <p className="text-black whitespace-pre-wrap">
                     {sessionData.description}
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export default () => {
             }}
           >
             <div className="space-y-4">
-              <h2 className="text-xl font-bold mb-4">
+              <h2 className="text-lg font-bold mb-2 text-black">
                 Подача заявки на сессию
               </h2>
 
@@ -174,7 +174,7 @@ export default () => {
                     <select
                       value={selectedCharacterId}
                       onChange={handleCharacterChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-400 rounded-none shadow-sm focus:outline-none"
                       disabled={isCharacterLoading}
                     >
                       <option value={0}>-- Выберите персонажа --</option>
@@ -201,7 +201,7 @@ export default () => {
                       value={commentText}
                       onChange={handleCommentText}
                       rows={4}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                      className="w-full px-3 py-2 border border-gray-400 rounded-none shadow-sm focus:outline-none"
                       placeholder="Оставьте комментарий к заявке..."
                     />
                   </div>
@@ -210,7 +210,7 @@ export default () => {
 
               {/* Ошибка */}
               {error && (
-                <div className="text-red-600 text-sm bg-red-50 p-2 rounded">
+                <div className="text-black text-sm bg-gray-100 p-2 border border-gray-300">
                   {error}
                 </div>
               )}
@@ -224,14 +224,14 @@ export default () => {
                     setSelectedCharacterId(0);
                     setCommentText("");
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-4 py-2 border border-black text-black hover:bg-gray-100 transition-colors"
                 >
                   Отмена
                 </button>
                 {characterData?.length == 0 ? (
                   <Link
                     to="/characters"
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     Создать нового
                   </Link>
@@ -239,7 +239,7 @@ export default () => {
                   <button
                     onClick={handleSubmit}
                     disabled={isSubmitting || !selectedCharacterId}
-                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     {isSubmitting ? "Отправка..." : "Отправить заявку"}
                   </button>
@@ -251,7 +251,7 @@ export default () => {
           {/* Кнопка регистрации */}
           <div className="mt-6 flex justify-center">
             <button
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-semibold"
+              className="bg-black text-white px-6 py-2 hover:bg-gray-800 transition-colors font-semibold"
               onClick={() => setIsModalOpen(true)}
             >
               Записаться на сессию

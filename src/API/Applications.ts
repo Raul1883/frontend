@@ -1,5 +1,5 @@
 import type {
-  ApplicationCount,
+  ApplicationDataItem,
   ApplicationGet,
   ApplicationPost,
 } from "../types/Application";
@@ -7,11 +7,11 @@ import axiosInstance from "./AxiosInstance";
 
 const APPLICATIONS_URL = "/applications";
 
-export const getApplicationsCount = async (
+export const getApplicationsPreviewData = async (
   session_id: string,
-): Promise<ApplicationCount> => {
-  const response = await axiosInstance.get<ApplicationCount>(
-    APPLICATIONS_URL + "/by_sessions/count/" + session_id,
+): Promise<any> => {
+  const response = await axiosInstance.get<ApplicationDataItem>(
+    APPLICATIONS_URL + "/by_sessions/preview/" + session_id,
   );
   return response.data;
 };

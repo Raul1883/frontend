@@ -10,9 +10,11 @@ export type ApplicationGet = {
   session_id: number;
   character_id: number;
   comment: string;
-  status: string
+  status: string;
 };
 
-export type ApplicationCount = {
-    count: number;
-}
+export type ApplicationDataItem = {
+  login: string;
+  contact_info: string;
+};
+
