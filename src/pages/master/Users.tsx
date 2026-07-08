@@ -57,17 +57,26 @@ export default () => {
   const handleSavePassword = (userId: number) => {
     const password = passwordValues[userId] || "";
 
-    if (password == "" || password.length < 6 ) {
-      alert("пароль короткий или пустой")
-      return
+    if (password == "" || password.length < 6) {
+      alert("пароль короткий или пустой");
+      return;
     }
 
     axiosInstance.patch("users/user/pwd", {
       id: userId,
-      new_pwd: password
-    })
+      new_pwd: password,
+    });
     alert(`Сохранение пароля для пользователя ${userId}:`);
+    
+  };
 
+  const handleDelete = (userId: number) => {
+    const confirmExit = window.confirm("точно удалить?");
+
+    if (!confirmExit) return;
+
+    axiosInstance.delete(`users/user/${userId}`);
+    alert("Обнови страницу!")
   };
 
   // Обработка состояний загрузки и ошибки
@@ -176,6 +185,14 @@ export default () => {
                       `}
                     >
                       {updatingUserId === user.id ? "..." : "Назначить player"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDelete(user.id);
+                      }}
+                      className="px-3 py-1 text-xs font-medium border border-black rounded-sm transition-colors"
+                    >
+                      Удалить
                     </button>
                   </div>
                 </td>
