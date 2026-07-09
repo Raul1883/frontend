@@ -22,16 +22,17 @@ import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
 import WikiPage from "./pages/tools/wiki/WikiPage";
 import "antd/dist/reset.css"; // Или 'antd/dist/antd.css' для старой версии
-import { ConfigProvider, theme } from "antd";
+import { ConfigProvider, theme, App as AppAntD } from "antd";
+import MainPage from "./pages/MainPage";
 
 function App() {
   return (
-    <>
+    <AppAntD>
       <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
         <BrowserRouter basename="/">
           <AuthProvider>
             <Routes>
-              <Route path="/" element={<Sessions />} />
+              <Route path="/" element={<MainPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/reg" element={<Reg />} />
 
@@ -163,7 +164,7 @@ function App() {
           </AuthProvider>
         </BrowserRouter>
       </ConfigProvider>
-    </>
+    </AppAntD>
   );
 }
 

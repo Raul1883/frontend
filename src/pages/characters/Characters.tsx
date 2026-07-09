@@ -8,7 +8,6 @@ import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
 import { Button, Card, Flex, Modal } from "antd";
 import CharacterImport from "./CharacterImport";
 
-interface DataType {}
 
 export default function CharacterList() {
   const navigate = useNavigate();
@@ -59,7 +58,7 @@ export default function CharacterList() {
   };
 
   return (
-    <div className="min-h-screen  text-gray-900 filter grayscale">
+    <div className="min-h-screen  text-gray-900 ">
       <Header />
 
       <div>
@@ -125,9 +124,9 @@ export default function CharacterList() {
           }}
         >
           <Flex gap="medium">
-          {schemaNames.map((name) => (
-            <Button onClick={() => navigate(name)}>{name}</Button>
-          ))}
+            {schemaNames.map((name) => (
+              <Button onClick={() => navigate(name)}>{name}</Button>
+            ))}
           </Flex>
         </Modal>
       </div>

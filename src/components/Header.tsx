@@ -21,10 +21,12 @@ export default () => {
           display: "flex",
           background: "white",
           justifyContent: "space-between",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
-        <h1 className="text-3xl font-bold">TTR manager</h1>
+        <h1 className="text-3xl font-bold">
+          <Link to="/">TTR manager</Link>
+        </h1>
 
         <Menu
           mode="horizontal"

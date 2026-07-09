@@ -8,7 +8,6 @@ import { createApplications } from "../API/Applications";
 import {
   Button,
   Card,
-  Descriptions,
   Divider,
   Flex,
   Input,
@@ -16,19 +15,19 @@ import {
   Tag,
   Typography,
   Modal,
-  type DescriptionsProps,
   Alert,
   Select,
+  App,
 } from "antd";
 import Header from "../components/Header";
 
 export default () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [commentText, setCommentText] = useState<string>("");
   const [selectedCharacterId, setSelectedCharacterId] = useState<number>(0);
-  const [error, setError] = useState<string>("");
+  const { message } = App.useApp();
 
   const {
     data: sessionData,
@@ -63,11 +62,9 @@ export default () => {
     }
 
     if (!selectedCharacterId) {
-      setError("Выберите персонажа");
+      message.error("Выберите персонажа");
       return;
     }
-
-    setError("");
 
     try {
       const applicationData = {
@@ -81,14 +78,10 @@ export default () => {
       setIsModalOpen(false);
       setCommentText("");
       setSelectedCharacterId(0);
-      
-      Modal.success({
-        content: 'Заявка успешно отправлена!',
-      })
 
-
+      message.success("Заявка успешно создана");
     } catch (err) {
-      setError("Ошибка при отправке заявки. Попробуйте позже.");
+      message.error("Ошибка при отправке заявки. Попробуйте позже.");
       console.error(err);
     } finally {
     }
@@ -96,7 +89,6 @@ export default () => {
 
   const onClose = () => {
     setIsModalOpen(false);
-    setError("");
     setSelectedCharacterId(0);
     setCommentText("");
   };
@@ -105,7 +97,7 @@ export default () => {
     <>
       <Header />
       <div className="flex flex-col items-center mt-10">
-        <Card className="w-4xl  p-6">
+        <Card className="w-4xl p-6">
           <Flex justify="space-between" align="center">
             <Typography.Title level={2} className="mb-4">
               {sessionData.title}
@@ -119,6 +111,9 @@ export default () => {
               <Tag color="purple">{sessionData.scheduled_at}</Tag>
               <Tag color="blue">{sessionData.master.login}</Tag>
             </Space>
+            <Button type="dashed">
+              <Link to="/sessions">Закрыть</Link>
+            </Button>
           </Flex>
 
           <Divider />
@@ -170,7 +165,6 @@ export default () => {
                 value={commentText}
                 onChange={handleCommentText}
               />
-              {error && <Alert title={error} type="error" showIcon />}
             </Space>
           )}
         </Modal>
