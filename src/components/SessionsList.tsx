@@ -21,7 +21,7 @@ export default ({ master = false }: { master: boolean }) => {
   if (data?.length == 0) return <p>А на сегодня все</p>;
 
   return (
-    <div className="flex flex-wrap">
+    <div className="flex flex-wrap gap-2 p-6">
       {data?.map((session) => (
         <SessionPreview
           key={session.id}

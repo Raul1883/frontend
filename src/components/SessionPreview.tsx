@@ -4,95 +4,98 @@ import { useState, type JSX } from "react";
 import useSWR from "swr";
 import { getApplicationsPreviewData } from "../API/Applications";
 import type { ApplicationDataItem } from "../types/Application";
+import { Button, Card, Popover, Tag, Space, Typography } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-type previewProps = {
+type PreviewProps = {
   session: SessionGet;
   master?: boolean;
   handleDelete?: (id: number) => void;
 };
 
-export default (props: previewProps) => {
+export default (props: PreviewProps) => {
   const { data, isLoading, error } = useSWR<ApplicationDataItem[]>(
     props.session.id.toString(),
     getApplicationsPreviewData,
   );
 
-  const [isPopoverOpen, setIsPopoverOpen] = useState<boolean>(false);
+  if (isLoading || error || !data) return null;
 
-  if (isLoading || error || !data) return <></>;
   const number = data.length;
 
-  const btnStyle = "text-xl font-bold border-2 px-4 py-2";
-  const masterButtons: JSX.Element = (
-    <div className="flex gap-2">
-      <Link to={`/manage/sessions/${props.session.id}`} className={btnStyle}>
-        Изменить
-      </Link>
-      <button
-        onClick={() => {
-          if (props.handleDelete) props.handleDelete(props.session.id);
-        }}
-        className={btnStyle}
-      >
-        Удалить
-      </button>
+  // Контент всплывающего окна со списком участников
+  const popoverContent = (
+    <div style={{ minWidth: 200 }}>
+      <Typography.Title level={5} style={{ marginBottom: 8 }}>
+        Участники:
+      </Typography.Title>
+      <ul style={{ listStyle: "disc", paddingLeft: 20, marginBottom: 0 }}>
+        {data.map((item, idx) => (
+          <li key={idx}>
+            <Typography.Text>
+              {item.login}. {item.contact_info}
+            </Typography.Text>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 
-  const userButtons: JSX.Element = (
-    <div className="flex w-full">
-      <Link
-        to={`${props.session.id}`}
-        className="text-xl w-[95%] font-bold mt-2 border-2 px-4 py-2"
-      >
+  const masterButtons = [
+    <Link to={`/manage/sessions/${props.session.id}`}>
+      <Button type="primary" icon={<EditOutlined />}>
+        Изменить
+      </Button>
+    </Link>,
+    <Button
+      danger
+      icon={<DeleteOutlined />}
+      onClick={() => {
+        if (props.handleDelete) props.handleDelete(props.session.id);
+      }}
+    >
+      Удалить
+    </Button>,
+  ];
+  const userButtons = [
+    <Link to={`/sessions/${props.session.id}`}>
+      <Button type="primary" block>
         Узнать больше
-      </Link>
-    </div>
-  );
+      </Button>
+    </Link>,
+  ];
 
   return (
-    <div className="border sm:w-[25%] w-[33%] py-4 px-6 relative">
-      <div
-        className="cursor-pointer px-4 inline-block relative"
-        onMouseEnter={() => setIsPopoverOpen(true)}
-        onMouseLeave={() => setIsPopoverOpen(false)}
-      >
-        <span className="text-5xl font-bold">{number}</span> заявки
-
-        {/* Всплывающее окно */}
-        {isPopoverOpen && (
-          <div
-            className="absolute left-0 top-full mt-2 min-w-[200px] bg-white border border-gray-300 rounded shadow-lg p-4 z-10"
-            onMouseEnter={() => setIsPopoverOpen(true)}
-            onMouseLeave={() => setIsPopoverOpen(false)}
-          >
-            <h1 className="text-xl font-semibold mb-2">Участники:</h1>
-            <ul className="list-disc pl-4">
-              {data.map((item, idx) => (
-                <li key={idx}>
-                  <p>{item.login}. {item.contact_info}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      <h1 className="text-2xl font-bold">{props.session.title}</h1>
-      <ul className="flex gap-4 pt-4 flex-wrap">
-        <li className="font-bold border-2 px-1">{props.session.genre.text}</li>
-        <li className="font-bold border-2 px-1">{props.session.system.text}</li>
-        <li className="font-bold border-2 px-1">
-          {props.session.company?.title || "OneShot"}
-        </li>
-      </ul>
-      <div className="flex mt-2 border-t-2 max-w-95%">
-        <span>{props.session.master.login}</span>
-        <span className="ml-auto mr-0">{props.session.scheduled_at}</span>
-      </div>
-      <div className="flex justify-center">
-        {props.master ? masterButtons : userButtons}
-      </div>
-    </div>
+    <Card
+      style={{
+        width: "100%",
+        maxWidth: 320,
+        marginBottom: 16,
+      }}
+      actions={props.master ? masterButtons : userButtons}
+      extra={
+        <Popover
+          content={popoverContent}
+          trigger="hover"
+          placement="bottomLeft"
+        >
+          <Typography.Title level={4}>{number} заявки</Typography.Title>
+        </Popover>
+      }
+      title={
+        <Typography.Title level={4}>{props.session.title}</Typography.Title>
+      }
+    >
+      {props.session.description ? (
+        <Typography.Text>
+          {props.session.description.substring(0, 100)}...
+        </Typography.Text>
+      ) : null}
+      <Space size="small" wrap style={{ marginBottom: 8, marginTop: 8 }}>
+        <Tag color="blue">{props.session.genre.text}</Tag>
+        <Tag color="green">{props.session.system.text}</Tag>
+        <Tag color="orange">{props.session.company?.title || "OneShot"}</Tag>
+      </Space>
+    </Card>
   );
 };

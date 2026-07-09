@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
 import Header from "../../components/Header";
-import Modal from "../../components/Modal";
 import { useState } from "react";
-import CharacterExport from "./CharacterExport";
 import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
+import { Button, Card, Flex, Modal } from "antd";
+import CharacterImport from "./CharacterImport";
+
+interface DataType {}
 
 export default function CharacterList() {
   const navigate = useNavigate();
@@ -55,91 +57,95 @@ export default function CharacterList() {
     await deleteById(`/characters`, id);
     await mutate();
   };
-  const btnStyle =
-    "bg-gray-200 px-3 py-2 font-bold  rounded-md hover:bg-gray-300";
 
   return (
     <div className="min-h-screen  text-gray-900 filter grayscale">
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-end mb-8 gap-2">
-          <CharacterExport mutate={mutate} />
-          <button
-            onClick={() => {
-              setModal(true);
-            }}
-            className="px-5 py-2 bg-gray-800 text-white rounded-md shadow-sm 
-                       hover:bg-gray-700 transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            + Создать персонажа
-          </button>
-        </div>
 
-        {!Array.isArray(characterData) ? (
-          <div>Ошибка формата данных</div>
-        ) : (
-          <div />
-        )}
-
-        {characterData?.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg">
-            Пока нет ни одного персонажа
-          </p>
-        ) : (
-          <div className="grid gap-6 ">
-            {characterData?.map((character) => (
-              <div
-                key={character.id}
-                className="bg-white border border-gray-300 rounded-lg p-5 
-                           shadow-sm hover:shadow-md transition-all duration-200"
-              >
-                <h2 className="text-xl font-bold mb-2 text-gray-800">
-                  {character.name}
-                </h2>
-                <p className="text-gray-700 mb-4 leading-relaxed">
-                  {character.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <button
-                    onClick={() => navigate(`${character.id}`)}
-                    className="px-4 py-1.5 bg-gray-600 text-white rounded-md 
-                             hover:bg-gray-500 transition-colors duration-200 
-                             focus:outline-none focus:ring-2 focus:ring-gray-400"
-                  >
-                    Подробнее
-                  </button>
-                  <button
-                    onClick={() => deleteChar(character.id)}
-                    className="px-4 py-1.5 bg-gray-600 text-white rounded-md 
-                             hover:bg-gray-500 transition-colors duration-200 
-                             focus:outline-none focus:ring-2 focus:ring-gray-400"
-                  >
-                    Удалить
-                  </button>
-                </div>
-              </div>
-            ))}
+      <div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-end mb-8 gap-2">
+            <CharacterImport mutate={mutate} />
+            <Button
+              onClick={() => {
+                setModal(true);
+              }}
+            >
+              + Создать персонажа
+            </Button>
           </div>
-        )}
-      </div>
 
-      <Modal
-        isOpen={modal}
-        className="w-[40%]"
-        onClose={() => {
-          setModal(false);
-        }}
-      >
-        <h1 className="text-center text-2xl p-3">Выберите систему</h1>
-        <div className="flex gap-2">
-          {schemaNames.map((name) => (
-            <button onClick={() => navigate(name)} className={btnStyle}>
-              {name}
-            </button>
-          ))}
+          {!Array.isArray(characterData) ? (
+            <div>Ошибка формата данных</div>
+          ) : (
+            <div />
+          )}
+
+          {characterData?.length === 0 ? (
+            <p className="text-center text-gray-500 text-lg">
+              Пока нет ни одного персонажа
+            </p>
+          ) : (
+            <Flex gap="medium" justify="">
+              {characterData?.map((character) => (
+                <Card
+                  key={character.id}
+                  title={character.name}
+                  style={{ width: 300 }}
+                  actions={[
+                    <Button
+                      type="primary"
+                      onClick={() => navigate(`${character.id}`)}
+                    >
+                      Подробнее
+                    </Button>,
+                    <Button
+                      type="dashed"
+                      onClick={() => deleteChar(character.id)}
+                    >
+                      Удалить
+                    </Button>,
+                  ]}
+                >
+                  {!character.description ? null : (
+                    <p>{character.description}</p>
+                  )}
+                </Card>
+              ))}
+            </Flex>
+          )}
         </div>
-      </Modal>
+
+        <Modal
+          title="Выберите систему"
+          open={modal}
+          footer={null}
+          onCancel={() => {
+            setModal(false);
+          }}
+        >
+          <Flex gap="medium">
+          {schemaNames.map((name) => (
+            <Button onClick={() => navigate(name)}>{name}</Button>
+          ))}
+          </Flex>
+        </Modal>
+      </div>
     </div>
   );
+}
+
+{
+  /* <Modal
+  isOpen={modal}
+  className="w-[40%]"
+  onClose={() => {
+    setModal(false);
+  }}
+>
+  <h1 className="text-center text-2xl p-3">Выберите систему</h1>
+  <div className="flex gap-2">
+
+  </div>
+</Modal> */
 }

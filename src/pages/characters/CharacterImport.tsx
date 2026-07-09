@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import type { CharacterGet, CharacterPost } from "../../types/Character";
 import { create } from "../../API/Fetcher";
+import { Button } from "antd";
 
 export default ({ mutate }: { mutate: any }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,14 +41,7 @@ export default ({ mutate }: { mutate: any }) => {
         className="hidden"
       />
 
-      <button
-        onClick={handleButtonClick}
-        className="px-5 py-2 bg-gray-800 text-white rounded-md shadow-sm 
-                       hover:bg-gray-700 transition-colors duration-200 
-                       focus:outline-none focus:ring-2 focus:ring-gray-500"
-      >
-        Загрузить из JSON
-      </button>
+      <Button onClick={handleButtonClick}>Загрузить из JSON</Button>
     </div>
   );
 };

@@ -31,7 +31,7 @@ export default () => {
 
   return (
     <div className="bg-gray-200 flex flex-col min-h-screen">
-      <Header compact={true} />
+      <Header />
       <div className="w-[80%] mx-auto mt-4 p-6 bg-white rounded-md">
         <h1 className="text-3xl font-bold mb-4">Город</h1>
         <p className="mb-2">
@@ -59,9 +59,11 @@ export default () => {
       </div>
 
       <div className="w-[90%] mx-auto my-4 flex items-end justify-between  gap-4 flex-wrap">
-        {!cityData ? <div>Ошибка загрузки</div> :  cityData.buildings.map((x) => (
-          <BuildingCard data={x} />
-        ))}
+        {!cityData ? (
+          <div>Ошибка загрузки</div>
+        ) : (
+          cityData.buildings.map((x) => <BuildingCard data={x} />)
+        )}
       </div>
     </div>
   );
