@@ -1,21 +1,19 @@
-import { Typography, Card } from "antd";
-import Header from "../components/Header";
+import { Typography, Card, Flex } from "antd";
 import SessionsList from "../components/SessionsList";
+import MainLayout from "../components/MainLayout";
 
 const { Paragraph } = Typography;
 
 export default () => {
   return (
-    <div className="min-h-screen bg-linear-to-b from-white to-gray-50">
-      <Header />
-
-      <div className="container mx-auto px-4 py-12 flex flex-col items-center">
-        <h1 className="text-5xl md:text-7xl font-extrabold  bg-clip-text   mb-6">
+    <MainLayout>
+      <Flex vertical align="center">
+        <h1 className="text-5xl   text-7xl font-extrabold  bg-clip-text  pt-20 mb-6">
           Привет!
         </h1>
 
         <Card className="w-full max-w-3xl shadow-lg rounded-2xl border-0 transition-all hover:shadow-xl">
-          <Typography className="text-base md:text-lg leading-relaxed text-gray-700">
+          <Typography>
             <Paragraph>
               Это небольшой сайт, который я разрабатываю самостоятельно для себя
               и своих друзей. В данный момент сайт находится в стадии
@@ -39,12 +37,10 @@ export default () => {
           </Typography>
         </Card>
 
-        <div className="w-16 h-1 bg-gray-300 rounded-full my-10" />
-
         <div className="w-full max-w-5xl">
           <SessionsList master={false} />
         </div>
-      </div>
-    </div>
+      </Flex>
+    </MainLayout>
   );
 };

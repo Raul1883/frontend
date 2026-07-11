@@ -2,16 +2,15 @@ import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
-import Header from "../../components/Header";
 import { useState } from "react";
 import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
-import { Button, Card, Flex, Modal } from "antd";
+import { Button, Card, Flex, Modal, Popconfirm } from "antd";
 import CharacterImport from "./CharacterImport";
-
+import MainLayout from "../../components/MainLayout";
 
 export default function CharacterList() {
   const navigate = useNavigate();
-  const [modal, setModal] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const {
     data: characterData,
     isLoading: chrIsLoading,
@@ -50,24 +49,19 @@ export default function CharacterList() {
   const schemaNames: string[] = schemaData?.map((x) => x.name) || [];
 
   const deleteChar = async (id: number) => {
-    const confirmDelete = window.confirm(`Точно?`);
-    if (!confirmDelete) return;
-
     await deleteById(`/characters`, id);
     await mutate();
   };
 
   return (
-    <div className="min-h-screen  text-gray-900 ">
-      <Header />
-
+    <MainLayout>
       <div>
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-end mb-8 gap-2">
             <CharacterImport mutate={mutate} />
             <Button
               onClick={() => {
-                setModal(true);
+                setIsModalOpen(true);
               }}
             >
               + Создать персонажа
@@ -92,18 +86,19 @@ export default function CharacterList() {
                   title={character.name}
                   style={{ width: 300 }}
                   actions={[
-                    <Button
-                      type="primary"
-                      onClick={() => navigate(`${character.id}`)}
-                    >
+                    <Button onClick={() => navigate(`${character.id}`)}>
                       Подробнее
                     </Button>,
-                    <Button
-                      type="dashed"
-                      onClick={() => deleteChar(character.id)}
+
+                    <Popconfirm
+                      title="Точно?"
+                      onConfirm={() => deleteChar(character.id)}
+                      okText="Да"
+                      cancelText="Нет"
+                      okButtonProps={{ danger: true }} // Делаем кнопку подтверждения красной
                     >
-                      Удалить
-                    </Button>,
+                      <Button danger>Удалить</Button>
+                    </Popconfirm>,
                   ]}
                 >
                   {!character.description ? null : (
@@ -117,10 +112,10 @@ export default function CharacterList() {
 
         <Modal
           title="Выберите систему"
-          open={modal}
+          open={isModalOpen}
           footer={null}
           onCancel={() => {
-            setModal(false);
+            setIsModalOpen(false);
           }}
         >
           <Flex gap="medium">
@@ -130,21 +125,6 @@ export default function CharacterList() {
           </Flex>
         </Modal>
       </div>
-    </div>
+    </MainLayout>
   );
-}
-
-{
-  /* <Modal
-  isOpen={modal}
-  className="w-[40%]"
-  onClose={() => {
-    setModal(false);
-  }}
->
-  <h1 className="text-center text-2xl p-3">Выберите систему</h1>
-  <div className="flex gap-2">
-
-  </div>
-</Modal> */
 }

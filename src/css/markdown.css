@@ -1,27 +1,67 @@
-/* markdown.css – базовые стили для Markdown-контента */
-/* Класс-обёртка для изоляции стилей, например <div class="markdown-body"> */
-
-
-
-
+:root {
+  --callout-bg-color: #ebe5d5;
+}
+:root.dark {
+  --callout-bg-color: #161616;
+}
+.blockquote,
+.callout {
+  background: #f2f3f5;
+  background: var(--callout-bg-color);
+  border-radius: 2px;
+  font-style: normal;
+}
+.callout {
+  padding: 0 !important;
+}
+.callout-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+}
+.callout-title > strong {
+  font-weight: 700;
+}
+.blockquote,
+.callout-content {
+  padding: 10px 20px;
+}
+.blockquote-heading {
+  margin: 5px 0 !important;
+  padding: 0 !important;
+}
+.blockquote > p,
+.callout-content > p {
+  font-weight: 400;
+  margin: 5px 0;
+}
+.callout-title p {
+  margin: 0;
+}
+.callout-title > strong {
+  line-height: 1.5;
+}
+.blockquote > p:before,
+.callout p:before,
+p:after {
+  display: none;
+}
 
 .markdown-body {
-  /* Основные типографические переменные */
-  --md-font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   --md-font-size: 16px;
   --md-line-height: 1.6;
   --md-text-color: #24292f;
-  --md-bg-color: #ffffff;
-  --md-link-color: #0969da;
-  --md-link-active-color: #0c5bb0;
-  --md-border-color: #d0d7de;
-  --md-code-bg: #f6f8fa;
-  --md-code-color: #e83e8c;
-  --md-blockquote-border: #d0d7de;
-  --md-table-header-bg: #f6f8fa;
-  --md-table-border: #d0d7de;
-  --md-hr-color: #d0d7de;
+  --md-bg-color: #fcf5e4;
+  --md-link-color: #326236;
+  --md-link-active-color: #326236;
+  --md-border-color: #326236;
+  --md-code-bg: #ebe5d5;
+  --md-code-color: #326236;
+  --md-blockquote-border: #326236;
+  --md-table-header-bg: #ebe5d5;
+  --md-table-border: #ebe5d5;
+  --md-hr-color: #326236;
 
   font-family: var(--md-font-family);
   font-size: var(--md-font-size);
@@ -118,7 +158,6 @@
   margin-bottom: 0.25em;
 }
 
-/* Блоки цитирования */
 .markdown-body blockquote {
   margin: 0 0 1em 0;
   padding: 0 1em;

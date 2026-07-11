@@ -6,6 +6,7 @@ import { getApplicationsPreviewData } from "../API/Applications";
 import type { ApplicationDataItem } from "../types/Application";
 import { Button, Card, Popover, Tag, Space, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import NavButton from "./NavButton";
 
 type PreviewProps = {
   session: SessionGet;
@@ -42,11 +43,13 @@ export default (props: PreviewProps) => {
   );
 
   const masterButtons = [
-    <Link to={`/manage/sessions/${props.session.id}`}>
-      <Button type="primary" icon={<EditOutlined />}>
-        Изменить
-      </Button>
-    </Link>,
+    <NavButton
+      to={`/manage/sessions/${props.session.id}`}
+      type="primary"
+      icon={<EditOutlined />}
+    >
+      Изменить
+    </NavButton>,
     <Button
       danger
       icon={<DeleteOutlined />}
@@ -58,17 +61,12 @@ export default (props: PreviewProps) => {
     </Button>,
   ];
   const userButtons = [
-    <Link to={`/sessions/${props.session.id}`}>
-      <Button type="primary" block>
-        Узнать больше
-      </Button>
-    </Link>,
+    <NavButton to={`/sessions/${props.session.id}`}>Узнать больше</NavButton>,
   ];
 
   return (
     <Card
       style={{
-        width: "100%",
         maxWidth: 320,
         marginBottom: 16,
       }}
@@ -92,9 +90,9 @@ export default (props: PreviewProps) => {
         </Typography.Text>
       ) : null}
       <Space size="small" wrap style={{ marginBottom: 8, marginTop: 8 }}>
-        <Tag color="blue">{props.session.genre.text}</Tag>
-        <Tag color="green">{props.session.system.text}</Tag>
-        <Tag color="orange">{props.session.company?.title || "OneShot"}</Tag>
+        <Tag>{props.session.genre.text}</Tag>
+        <Tag>{props.session.system.text}</Tag>
+        <Tag>{props.session.company?.title || "OneShot"}</Tag>
       </Space>
     </Card>
   );

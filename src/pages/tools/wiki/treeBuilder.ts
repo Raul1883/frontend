@@ -1,50 +1,74 @@
-export interface ITreeNode {
-  name: string;
-  id: string | null; // null для папок, строка-путь для файлов
-  isFolder: boolean;
-  children: ITreeNode[];
+import type { TreeDataNode } from "antd";
+
+// Временный интерфейс для построения сырого дерева
+interface RawBuilderNode {
+  title: string;
+  isLeaf: boolean;
+  fullPath: string; // нужен, чтобы гарантировать уникальность ключа папки
+  children: Record<string, RawBuilderNode>;
 }
 
-export function buildTree(paths: string[]): ITreeNode[] {
-  const root: { children: Record<string, any> } = { children: {} };
+/**
+ * Преобразует плоский массив путей напрямую в формат TreeDataNode для Ant Design
+ * @param paths массив строк вида ['folder/subfolder/page.md', 'root-page.md']
+ */
+export function buildAntdTree(paths: string[]): TreeDataNode[] {
+  // 1. Создаем корневой объект сборщика
+  const rootChildren: Record<string, RawBuilderNode> = {};
 
   paths.forEach((path) => {
     const parts = path.split("/");
-    let current = root;
+    let currentChildren = rootChildren;
+    let accumulatedPath = "";
 
     parts.forEach((part, index) => {
       const isLast = index === parts.length - 1;
+      
+      // Накапливаем путь для текущего уровня (чтобы ключ папки был уникальным)
+      accumulatedPath = accumulatedPath ? `${accumulatedPath}/${part}` : part;
 
-      if (!current.children[part]) {
-        current.children[part] = {
-          name: isLast ? part.replace(".md", "") : part,
-          id: isLast ? path : null,
-          isFolder: !isLast,
-          children: isLast ? null : {},
+      if (!currentChildren[part]) {
+        currentChildren[part] = {
+          title: isLast ? part.replace(".md", "") : part,
+          isLeaf: isLast,
+          fullPath: accumulatedPath,
+          children: {},
         };
       }
-      current = current.children[part];
+
+      currentChildren = currentChildren[part].children;
     });
   });
 
-  // Рекурсивно превращаем Record<string, Node> в отсортированный массив ITreeNode[]
-  const convertToArray = (nodeChildren: Record<string, any>): ITreeNode[] => {
-    if (!nodeChildren) return [];
+  // 2. Рекурсивная функция для конвертации во внутренний формат Antd и сортировки
+  const convertAndSort = (childrenMap: Record<string, RawBuilderNode>): TreeDataNode[] => {
+    const nodes = Object.values(childrenMap);
+    if (nodes.length === 0) return [];
 
-    return Object.values(nodeChildren)
-      .map((node) => ({
-        name: node.name,
-        id: node.id,
-        isFolder: node.isFolder,
-        children: convertToArray(node.children),
-      }))
+    return nodes
+      .map((node) => {
+        // Для файлов делаем привычный url-путь, для папок — уникальный внутренний fullPath
+        const key = node.isLeaf
+          ? `/tools/wiki/${encodeURIComponent(node.fullPath)}`
+          : `folder://${node.fullPath}`;
+
+        const hasChildren = Object.keys(node.children).length > 0;
+
+        return {
+          title: node.title,
+          key: key,
+          isLeaf: node.isLeaf,
+          children: hasChildren ? convertAndSort(node.children) : undefined,
+        };
+      })
       .sort((a, b) => {
-        // Сортировка: папки идут первыми, затем файлы по алфавиту
-        if (a.isFolder && !b.isFolder) return -1;
-        if (!a.isFolder && b.isFolder) return 1;
-        return a.name.localeCompare(b.name);
+        // Папки всегда идут выше файлов
+        if (!a.isLeaf && b.isLeaf) return -1;
+        if (a.isLeaf && !b.isLeaf) return 1;
+        // Внутри своей группы сортируем по алфавиту
+        return (a.title as string).localeCompare(b.title as string);
       });
   };
 
-  return convertToArray(root.children);
+  return convertAndSort(rootChildren);
 }

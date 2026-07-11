@@ -1,4 +1,4 @@
-import Header from "../../../components/Header";
+import MainLayout from "../../../components/MainLayout";
 import Menu, { type menuItem } from "../../../components/Menu";
 
 const items: menuItem[] = [
@@ -11,9 +11,8 @@ const items: menuItem[] = [
 
 export default () => {
   return (
-    <div>
-      <Header />
-      <Menu menuItems={items} />
-    </div>
+    <MainLayout>
+      <Menu menuItems={items} title="Гильдийские ваншоты" />
+    </MainLayout>
   );
 };

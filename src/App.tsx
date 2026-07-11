@@ -2,11 +2,11 @@ import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { PrivateRoute } from "./utils/PrivateRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
-import Sessions from "./pages/Sessions";
+import Sessions from "./pages/Sessions/Sessions";
 import MasterPanel from "./pages/master/MasterPanel";
 import ManageSessions from "./pages/master/ManageSessions";
 import SessionsEditorV2 from "./pages/master/SessionsEditor";
-import SessionInfo from "./pages/Session";
+import SessionInfo from "./pages/Sessions/Session";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Login } from "./pages/Login";
 import { RoleGuard } from "./utils/RoleGuard";
@@ -22,13 +22,77 @@ import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
 import WikiPage from "./pages/tools/wiki/WikiPage";
 import "antd/dist/reset.css"; // Или 'antd/dist/antd.css' для старой версии
-import { ConfigProvider, theme, App as AppAntD } from "antd";
+import { ConfigProvider, theme, App as AppAntD, Layout } from "antd";
 import MainPage from "./pages/MainPage";
 
+const TypewriterTheme = {
+  token: {
+    fontFamily: '"iA Writer Mono V", "Courier New", Courier, monospace',
+    fontFamilyCode: '"iA Writer Mono V", "Courier New", Courier, monospace',
+
+    colorPrimary: "#979795",
+    colorSuccess: "#4b7a47",
+    colorWarning: "#c99635",
+    colorError: "#b04a4a",
+    colorInfo: "#4a708b",
+
+    colorText: "#2e2e2e",
+    colorTextDescription: "#595959",
+    colorBgContainer: "#fcf5e4",
+    colorBgLayout: "#f4f4f4",
+
+    colorBorder: "#d9d9d9",
+    colorBorderSecondary: "#e8e8e8",
+
+    borderRadius: 2,
+    borderRadiusXS: 1,
+    borderRadiusSM: 1,
+    borderRadiusLG: 4,
+
+    controlOutline: "rgba(0, 0, 0, 0.04)",
+    colorBgTextHover: "rgba(0, 0, 0, 0.04)",
+    colorBgTextActive: "rgba(0, 0, 0, 0.08)",
+  },
+  components: {
+    Button: {
+      // Кнопки делаем более строгими
+      borderRadius: 2,
+      controlHeight: 34,
+      fontFamily: '"iA Writer Mono V", monospace',
+    },
+    Input: {
+      // Поля ввода как на печатной машинке
+      borderRadius: 0, // Прямые углы
+      colorBgContainer: "#ffffff",
+    },
+    Typography: {
+      // Специфика для текста
+      colorText: "#2e2e2e",
+    },
+    Layout: {
+      bodyBg: "#e4dcc8",
+      headerBg: "#fcf5e4",
+      siderBg: "#fcf5e4",
+    },
+    Modal: {
+      contentBg: "#fcf5e4",
+    },
+    Select: {
+      colorBgContainer: "#fff",
+    },
+    Tree: {
+      indentSize: 12,
+      paddingXS: 2,
+      fontSize: 16,
+    },
+  },
+};
+
 function App() {
+  console.log(TypewriterTheme);
   return (
     <AppAntD>
-      <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
+      <ConfigProvider theme={TypewriterTheme}>
         <BrowserRouter basename="/">
           <AuthProvider>
             <Routes>

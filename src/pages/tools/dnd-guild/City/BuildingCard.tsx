@@ -1,10 +1,11 @@
+import React, { useState } from "react";
+import { Card, Button, Modal, Flex, Typography, Popover } from "antd";
 import ReactMarkdown from "react-markdown";
-import Modal from "../../../../components/Modal";
 import remarkGfm from "remark-gfm";
-import { useState } from "react";
-import "../../../../css/markdown.css";
 
-export interface buildingData {
+const { Title, Text } = Typography;
+
+export interface BuildingData {
   name: string;
   level: number;
   description: string;
@@ -13,47 +14,62 @@ export interface buildingData {
 
 const levelToBills = [1, 3, 5, 7, 9];
 
-export default ({ data }: { data: buildingData }) => {
+export default ({ data }: { data: BuildingData }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (
-    <div className="bg-gray-300 rounded-md w-70 flex items-center flex-col pb-6">
-      <div className="flex gap-4 items-center my-2 text-xl font-bold">
-        <h2 className="">{data.name}</h2>
-        <p className="">{data.level}lvl</p>
-      </div>
-      <img
-        className="h-40 w-auto m-2"
-        src={data.img}
+    <>
+      <Card
+        className="w-70 pb-2"
+        cover={
+          <img
+            alt={data.name}
+            src={data.img}
+            className="h-40 object-contain p-2"
+          />
+        }
+        title={data.name}
+        extra={
+          <Popover
+            content={
+              <Typography.Text>
+                Купчих для улучшения: {levelToBills[data.level] ?? 0}
+              </Typography.Text>
+            }
+            trigger="hover"
+            placement="bottomLeft"
+          >
+            lvl {data.level}
+          </Popover>
+        }
+        actions={[
+          <Button onClick={() => setIsModalOpen(true)}>Подробнее</Button>,
+        ]}
       />
-      <button
-        onClick={() => {
-          setIsModalOpen(true);
-        }}
-        className="font-bold border rounded-md px-4 py-2 hover:shadow-xl"
-      >
-        Подробнее
-      </button>
 
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-        }}
-        className="w-[60%] max-w-[90vw] max-h-[80vh] overflow-y-auto"
+        title={data.name}
+        open={isModalOpen}
+        onCancel={() => setIsModalOpen(false)}
+        footer={null}
+        width="60%"
+        centered
       >
-        <h1 className="text-xl font-bold ">{data.name}</h1>
-        <div className="flex flex-col gap-2">
-          <p className="text-gray-500">
-            Купчих для улучшения: {levelToBills[data.level]}
-          </p>
+        <Flex
+          vertical
+          gap="small"
+          className="max-h-[70vh] overflow-y-auto pt-2"
+        >
+          <Text type="secondary">
+            Купчих для улучшения: {levelToBills[data.level] ?? 0}
+          </Text>
           <div className="markdown-body">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {data.description}
             </ReactMarkdown>
           </div>
-        </div>
+        </Flex>
       </Modal>
-    </div>
+    </>
   );
 };

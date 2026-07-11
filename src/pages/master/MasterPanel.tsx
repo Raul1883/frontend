@@ -1,4 +1,4 @@
-import Header from "../../components/Header";
+import MainLayout from "../../components/MainLayout";
 import Menu from "../../components/Menu";
 
 export const menuItems = [
@@ -12,11 +12,11 @@ export const menuItems = [
     path: "/manage/users",
     description: "Список пользователей и статистика",
   },
-  {
-    title: "База знаний",
-    path: "/manage/knowledge",
-    description: "Пока не реализовано",
-  },
+  // {
+  //   title: "База знаний",
+  //   path: "/manage/knowledge",
+  //   description: "Пока не реализовано",
+  // },
   // {
   //   title: "Компании",
   //   path: "/manage/companies",
@@ -31,11 +31,9 @@ export const menuItems = [
 
 const MainMenu = () => {
   return (
-    <div>
-      <Header />
-
-      <Menu menuItems={menuItems} />
-    </div>
+    <MainLayout>
+      <Menu menuItems={menuItems} title="Мастеркая" />
+    </MainLayout>
   );
 };
 

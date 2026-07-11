@@ -1,3 +1,4 @@
+import { Card, Divider, Space, Typography } from "antd";
 import { Link } from "react-router-dom";
 
 export interface menuItem {
@@ -6,31 +7,36 @@ export interface menuItem {
   description: string;
 }
 
-export interface menuItems {
+export interface menuProps {
+  title?: string;
   menuItems: menuItem[];
 }
 
-export default (props: menuItems) => {
+
+
+export default (props: menuProps) => {
   return (
     <div>
-      <div className=" p-8 flex flex-col items-center ">
-        {/* Сетка меню */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+      <div className=" p-8 ">
+
+        {props.title && (
+          <Divider>
+            <Typography.Title>{props.title}</Typography.Title>
+          </Divider>
+        )}
+
+
+        <Space size="large" className="w-full" wrap>
           {props.menuItems.map((item) => (
-            <Link
-              key={item.title}
-              to={item.path}
-              className="group relative bg-white p-8  border-2 hover:shadow-xl  flex flex-col items-start"
+            <Card
+              title={item.title}
+              extra={<Link to={item.path}>Перейти</Link>}
+              style={{ width: 300 }}
             >
-              <h2 className="text-xl font-bold text-slate-800 mb-2">
-                {item.title}
-              </h2>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                {item.description}
-              </p>
-            </Link>
+              {item.description}
+            </Card>
           ))}
-        </div>
+        </Space>
       </div>
     </div>
   );

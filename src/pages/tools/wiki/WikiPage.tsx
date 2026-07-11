@@ -1,15 +1,10 @@
-import Header from "../../../components/Header";
 import MdViewer from "./MdViewer";
-import { WikiSidebar } from "./Sidebar";
+import { WikiLayout } from "./WikiLayout";
 
 export default () => {
   return (
-    <div>
-      <Header />
-      <div className="flex">
-        <WikiSidebar />
-        <MdViewer />
-      </div>
-    </div>
+    <WikiLayout>
+      <MdViewer />
+    </WikiLayout>
   );
 };
