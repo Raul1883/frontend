@@ -1,6 +1,7 @@
 import { Button, Layout, Menu } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { AuthButton } from "./AuthButton";
+import { useAuth } from "../hooks/useAuth";
 
 const { Header, Content, Footer } = Layout;
 
@@ -11,6 +12,26 @@ interface LayoutProps {
   fluid?: boolean;
 }
 
+const getHeaderItems = () => {
+  const { userRole } = useAuth();
+  if (userRole == "master") {
+    return [
+      { key: "sessions", label: <Link to="/sessions">Игры</Link> },
+      { key: "characters", label: <Link to="/characters">Персонажи</Link> },
+      { key: "tools", label: <Link to="/tools">Инструменты</Link> },
+      { key: "manage", label: <Link to="/manage">Мастерская</Link> },
+      { key: "exit", label: <AuthButton /> },
+    ];
+  }
+
+  return [
+    { key: "sessions", label: <Link to="/sessions">Игры</Link> },
+    { key: "characters", label: <Link to="/characters">Персонажи</Link> },
+    { key: "tools", label: <Link to="/tools">Инструменты</Link> },
+    { key: "exit", label: <AuthButton /> },
+  ];
+};
+
 export default ({
   children,
   header = true,
@@ -19,13 +40,7 @@ export default ({
 }: LayoutProps) => {
   const location = useLocation();
 
-  const items = [
-    { key: "sessions", label: <Link to="/sessions">Игры</Link> },
-    { key: "characters", label: <Link to="/characters">Персонажи</Link> },
-    { key: "tools", label: <Link to="/tools">Инструменты</Link> },
-    { key: "manage", label: <Link to="/manage">Мастерская</Link> },
-    { key: "exit", label: <AuthButton /> },
-  ];
+  const items = getHeaderItems();
 
   const currentKey = location.pathname.split("/")[1] || "sessions";
 

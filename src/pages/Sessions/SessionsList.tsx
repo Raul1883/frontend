@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import type { SessionGet } from "../types/Session";
+import type { SessionGet } from "../../types/Session";
 import SessionPreview from "./SessionPreview";
-import { deleteById, getAll } from "../API/Fetcher";
+import { deleteById, getAll } from "../../API/Fetcher";
 import { Space } from "antd";
 
 export default ({ master = false }: { master: boolean }) => {

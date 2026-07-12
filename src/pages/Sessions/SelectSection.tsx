@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { getAll } from "../API/Fetcher";
+import { getAll } from "../../API/Fetcher";
 
 type SelectItem = {
   id: number;
@@ -35,7 +35,10 @@ export default (selectData: SelectData) => {
   return (
     <div className="w-[30%]">
       <h3 className="text-l font-bold pl-2 mb-1">{selectData.title}</h3>
-      <select id={default_id} className="border-4 py-2 w-full rounded-lg indent-2">
+      <select
+        id={default_id}
+        className="border-4 py-2 w-full rounded-lg indent-2"
+      >
         <option className="" key={default_id} id={default_id}>
           {default_text}
         </option>

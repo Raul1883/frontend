@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import useSWR from "swr";
-import { Tree, Spin, Alert, Typography, Skeleton } from "antd";
+import { Tree, Spin, Alert, Typography } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FolderOutlined, FileTextOutlined } from "@ant-design/icons";
 import axiosInstance from "../../../API/AxiosInstance";
@@ -44,12 +44,6 @@ export const WikiSidebar: React.FC = () => {
   // Декодируем pathname для точного сопоставления с key в дереве
   const selectedKey = decodeURIComponent(location.pathname);
 
-  if (!paths || paths.length === 0) {
-    return <div>Вики пуста</div>;
-  }
-
-  console.log(antdTreeData);
-
   if (isLoading) {
     return (
       <aside className="overflow-y-auto pt-8">
@@ -59,6 +53,10 @@ export const WikiSidebar: React.FC = () => {
         </Typography.Title>
       </aside>
     );
+  }
+
+  if (!paths || paths.length === 0) {
+    return <div>Вики пуста</div>;
   }
 
   if (error) {

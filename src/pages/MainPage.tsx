@@ -1,5 +1,5 @@
 import { Typography, Card, Flex } from "antd";
-import SessionsList from "../components/SessionsList";
+import SessionsList from "./Sessions/SessionsList";
 import MainLayout from "../components/MainLayout";
 
 const { Paragraph } = Typography;

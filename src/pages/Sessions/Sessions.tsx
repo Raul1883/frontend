@@ -1,5 +1,5 @@
 import { Divider, Typography } from "antd";
-import SessionsList from "../../components/SessionsList";
+import SessionsList from "./SessionsList";
 import MainLayout from "../../components/MainLayout";
 
 export default () => {

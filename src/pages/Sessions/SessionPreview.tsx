@@ -1,9 +1,9 @@
-import type { SessionGet } from "../types/Session";
+import type { SessionGet } from "../../types/Session";
 import useSWR from "swr";
-import { getApplicationsPreviewData } from "../API/Applications";
-import type { ApplicationDataItem } from "../types/Application";
+import { getApplicationsPreviewData } from "../../API/Applications";
+import type { ApplicationDataItem } from "../../types/Application";
 import { EditOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
-import NavButton from "./NavButton";
+import NavButton from "../../components/NavButton";
 import Typography from "antd/es/typography";
 import Button from "antd/es/button";
 import Card from "antd/es/card";

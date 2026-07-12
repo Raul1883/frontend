@@ -1,24 +1,24 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Form, Input, Button, Typography, Alert, Layout, Card } from "antd";
 import { useAuth } from "../hooks/useAuth";
 
+const { Title } = Typography;
+
 export const Login: React.FC = () => {
-  const [login, setLogin] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const { login: authLogin } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onFinish = async (values: { login: string; password: string }) => {
     setError("");
     setIsLoading(true);
 
     try {
-      await authLogin(login, password);
-      navigate("/"); // Редирект после успешного входа
+      await authLogin(values.login, values.password);
+      navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Login failed");
     } finally {
@@ -26,47 +26,62 @@ export const Login: React.FC = () => {
     }
   };
 
-
-
   return (
-    <div className="flex items-center justify-center w-full h-screen ">
-      <form
-        className="flex flex-col gap-4 w-80 p-8 bg-white shadow-xl"
-        onSubmit={handleSubmit}
-      >
-        <h2 className="text-2xl font-light tracking-wide text-center text-black mb-2">
-          Вход
-        </h2>
+    <Layout
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        width: "100%",
+      }}
+    >
+      <Card>
+        <Form name="login" onFinish={onFinish} layout="vertical">
+          <Title
+            level={2}
+            style={{ textAlign: "center", fontWeight: 300, marginBottom: 24 }}
+          >
+            Вход
+          </Title>
 
-        <input
-          type="text"
-          value={login}
-          onChange={(e) => setLogin(e.target.value)}
-          placeholder="Логин"
-          required
-          className="w-full px-4 py-3 text-black bg-white border border-gray-300 rounded-none focus:outline-none focus:border-black transition-colors placeholder-gray-400"
-        />
+          <Form.Item
+            name="login"
+            rules={[{ required: true, message: "Пожалуйста, введите логин" }]}
+          >
+            <Input placeholder="Логин" size="large" />
+          </Form.Item>
 
-        <input
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Пароль"
-          required
-          className="w-full px-4 py-3 text-black bg-white border border-gray-300 rounded-none focus:outline-none focus:border-black transition-colors placeholder-gray-400"
-        />
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Пожалуйста, введите пароль" }]}
+          >
+            <Input.Password placeholder="Пароль" size="large" />
+          </Form.Item>
 
-        {error && <div className="text-sm text-red-600 mt-[-8px]">{error}</div>}
+          {error && (
+            <Form.Item style={{ marginBottom: 16 }}>
+              <Alert message={error} type="error" showIcon />
+            </Form.Item>
+          )}
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full py-3 mt-2 text-white bg-black hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm font-medium tracking-wide"
-        >
-          {isLoading ? "Загрузка..." : "Войти"}
-        </button>
-        <Link to="/reg" className="text-center hover:text-gray-500">Зарегестироваться</Link>
-      </form>
-    </div>
+          <Form.Item style={{ marginBottom: 12 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              loading={isLoading}
+            >
+              {isLoading ? "Загрузка..." : "Войти"}
+            </Button>
+          </Form.Item>
+
+          <div style={{ textAlign: "center" }}>
+            <Link to="/reg">Зарегистрироваться</Link>
+          </div>
+        </Form>
+      </Card>
+    </Layout>
   );
 };
