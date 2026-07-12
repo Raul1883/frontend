@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import useSWR from "swr";
-import { Tree, Spin, Alert, Typography } from "antd";
+import { Tree, Spin, Alert, Typography, Skeleton } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FolderOutlined, FileTextOutlined } from "@ant-design/icons";
 import axiosInstance from "../../../API/AxiosInstance";
@@ -33,8 +33,9 @@ export const WikiSidebar: React.FC = () => {
   }, [paths]);
 
   // Обработка клика по элементу дерева
-  const handleSelect = (info: any) => {
+  const handleSelect = (selectedKeys: React.Key[], info: any) => {
     if (!info.node.isLeaf) return;
+    selectedKeys;
 
     const targetUrl = info.node.key as string;
     navigate(targetUrl);

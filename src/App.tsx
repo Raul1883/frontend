@@ -16,14 +16,20 @@ import Users from "./pages/master/Users";
 import { CharacterForm } from "./pages/characters/render/SchemaRender";
 import Reg from "./pages/Reg";
 import CharacterSchemas from "./pages/master/SystemSchemaEditor/CharacterSchemas";
-import CharacterSchemasEditor from "./pages/master/SystemSchemaEditor/CharacterSchemasEditor";
 import ToolsMainPage from "./pages/tools/ToolsMainPage";
 import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
-import WikiPage from "./pages/tools/wiki/WikiPage";
 import "antd/dist/reset.css"; // Или 'antd/dist/antd.css' для старой версии
-import { ConfigProvider, App as AppAntD, } from "antd";
+import { ConfigProvider, App as AppAntD } from "antd";
 import MainPage from "./pages/MainPage";
+
+import React from "react";
+
+const CharacterSchemasEditor = React.lazy(
+  () => import("./pages/master/SystemSchemaEditor/CharacterSchemasEditor"),
+);
+
+const WikiPage = React.lazy(() => import("./pages/tools/wiki/WikiPage"));
 
 const TypewriterTheme = {
   token: {
