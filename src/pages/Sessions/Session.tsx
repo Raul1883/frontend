@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { getById } from "../../API/Fetcher";
@@ -28,7 +28,6 @@ export default () => {
   } = useSWR<SessionGet>(id ? ["/sessions", id] : null, ([url, targetId]) =>
     getById<SessionGet>(url as string, Number(targetId)),
   );
-  
 
   if (sessionError) {
     return (
@@ -83,7 +82,7 @@ export default () => {
             open={isModalOpen}
             sessionId={Number(id)}
             onClose={() => setIsModalOpen(false)}
-            onSuccess={() => mutateSession()} 
+            onSuccess={() => mutateSession()}
           />
         )}
       </div>

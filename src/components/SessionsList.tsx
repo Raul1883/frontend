@@ -2,6 +2,7 @@ import useSWR from "swr";
 import type { SessionGet } from "../types/Session";
 import SessionPreview from "./SessionPreview";
 import { deleteById, getAll } from "../API/Fetcher";
+import { Space } from "antd";
 
 export default ({ master = false }: { master: boolean }) => {
   const { data, error, isLoading, mutate } = useSWR<SessionGet[]>("/sessions", getAll);
@@ -21,7 +22,7 @@ export default ({ master = false }: { master: boolean }) => {
   if (data?.length == 0) return <p>А на сегодня все</p>;
 
   return (
-    <div className="flex flex-wrap gap-2 p-6">
+    <Space wrap align="start">
       {data?.map((session) => (
         <SessionPreview
           key={session.id}
@@ -30,6 +31,6 @@ export default ({ master = false }: { master: boolean }) => {
           handleDelete={handleDelete}
         />
       ))}
-    </div>
+    </Space>
   );
 };

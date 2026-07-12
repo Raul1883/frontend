@@ -1,12 +1,16 @@
-import { Link } from "react-router-dom";
 import type { SessionGet } from "../types/Session";
-import { useState, type JSX } from "react";
 import useSWR from "swr";
 import { getApplicationsPreviewData } from "../API/Applications";
 import type { ApplicationDataItem } from "../types/Application";
-import { Button, Card, Popover, Tag, Space, Typography } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import NavButton from "./NavButton";
+import Typography from "antd/es/typography";
+import Button from "antd/es/button";
+import Card from "antd/es/card";
+import Popover from "antd/es/popover";
+import Tag from "antd/es/tag";
+import Space from "antd/es/space";
+import { Avatar, Badge } from "antd";
 
 type PreviewProps = {
   session: SessionGet;
@@ -24,23 +28,29 @@ export default (props: PreviewProps) => {
 
   const number = data.length;
 
-  // Контент всплывающего окна со списком участников
-  const popoverContent = (
-    <div style={{ minWidth: 200 }}>
-      <Typography.Title level={5} style={{ marginBottom: 8 }}>
-        Участники:
-      </Typography.Title>
-      <ul style={{ listStyle: "disc", paddingLeft: 20, marginBottom: 0 }}>
-        {data.map((item, idx) => (
-          <li key={idx}>
-            <Typography.Text>
-              {item.login}. {item.contact_info}
-            </Typography.Text>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+  const popoverContent =
+    data.length != 0 ? (
+      <div style={{ minWidth: 200 }}>
+        <Typography.Title level={5} style={{ marginBottom: 8 }}>
+          Участники:
+        </Typography.Title>
+        <ul style={{ listStyle: "disc", paddingLeft: 20, marginBottom: 0 }}>
+          {data.map((item, idx) => (
+            <li key={idx}>
+              <Typography.Text>
+                {item.login}. {item.contact_info}
+              </Typography.Text>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <div style={{ minWidth: 200 }}>
+        <Typography.Title level={5} style={{ marginBottom: 8 }}>
+          Пока нет участников
+        </Typography.Title>
+      </div>
+    );
 
   const masterButtons = [
     <NavButton
@@ -77,11 +87,15 @@ export default (props: PreviewProps) => {
           trigger="hover"
           placement="bottomLeft"
         >
-          <Typography.Title level={4}>{number} заявки</Typography.Title>
+          <Badge count={number} color="#71bc78">
+            <Avatar shape="square" icon={<UserOutlined />} />
+          </Badge>
         </Popover>
       }
       title={
-        <Typography.Title level={4}>{props.session.title}</Typography.Title>
+        <Typography.Title level={4} style={{ whiteSpace: "normal" }}>
+          {props.session.title}
+        </Typography.Title>
       }
     >
       {props.session.description ? (

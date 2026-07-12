@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, Button, Modal, Flex, Typography, Popover } from "antd";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const { Title, Text } = Typography;
+const { Text } = Typography;
 
 export interface BuildingData {
   name: string;

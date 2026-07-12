@@ -22,7 +22,7 @@ import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
 import WikiPage from "./pages/tools/wiki/WikiPage";
 import "antd/dist/reset.css"; // Или 'antd/dist/antd.css' для старой версии
-import { ConfigProvider, theme, App as AppAntD, Layout } from "antd";
+import { ConfigProvider, App as AppAntD, } from "antd";
 import MainPage from "./pages/MainPage";
 
 const TypewriterTheme = {
