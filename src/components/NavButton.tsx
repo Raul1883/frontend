@@ -1,8 +1,8 @@
 import { Button, type ButtonProps } from "antd";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, type To } from "react-router-dom";
 
 interface NavButtonProps extends ButtonProps {
-  to: string;
+  to: To | number;
 }
 
 export default ({ to, children, onClick, ...rest }: NavButtonProps) => {
@@ -10,7 +10,12 @@ export default ({ to, children, onClick, ...rest }: NavButtonProps) => {
   return (
     <Button
       onClick={() => {
-        navigate(to);
+        // костыль чтобы ts не ругался на no matching overload
+        if (typeof to === "number") {
+          navigate(to);
+        } else {
+          navigate(to);
+        }
       }}
       {...rest}
     >

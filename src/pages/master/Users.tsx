@@ -1,8 +1,8 @@
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { getAll, updateByBody } from "../../API/Fetcher";
-import ManageHeader from "./ManageHeader";
 import axiosInstance from "../../API/AxiosInstance";
+import MainLayout from "../../components/MainLayout";
 
 // Типы согласно заданию
 interface UserRead {
@@ -101,8 +101,7 @@ export default () => {
   }
 
   return (
-    <div className="">
-      <ManageHeader title="Управление пользователями" />
+    <MainLayout>
       <div className="h-8"></div>
       {/* Таблица с ч/б стилизацией */}
       <div className="overflow-x-auto mx-8">
@@ -218,6 +217,6 @@ export default () => {
           </tbody>
         </table>
       </div>
-    </div>
+    </MainLayout>
   );
 };

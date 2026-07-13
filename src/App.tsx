@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { PrivateRoute } from "./utils/PrivateRoute";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import Sessions from "./pages/Sessions/Sessions";
-import MasterPanel from "./pages/master/MasterPanel";
 import ManageSessions from "./pages/master/ManageSessions";
 import SessionsEditorV2 from "./pages/master/SessionsEditor";
 import SessionInfo from "./pages/Sessions/Session";
@@ -24,6 +23,7 @@ import { ConfigProvider, App as AppAntD } from "antd";
 import MainPage from "./pages/MainPage";
 
 import React, { Suspense } from "react";
+import MasterPanel from "./pages/master/MasterPanel";
 
 const CharacterSchemasEditor = React.lazy(
   () => import("./pages/master/SystemSchemaEditor/CharacterSchemasEditor"),

@@ -3,13 +3,13 @@ import { create, deleteById, getAll } from "../../../API/Fetcher";
 import { useState } from "react";
 import Modal from "../../../components/Modal";
 import { Link } from "react-router-dom";
-import ManageHeader from "../ManageHeader";
 import type {
   SystemSchemaCreate,
   SystemSchemaPreview,
   SystemSchemaRead,
 } from "../../../types/CharacterSchemasTypes";
 import type { CharacterSchema } from "../../characters/types/CharacterSheet";
+import MainLayout from "../../../components/MainLayout";
 
 const EmptySchema: CharacterSchema = {
   sections: [
@@ -69,8 +69,7 @@ export default () => {
   };
 
   return (
-    <div>
-      <ManageHeader title="Редактор схем" />
+    <MainLayout>
       <div>
         <div className="flex flex-col mt-4 mx-auto  items-center w-200 min-h-100 border">
           <div className="w-[90%] flex justify-between items-center mx-4 mt-2 ">
@@ -120,6 +119,6 @@ export default () => {
         <input value={newName} onChange={handleChange} className="px-3 py-2" />
         <button onClick={handleCreate}>Сохранить</button>
       </Modal>
-    </div>
+    </MainLayout>
   );
 };

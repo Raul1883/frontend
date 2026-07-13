@@ -19,7 +19,18 @@ const getHeaderItems = () => {
       { key: "sessions", label: <Link to="/sessions">Игры</Link> },
       { key: "characters", label: <Link to="/characters">Персонажи</Link> },
       { key: "tools", label: <Link to="/tools">Инструменты</Link> },
-      { key: "manage", label: <Link to="/manage">Мастерская</Link> },
+      {
+        key: "manage",
+        label: <Link to="/manage">Мастерская</Link>,
+        children: [
+          {
+            label: <Link to="/manage/sessions">Сессии</Link>,
+            key: "manage/sessions",
+          },
+          { label: <Link to="/manage/users">Игроки</Link>, key: "manage/users" },
+          { label: <Link to="/manage/schemas">Схемы</Link>, key: "manage/schemas" },
+        ],
+      },
       { key: "exit", label: <AuthButton /> },
     ];
   }

@@ -1,8 +1,8 @@
 import useSWR from "swr";
 import { create, deleteById, getAll } from "../API/Fetcher";
 import { useState, useEffect } from "react";
-import Modal from "../components/Modal";
 import type { EntityCreate } from "../types/Entity";
+import { App, Button, Flex, Popconfirm, Select, type SelectProps } from "antd";
 
 type attributeType = "genre" | "system";
 
@@ -11,166 +11,115 @@ type Entity = {
   text: string;
 };
 
-export default ({
-  type,
-  setState,
-  defaultId = null,
-}: {
+// Пропсы, которые Antd Form автоматически прокинет в компонент
+interface AttributeEditorProps {
   type: attributeType;
-  setState: (name: string, value: number) => void;
-  defaultId?: number | null;
-}) => {
+  value?: number; // Текущее id из формы
+  onChange?: (value: number | undefined) => void; // Колбэк для формы
+}
+
+const typeToStr = (value: attributeType) => {
+  return value === "genre" ? "Жанр" : "Система";
+};
+
+export default ({ type, value, onChange }: AttributeEditorProps) => {
   const { data, isLoading, error, mutate } = useSWR<Entity[]>(
     `/${type}`,
     getAll,
   );
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [newTextState, setNewTextState] = useState<string>("");
-  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [options, setOptions] = useState<SelectProps["options"]>([]);
+  const { message } = App.useApp();
 
   useEffect(() => {
-    if (defaultId !== null && defaultId !== selectedId) {
-      setSelectedId(defaultId);
-    }
-  }, [defaultId]);
-
-  useEffect(() => {
-    if (data && data.length > 0 && selectedId === null) {
-      const initialId = defaultId !== null ? defaultId : data[0]?.id;
-      if (initialId !== undefined) {
-        setSelectedId(initialId);
-        if (defaultId === null) {
-          setState(`${type}_id`, initialId);
-        }
-      }
-    }
-  }, [data, selectedId, defaultId, setState, type]);
-
-  const closeModal = () => setIsModalOpen(false);
-  const openModal = () => setIsModalOpen(true);
-
-  const handleChangeSelectedItem = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const newId = parseInt(event.target.value, 10);
-    if (!isNaN(newId)) {
-      setSelectedId(newId);
-      setState(`${type}_id`, newId);
-    }
-  };
-
-  const handleChangeModalInput = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setNewTextState(e.target.value);
-  };
-
-  const handleCreateNewEntity = async () => {
-    if (newTextState.trim() === "") {
-      alert("Имя не может быть пустым!");
-      return;
-    }
-
-    const newEntity: EntityCreate = { text: newTextState };
-
-    try {
-      const createdEntity = await create<EntityCreate, Entity>(
-        `/${type}`,
-        newEntity,
-      );
-      await mutate();
-      setSelectedId(createdEntity.id);
-      setState(`${type}_id`, createdEntity.id);
-      closeModal();
-      setNewTextState("");
-    } catch (error) {
-      console.error("Ошибка при создании:", error);
-      alert("Не удалось создать элемент");
-    }
-  };
+    if (!data) return;
+    const mapped = data.map((x) => ({
+      value: x.id.toString(),
+      label: x.text,
+    }));
+    setOptions(mapped);
+  }, [data]);
 
   const handleDelete = async () => {
-    if (!selectedId) {
-      alert("Нет выбранного элемента для удаления");
+    if (!value || value === 0) {
+      message.warning("Нет выбранного элемента для удаления");
       return;
     }
 
-    // Подтверждение удаления
-    const confirmDelete = window.confirm(
-      `Точно?`,
-    );
-    if (!confirmDelete) return;
-
     try {
-      // Выполняем DELETE запрос
-      await deleteById(`/${type}`, selectedId);
-      // Обновляем данные из сервера
+      await deleteById(`/${type}`, value);
       await mutate();
+      message.destroy("Удалено");
 
-      // После обновления данных нужно выбрать новый элемент
-      if (data && data.length > 0) {
-        const remainingItems = data.filter((item) => item.id !== selectedId);
-        const newSelectedId =
-          remainingItems.length > 0 ? remainingItems[0]?.id : null;
-        setSelectedId(newSelectedId);
-        if (newSelectedId !== null) {
-          setState(`${type}_id`, newSelectedId);
-        } else {
-          // Если элементов не осталось, сбрасываем значение в родителе (например, 0)
-          setState(`${type}_id`, 0);
-        }
-      } else {
-        setSelectedId(null);
-        setState(`${type}_id`, 0);
-      }
+      if (onChange) onChange(undefined);
     } catch (error) {
       console.error("Ошибка при удалении:", error);
-      alert("Не удалось удалить элемент");
+      message.error(
+        "Не удалось удалить элемент. Возможно он используется в сохраненной версии этой или другой сессии?",
+      );
+    }
+  };
+
+  const handleChange = async (valueArr: string[]) => {
+    const inputValue = valueArr[valueArr.length - 1];
+
+    if (!inputValue) {
+      if (onChange) onChange(undefined);
+      return;
+    }
+
+    const existingEntity = data?.find(
+      (x) =>
+        x.id.toString() === inputValue ||
+        x.text.toLowerCase() === inputValue.toLowerCase(),
+    );
+
+    if (existingEntity) {
+      if (onChange) onChange(existingEntity.id);
+    } else {
+      try {
+        const newEntity: EntityCreate = { text: inputValue };
+        const createdEntity = await create<EntityCreate, Entity>(
+          `/${type}`,
+          newEntity,
+        );
+
+        await mutate();
+
+        if (onChange) onChange(createdEntity.id);
+      } catch (error) {
+        console.error("Ошибка при создании:", error);
+        message.error("Не удалось создать элемент");
+      }
     }
   };
 
   if (isLoading || error || !data) {
-    return <div></div>;
+    return <div style={{ width: "100%" }}>Загрузка {typeToStr(type)}...</div>;
   }
 
+  // Переводим числовой value из формы в строку для Select (или оставляем undefined)
+  const selectValue = value ? [value.toString()] : [];
+
   return (
-    <div className="flex flex-row items-center h-10 border-2 rounded-lg">
-      <select
-        className="py-2 w-full indent-2 border-r-2  focus:outline-none "
-        value={selectedId ?? ""}
-        onChange={handleChangeSelectedItem}
+    <Flex vertical={false} style={{ width: "100%", gap: "8px" }} align="center">
+      <Select
+        mode="tags"
+        placeholder={`Выберите или введите свой ${typeToStr(type).toLowerCase()}`}
+        maxCount={1}
+        value={selectValue}
+        onChange={handleChange}
+        options={options}
+        style={{ width: "100%" }}
+      />
+      <Popconfirm
+        title="Точно?"
+        onConfirm={handleDelete}
+        description="Это действие удалит данные на сервере. Действие невозможно, если какая-то из сессий его использует."
       >
-        {data.map((item) => (
-          <option key={item.id} value={item.id}>
-            {item.text}
-          </option>
-        ))}
-      </select>
-      <div className="flex flex-row p-0 h-full font-bold ">
-        <button onClick={openModal} className="w-8 p-0 border-r-2">
-          +
-        </button>
-        <button onClick={handleDelete} className="w-8 p-0">
-          -
-        </button>
-      </div>
-      <Modal onClose={closeModal} isOpen={isModalOpen}>
-        <h1>Добавить</h1>
-        <div className="flex flex-row">
-          <input
-            name="text"
-            onChange={handleChangeModalInput}
-            value={newTextState}
-            className="w-full border p-2 rounded"
-          />
-          <button
-            onClick={handleCreateNewEntity}
-            className="mx-4 px-2 border-2 rounded"
-          >
-            Сохранить
-          </button>
-        </div>
-      </Modal>
-    </div>
+        <Button danger type="primary" disabled={!value}>
+          Удалить
+        </Button>
+      </Popconfirm>
+    </Flex>
   );
 };
