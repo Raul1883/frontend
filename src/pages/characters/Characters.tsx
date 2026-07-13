@@ -4,7 +4,18 @@ import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
 import { useState } from "react";
 import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
-import { Button, Card, Flex, Modal, Popconfirm } from "antd";
+import {
+  Button,
+  Card,
+  Divider,
+  Empty,
+  Flex,
+  Modal,
+  Popconfirm,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
 import CharacterImport from "./CharacterImport";
 import MainLayout from "../../components/MainLayout";
 
@@ -26,23 +37,23 @@ export default function CharacterList() {
 
   if (chrIsLoading || schemaIsLoading)
     return (
-      <div className="w-full h-full flex items-center justify-center text-gray-600">
-        загрузка...
-      </div>
+      <MainLayout>
+        <Spin />
+      </MainLayout>
     );
 
   if (chrError || schemaError)
     return (
-      <div className="w-full h-full flex items-center justify-center text-red-700">
-        Ошибка загрузки
-      </div>
+      <MainLayout>
+        <Empty>Ошибка загрузки</Empty>
+      </MainLayout>
     );
 
   if (!Array.isArray(characterData)) {
     return (
-      <div>
-        Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу
-      </div>
+      <MainLayout>
+        <Empty description="Ошибка: сервер вернул данные в неверном формате. Перезагрузите страницу" />
+      </MainLayout>
     );
   }
 
@@ -57,15 +68,18 @@ export default function CharacterList() {
     <MainLayout>
       <div>
         <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-end mb-8 gap-2">
-            <CharacterImport mutate={mutate} />
-            <Button
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-            >
-              + Создать персонажа
-            </Button>
+          <div className="flex justify-between mb-8 gap-2">
+            <Typography.Title>Персонажи</Typography.Title>
+            <Space>
+              <CharacterImport mutate={mutate} />
+              <Button
+                onClick={() => {
+                  setIsModalOpen(true);
+                }}
+              >
+                + Создать персонажа
+              </Button>
+            </Space>
           </div>
 
           {!Array.isArray(characterData) ? (

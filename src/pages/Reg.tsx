@@ -53,7 +53,7 @@ export default () => {
         title: "Успешно!",
         content: `Регистрация успешно завершена`,
         onOk: () => {
-          navigate("/");
+          navigate("/login");
         },
       });
     } catch (err: any) {
