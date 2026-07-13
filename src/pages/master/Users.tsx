@@ -67,7 +67,6 @@ export default () => {
       new_pwd: password,
     });
     alert(`Сохранение пароля для пользователя ${userId}:`);
-    
   };
 
   const handleDelete = (userId: number) => {
@@ -76,7 +75,7 @@ export default () => {
     if (!confirmExit) return;
 
     axiosInstance.delete(`users/user/${userId}`);
-    alert("Обнови страницу!")
+    alert("Обнови страницу!");
   };
 
   // Обработка состояний загрузки и ошибки
@@ -103,7 +102,6 @@ export default () => {
   return (
     <MainLayout>
       <div className="h-8"></div>
-      {/* Таблица с ч/б стилизацией */}
       <div className="overflow-x-auto mx-8">
         <table className="min-w-full border border-gray-400 divide-y divide-gray-400">
           <thead className="bg-gray-100">

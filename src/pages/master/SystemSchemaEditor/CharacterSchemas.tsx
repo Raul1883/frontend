@@ -1,8 +1,7 @@
 import useSWR from "swr";
 import { create, deleteById, getAll } from "../../../API/Fetcher";
 import { useState } from "react";
-import Modal from "../../../components/Modal";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import type {
   SystemSchemaCreate,
   SystemSchemaPreview,
@@ -10,6 +9,19 @@ import type {
 } from "../../../types/CharacterSchemasTypes";
 import type { CharacterSchema } from "../../characters/types/CharacterSheet";
 import MainLayout from "../../../components/MainLayout";
+import {
+  Button,
+  Card,
+  Divider,
+  Empty,
+  Flex,
+  Input,
+  Modal,
+  Popconfirm,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
 
 const EmptySchema: CharacterSchema = {
   sections: [
@@ -28,6 +40,7 @@ const EmptySchema: CharacterSchema = {
 export default () => {
   const [newName, setNewName] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const { data, isLoading, error, mutate } = useSWR<SystemSchemaPreview[]>(
     "systems-schemas",
@@ -35,16 +48,27 @@ export default () => {
   );
 
   if (isLoading) {
-    return <div>Загрузка...</div>;
+    return (
+      <MainLayout>
+        <Divider>
+          <Typography.Title>Схемы</Typography.Title>
+        </Divider>
+        <Spin size="large" />
+      </MainLayout>
+    );
   }
-  if (error) {
-    return <div>Ошибка загрузки схем</div>;
+  if (error || !data) {
+    return (
+      <MainLayout>
+        <Divider>
+          <Typography.Title>Схемы</Typography.Title>
+        </Divider>
+        <Empty description="Ошибка загрузки схем" />
+      </MainLayout>
+    );
   }
 
   const handleDelete = async (id: number) => {
-    const confirmDelete = window.confirm(`Точно?`);
-    if (!confirmDelete) return;
-
     await deleteById("systems-schemas", id);
     mutate();
   };
@@ -70,54 +94,49 @@ export default () => {
 
   return (
     <MainLayout>
-      <div>
-        <div className="flex flex-col mt-4 mx-auto  items-center w-200 min-h-100 border">
-          <div className="w-[90%] flex justify-between items-center mx-4 mt-2 ">
-            <h3 className="text-xl px-10 border-b text-center">Схемы</h3>
-            <button
-              onClick={() => {
-                setIsModalOpen(true);
-              }}
-              className="flex items-center justify-center border rounded h-8 px-2 py-1"
-            >
-              <span>Создать схему</span>
-            </button>
-          </div>
+      <Divider>
+        <Typography.Title>Схемы</Typography.Title>
+      </Divider>
+      <div className="flex items-center justify-center">
+        <Flex style={{ width: "60%" }} vertical gap="medium">
           {data?.map((schema: SystemSchemaPreview) => (
-            <div key={schema.id} className="w-full p-4 py-2 mb-2 ">
-              <div className=" border rounded h-full items-center px-2">
-                <p className="font-bold text-xl">{schema.name}</p>
-                <div className="flex items-center justify-between  mb-2 mt-2">
-                  <Link
-                    to={schema.id.toString()}
-                    className="p-2 border rounded "
-                  >
-                    редактировать
-                  </Link>
-                  <button
-                    onClick={() => {
+            <Card
+              title={schema.name}
+              key={schema.id}
+              extra={
+                <Space>
+                  <Button onClick={() => navigate(schema.id.toString())}>
+                    Редактировать
+                  </Button>
+                  <Popconfirm
+                    title="Точно?"
+                    onConfirm={() => {
                       handleDelete(schema.id);
                     }}
-                    className="p-2 border rounded "
                   >
-                    удалить
-                  </button>
-                </div>
-              </div>
-            </div>
+                    <Button danger>Удалить</Button>
+                  </Popconfirm>
+                </Space>
+              }
+              color="ant-layout-body-bg"
+            />
           ))}
-        </div>
+
+          <Button type="primary" onClick={() => setIsModalOpen(true)}>
+            Создать
+          </Button>
+        </Flex>
       </div>
 
       <Modal
-        isOpen={isModalOpen}
-        onClose={() => {
+        title="Новая схема"
+        open={isModalOpen}
+        onCancel={() => {
           setIsModalOpen(false);
         }}
-        className="w-120 flex flex-col gap-2"
+        onOk={handleCreate}
       >
-        <input value={newName} onChange={handleChange} className="px-3 py-2" />
-        <button onClick={handleCreate}>Сохранить</button>
+        <Input value={newName} onChange={handleChange} />
       </Modal>
     </MainLayout>
   );
