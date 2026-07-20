@@ -1,13 +1,11 @@
 import { useState } from "react";
 import type { SectionProps } from "../types/CharacterSheet";
-import { FieldRenderer } from "./FieldRender";
+import { FieldRenderer } from "./fields/FieldRender";
 
 import hand from "/src/assets/hand-svgrepo-com.svg";
 import SelectCustomSection from "./SelectCustomSection";
 
 export default function SectionRenderer(props: SectionProps) {
-  const { register, control } = props.methods;
-
   const getColsCount = () => {
     const saved = localStorage.getItem(
       `section_${props.section.title}_columns`,
@@ -25,7 +23,6 @@ export default function SectionRenderer(props: SectionProps) {
       gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
       gridTemplateRows: `repeat(${rows}, auto)`,
       gridAutoFlow: "column",
-      gap: "0.75rem",
       width: "100%",
     } as const;
   };
@@ -65,7 +62,6 @@ export default function SectionRenderer(props: SectionProps) {
       <div className="flex items-center justify-between mx-2 my-2">
         <div className="flex items-center gap-x-2 dragable cursor-grab active:cursor-grabbing">
           <img src={hand} className="w-4 h-4" />
-
           <h3 className="text-lg font-semibold">{props.section.title}</h3>
         </div>
 
@@ -91,12 +87,8 @@ export default function SectionRenderer(props: SectionProps) {
       {/* Fields */}
       <div style={getGridStyle()} className="px-3">
         {props.section.fields.map((field) => (
-          <div key={field.key} className="min-w-0">
-            <FieldRenderer
-              field={field}
-              register={register}
-              control={control}
-            />
+          <div key={field.key} className="">
+            <FieldRenderer field={field} form={props.form} />
           </div>
         ))}
       </div>

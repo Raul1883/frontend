@@ -2,7 +2,6 @@ import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -15,6 +14,8 @@ import type { CharacterGet, CharacterPost } from "../../../types/Character";
 import { getSchema } from "./SchemaSelector";
 import SchemaHeader from "./SchemaHeader";
 import SectionRender from "./SectionRender";
+import Form, { useForm } from "antd/es/form/Form";
+import { ConfigProvider } from "antd";
 
 function canBeNumber(str: string): boolean {
   const num = Number(str);
@@ -33,11 +34,7 @@ export function CharacterForm() {
   const [saved, setSaved] = useState(false);
   const [schema, setSchema] = useState<CharacterSchema>();
 
-  const methods = useForm({
-    mode: "onBlur",
-  });
-
-  const { reset, handleSubmit, getValues, } = methods;
+  const [form] = useForm();
 
   // CREATE NEW CHARACTER
   useEffect(() => {
@@ -53,6 +50,7 @@ export function CharacterForm() {
           description: "",
           data_fields: {
             system_name: id,
+            name: "Новый персонаж",
           },
         };
 
@@ -90,12 +88,6 @@ export function CharacterForm() {
     },
     {
       revalidateOnFocus: false,
-      onSuccess: (char) => {
-        reset({
-          name: char.name,
-          ...char.data_fields,
-        });
-      },
     },
   );
 
@@ -109,12 +101,15 @@ export function CharacterForm() {
     }
 
     try {
-      const values = getValues();
+      const values = form.getFieldsValue();
 
       const payload: CharacterPost = {
         name: values.name,
         description: values.story ?? "",
-        data_fields: values,
+        data_fields: {
+          system_name: character?.data_fields.system_name,
+          ...values,
+        },
       };
 
       await updateByPath<CharacterPost, CharacterGet>(
@@ -172,18 +167,37 @@ export function CharacterForm() {
   if (!schema) return <div>Не найдена схема персонажа</div>;
 
   return (
-    <div className="">
-      <form onSubmit={handleSubmit(onSubmit)} className="">
-        <SchemaHeader saved={saved} getValues={getValues} />
+    <ConfigProvider
+      theme={{
+        token: {
+          borderRadius: 2,
+          wireframe: false,
+          colorPrimary: "#6e6e6e",
+          colorInfo: "#6e6e6e",
+        },
+        components: {
+          Input: {
+            paddingInline: 2,
+            paddingBlock: 2,
+          },
+        },
+      }}
+    >
+      <Form
+        form={form}
+        onFinish={onSubmit}
+        initialValues={character.data_fields}
+      >
+        <SchemaHeader saved={saved} getValues={form.getFieldsValue()} />
 
         <SheetLayout schema={schema}>
           {schema.sections.map((section) => (
             <div key={section.title} className="">
-              <SectionRender section={section} methods={methods} />
+              <SectionRender section={section} form={form} />
             </div>
           ))}
         </SheetLayout>
-      </form>
-    </div>
+      </Form>
+    </ConfigProvider>
   );
 }

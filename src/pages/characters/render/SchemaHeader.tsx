@@ -8,6 +8,7 @@ import HelpChar from "./HelpChar";
 import save from "/src/assets/save-floppy-svgrepo-com.svg";
 import info from "/src/assets/info-circle-svgrepo-com.svg";
 import home from "/src/assets/house-water-svgrepo-com.svg";
+import { Button } from "antd";
 
 interface SchemaHeaderProps {
   saved: boolean;
@@ -20,6 +21,7 @@ export default (props: SchemaHeaderProps) => {
 
   return (
     <div className="flex gap-4 pl-4 mt-2">
+      <Button htmlType="submit">Сохранить</Button>
       <button type="submit" className="relative inline-flex items-center">
         <img className="w-7" src={save} />
         {props.saved && (

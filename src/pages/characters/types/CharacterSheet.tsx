@@ -1,3 +1,4 @@
+import type { FormInstance } from "antd";
 import type { Layout } from "react-grid-layout";
 import type { FieldValues, UseFormReturn } from "react-hook-form";
 
@@ -73,5 +74,5 @@ export type CharacterSchema = {
 
 export interface SectionProps {
   section: Section;
-  methods: UseFormReturn<FieldValues, any, FieldValues>;
+  form: FormInstance<any>;
 }

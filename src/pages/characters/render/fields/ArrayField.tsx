@@ -1,5 +1,5 @@
 import { useFieldArray, type UseFormRegister } from "react-hook-form";
-import type { ArrayField, Field, SelectField } from "../types/CharacterSheet";
+import type { ArrayField, Field, SelectField } from "../../types/CharacterSheet";
 
 export type ArrayFieldProps = {
   field: ArrayField;

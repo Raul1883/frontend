@@ -134,7 +134,9 @@ export default function CharacterList() {
         >
           <Flex gap="medium">
             {schemaNames.map((name) => (
-              <Button onClick={() => navigate(name)}>{name}</Button>
+              <Button key={name} onClick={() => navigate(name)}>
+                {name}
+              </Button>
             ))}
           </Flex>
         </Modal>
