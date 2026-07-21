@@ -1,21 +1,33 @@
-import axiosInstance from "./AxiosInstance";
+import { pb } from "./PocketBase";
 
 export const create = async <P, R>(
-  url: string,
-  sessionData: P,
+  collectionName: string,
+  data: P,
 ): Promise<R> => {
-  const response = await axiosInstance.post<R>(url, sessionData);
-  return response.data;
+  return await pb
+    .collection(collectionName)
+    .create<R>(data as Record<string, unknown>);
 };
 
-export const getAll = async <T>(url: string): Promise<T[]> => {
-  const response = await axiosInstance.get<T[]>(url);
-  return response.data;
+export const getAll = async <T>(collectionName: string): Promise<T[]> => {
+  return await pb.collection(collectionName).getFullList<T>();
 };
 
-export const getById = async <T>(url: string, id: number): Promise<T> => {
-  const response = await axiosInstance.get<T>(`${url}/${id}`);
-  return response.data;
+export const getById = async <T>(
+  collectionName: string,
+  id: string,
+): Promise<T> => {
+  return await pb.collection(collectionName).getOne<T>(id);
+};
+
+export const update = async <P, R>(
+  collectionName: string,
+  id: string,
+  data: Partial<P>,
+): Promise<R> => {
+  return await pb
+    .collection(collectionName)
+    .update<R>(id, data as Record<string, unknown>);
 };
 
 export const updateByPath = async <P, R>(
@@ -23,20 +35,20 @@ export const updateByPath = async <P, R>(
   id: number,
   data: Partial<P>,
 ): Promise<R> => {
-  const response = await axiosInstance.patch<R>(`${url}/${id}`, data);
-  return response.data;
+  return await update(url, id, data);
 };
 
 export const updateByBody = async <P, R>(
   url: string,
   data: Partial<P>,
 ): Promise<R> => {
-  const response = await axiosInstance.patch<R>(`${url}`, data);
-  return response.data;
+    return await update(url, data.id, data);
+
 };
 
-
-
-export const deleteById = async (url: string, id: number): Promise<void> => {
-  await axiosInstance.delete(`${url}/${id}`);
+export const deleteById = async (
+  collectionName: string,
+  id: string,
+): Promise<boolean> => {
+  return await pb.collection(collectionName).delete(id);
 };

@@ -5,10 +5,7 @@ import React, {
   type ReactNode,
 } from "react";
 import { authAPI, type User } from "../API/auth";
-import {
-  getAccessToken,
-  clearAccessToken,
-} from "../utils/token";
+import { pb } from "../API/PocketBase";
 
 interface AuthContextType {
   user: User | null;
@@ -31,31 +28,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [userRole, setUserRole] = useState<string | null>(null);
 
   const isAuthenticated = !!user;
-  //const userRole = user?.role || null;
 
   useEffect(() => {
-  const initAuth = async () => {
-    const token = getAccessToken();
-    if (token) {
-      try {
-        const profile = await authAPI.getProfile();
-        setUser(profile);
-        setUserRole(profile.role);
-      } catch (error) {
-        // Интерцептор уже обработает 401 и сделает редирект,
-        // но на всякий случай сбросим состояние
-        clearAccessToken();
-        setUser(null);
-        setUserRole(null);
+    const initAuth = async () => {
+      if (pb.authStore.isValid) {
+        try {
+          const response = await authAPI.refresh();
+          setUser(response.user);
+          setUserRole(response.user.role);
+        } catch (error) {
+          pb.authStore.clear();
+          setUser(null);
+          setUserRole(null);
+        }
       }
-    }
-    setIsLoading(false);
-  };
-  initAuth();
-}, []);
+
+      setIsLoading(false);
+    };
+
+    initAuth();
+  }, []);
 
   const login = async (login: string, password: string) => {
-    const response = await authAPI.login({ login, password });
+    const response = await authAPI.login(login, password);
     setUser(response.user);
     setUserRole(response.user.role);
   };

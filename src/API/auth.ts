@@ -1,50 +1,45 @@
-import axiosInstance  from './AxiosInstance';
-import { setAccessToken, clearAccessToken } from '../utils/token';
-
-export interface LoginCredentials {
-  login: string;
-  password: string;
-}
+import { pb } from "./PocketBase";
 
 export interface User {
-  id: number;
+  id: string;
   login: string;
-  contact_info: string | null;
+  contact_info: string;
   role: string;
 }
 
-export interface LoginResponse {
-  access_token: string;
-  user: User;
-}
-
 export const authAPI = {
-  login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const response = await axiosInstance.post<LoginResponse>('/auth/login', credentials);
-    const { access_token } = response.data;
-    
-    setAccessToken(access_token);
-    
-    return response.data;
+  login: async (login: string, password: string) => {
+    const authData = await pb
+      .collection("users")
+      .authWithPassword(login, password);
+    const user: User = {
+      id: authData.record.id,
+      login: authData.record.username,
+      contact_info: authData.record.contact_info || "",
+      role: authData.record.role || "player",
+    };
+
+    return { user, token: authData.token };
   },
-  
-  logout: async (): Promise<void> => {
-    try {
-      await axiosInstance.post('/auth/logout');
-    } finally {
-      clearAccessToken();
-    }
+
+  // Проверка сессии при перезагрузке страницы
+  refresh: async () => {
+    // Запрашиваем новый токен и актуальные данные профиля
+    const authData = await pb.collection("users").authRefresh();
+
+    const user: User = {
+      id: authData.record.id,
+      login: authData.record.username,
+      contact_info: authData.record.contact_info || "",
+      role: authData.record.role || "player",
+    };
+
+    return { user, token: authData.token };
   },
-  
-  refresh: async (): Promise<string> => {
-    const response = await axiosInstance.post<{ access_token: string }>('/auth/refresh');
-    const { access_token } = response.data;
-    setAccessToken(access_token);
-    return access_token;
-  },
-  
-  getProfile: async (): Promise<User> => {
-    const response = await axiosInstance.get<User>('/users/profile');
-    return response.data;
+
+  // Выход
+  logout: async () => {
+    // В PocketBase достаточно очистить локальное хранилище токена
+    pb.authStore.clear();
   },
 };

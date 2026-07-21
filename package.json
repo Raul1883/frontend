@@ -21,6 +21,7 @@
     "antd": "^6.5.0",
     "axios": "^1.13.5",
     "json-source-map": "^0.6.1",
+    "pocketbase": "^0.27.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-grid-layout": "^2.2.3",

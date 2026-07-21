@@ -5,7 +5,7 @@ import { Table, Tag, type TableProps } from "antd";
 import UserActions from "./UserActions";
 
 export interface UserRead {
-  id: number;
+  id: string;
   login: string;
   contact_info?: string | null;
   role: string;
@@ -17,7 +17,7 @@ export default () => {
     error,
     isLoading,
     mutate,
-  } = useSWR<UserRead[]>("/users", getAll, {
+  } = useSWR<UserRead[]>("users", getAll, {
     revalidateOnFocus: false,
   });
 

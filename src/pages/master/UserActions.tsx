@@ -1,9 +1,17 @@
-import { Button, Form, Input, Modal, Popconfirm, Select, Space } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  Popconfirm,
+  Select,
+  Space,
+  Tag,
+} from "antd";
 import type { UserRead } from "./Users";
 import { useState } from "react";
-import axiosInstance from "../../API/AxiosInstance";
 import useApp from "antd/es/app/useApp";
-import { updateByBody } from "../../API/Fetcher";
+import { deleteById, update } from "../../API/Fetcher";
 
 interface UserEditProps {
   data: UserRead;
@@ -14,7 +22,6 @@ interface FormData {
   login: string;
   contact_info: string;
   role: "player" | "master";
-  password?: string;
 }
 
 export default (props: UserEditProps) => {
@@ -23,10 +30,6 @@ export default (props: UserEditProps) => {
   const { message } = useApp();
 
   const onFinish = (values: FormData): void => {
-    if (values.password) {
-      setNewPassword(values.password);
-    }
-
     updateUser(values);
 
     setIsOpen(false);
@@ -34,15 +37,7 @@ export default (props: UserEditProps) => {
 
   const updateUser = async (values: FormData) => {
     try {
-      await updateByBody("/users/user/role", {
-        id: props.data.id,
-        role: values.role,
-      });
-      await updateByBody("/users/user", {
-        id: props.data.id,
-        login: values.login,
-        contact_info: values.contact_info,
-      });
+      await update("users", props.data.id, values);
       props.mutate();
       message.success(`Сохранены поля для пользователя ${props.data.login}:`);
     } catch (err) {
@@ -51,16 +46,8 @@ export default (props: UserEditProps) => {
     }
   };
 
-  const setNewPassword = (password: string) => {
-    axiosInstance.patch("users/user/pwd", {
-      id: props.data.id,
-      new_pwd: password,
-    });
-    message.success(`Сохранен пароль для пользователя ${props.data.login}:`);
-  };
-
-  const handleDelete = (userId: number) => {
-    axiosInstance.delete(`users/user/${userId}`);
+  const handleDelete = (userId: string) => {
+    deleteById("users", userId);
     props.mutate();
   };
 
@@ -110,9 +97,7 @@ export default (props: UserEditProps) => {
               ]}
             />
           </Form.Item>
-          <Form.Item label="Пароль" name="password">
-            <Input placeholder="Новый пароль" />
-          </Form.Item>
+          <Tag>За сменой пароля к главному администратору</Tag>
         </Modal>
       </Form>
     </Space>

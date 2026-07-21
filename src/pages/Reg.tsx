@@ -12,24 +12,21 @@ import {
   Tag,
   Modal,
 } from "antd";
-import axiosInstance from "../API/AxiosInstance";
 import { useNavigate } from "react-router-dom";
+import { pb } from "../API/PocketBase";
 
+// interface RegistrationData {
+//   login: string;
+//   password: string;
+//   contact_info: string;
+//   secret_key: string;
+// }
 interface RegistrationData {
+  email: string;
   login: string;
-  password: string;
   contact_info: string;
-  secret_key: string;
-}
-
-interface RegistrationResponse {
-  message?: string;
-  user?: {
-    id: number;
-    login: string;
-    contact_info: string | null;
-    role: string;
-  };
+  password: string;
+  passwordConfirm: string;
 }
 
 export default () => {
@@ -43,10 +40,8 @@ export default () => {
     setLoading(true);
     setError(null);
 
-    if (!values.secret_key) values.secret_key = "";
-
     try {
-      await axiosInstance.post<RegistrationResponse>("/auth/register", values);
+      await pb.collection("users").create({ role: "player", ...values });
       form.resetFields();
 
       modal.success({
@@ -93,22 +88,20 @@ export default () => {
             size="medium"
           >
             <Form.Item
-              label="Логин"
+              label="email"
+              name="email"
+              rules={[
+                { required: true, message: "Введите почту", type: "email" },
+              ]}
+            >
+              <Input placeholder="Почта" />
+            </Form.Item>
+            <Form.Item
+              label="Ник"
               name="login"
               rules={[{ required: true, message: "Введите логин" }]}
             >
-              <Input placeholder="Логин" autoComplete="username" />
-            </Form.Item>
-
-            <Form.Item
-              label="Пароль"
-              name="password"
-              rules={[{ required: true, message: "Введите пароль" }]}
-            >
-              <Input.Password
-                placeholder="Пароль"
-                autoComplete="new-password"
-              />
+              <Input placeholder="Логин" />
             </Form.Item>
 
             <Form.Item
@@ -118,13 +111,19 @@ export default () => {
             >
               <Input placeholder="ник в дс, телег, etc" />
             </Form.Item>
-
             <Form.Item
-              label="Мистическая строка"
-              name="secret_key"
-              tooltip="Если вы не знаете что с ней делать - не трогайте"
+              label="Пароль"
+              name="password"
+              rules={[{ required: true, message: "Введите пароль" }]}
             >
-              <Input placeholder="Если вы не знаете что с ней делать - не трогайте" />
+              <Input.Password placeholder="Пароль" />
+            </Form.Item>
+            <Form.Item
+              label="Пароль ещё раз"
+              name="passwordConfirm"
+              rules={[{ required: true, message: "Введите пароль" }]}
+            >
+              <Input.Password placeholder="Пароль" />
             </Form.Item>
 
             {error && (
@@ -137,7 +136,6 @@ export default () => {
                 />
               </Form.Item>
             )}
-
             <Form.Item>
               <Button type="primary" htmlType="submit" loading={loading} block>
                 {loading ? "Делается..." : "Сделать"}
