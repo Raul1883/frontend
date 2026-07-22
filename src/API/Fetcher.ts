@@ -42,8 +42,7 @@ export const updateByBody = async <P, R>(
   url: string,
   data: Partial<P>,
 ): Promise<R> => {
-    return await update(url, data.id, data);
-
+  return await update(url, data.id, data);
 };
 
 export const deleteById = async (

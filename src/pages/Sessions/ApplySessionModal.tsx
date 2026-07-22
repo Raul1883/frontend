@@ -5,16 +5,18 @@ import { useNavigate } from "react-router-dom";
 import { getAll } from "../../API/Fetcher";
 import { createApplications } from "../../API/Applications";
 import type { CharacterGet } from "../../types/Character";
+import { pb } from "../../API/PocketBase";
+import { useAuth } from "../../hooks/useAuth";
 
 interface ApplySessionModalProps {
   open: boolean;
-  sessionId: number;
+  sessionId: string;
   onClose: () => void;
   onSuccess?: () => void;
 }
 
 interface FormValues {
-  characterId: number;
+  character_id: number;
   comment?: string;
 }
 
@@ -27,12 +29,13 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
   const navigate = useNavigate();
   const [form] = Form.useForm<FormValues>();
   const { message } = App.useApp();
+  const { user } = useAuth();
 
   const {
     data: characterData,
     isLoading: isCharacterLoading,
     error,
-  } = useSWR<CharacterGet[]>(open ? "/characters" : null, getAll);
+  } = useSWR<CharacterGet[]>(open ? "characters" : null, getAll);
 
   const handleSubmit = async () => {
     try {
@@ -43,11 +46,13 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
         return;
       }
 
-      await createApplications({
+      const body = {
+        user_id: user?.id,
         session_id: sessionId,
-        character_id: values.characterId,
-        comment: values.comment || "",
-      });
+        ...values,
+      };
+
+      await pb.collection("applications").create(body);
 
       message.success("Заявка успешно создана");
       form.resetFields();
@@ -95,7 +100,7 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
         <Form form={form} layout="vertical" requiredMark={false}>
           <Form.Item<FormValues>
             label="Выберите персонажа"
-            name="characterId"
+            name="character_id"
             rules={[{ required: true, message: "Выберите персонажа" }]}
           >
             <Select

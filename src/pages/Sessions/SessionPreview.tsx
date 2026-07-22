@@ -1,7 +1,4 @@
-import type { SessionGet } from "../../types/Session";
-import useSWR from "swr";
-import { getApplicationsPreviewData } from "../../API/Applications";
-import type { ApplicationDataItem } from "../../types/Application";
+import type { ApplicationPayload, SessionGet } from "../../types/Session";
 import { EditOutlined, DeleteOutlined, UserOutlined } from "@ant-design/icons";
 import NavButton from "../../components/NavButton";
 import Typography from "antd/es/typography";
@@ -15,21 +12,22 @@ import { Avatar, Badge } from "antd";
 type PreviewProps = {
   session: SessionGet;
   master?: boolean;
-  handleDelete?: (id: number) => void;
+  handleDelete?: (id: string) => void;
 };
 
 export default (props: PreviewProps) => {
-  const { data, isLoading, error } = useSWR<ApplicationDataItem[]>(
-    props.session.id.toString(),
-    getApplicationsPreviewData,
-  );
+  let data: ApplicationPayload[] = [];
 
-  if (isLoading || error || !data) return null;
+  if (props.session.expand.applications_via_session) {
+    data = props.session.expand.applications_via_session;
+  } else {
+    data = [];
+  }
 
   const number = data.length;
 
   const popoverContent =
-    data.length != 0 ? (
+    data.length != 0 && data[0].expand.user ? (
       <div style={{ minWidth: 200 }}>
         <Typography.Title level={5} style={{ marginBottom: 8 }}>
           Участники:
@@ -38,7 +36,7 @@ export default (props: PreviewProps) => {
           {data.map((item, idx) => (
             <li key={idx}>
               <Typography.Text>
-                {item.login}. {item.contact_info}
+                {item.expand.user.login}. {item.expand.user.contact_info}
               </Typography.Text>
             </li>
           ))}
@@ -47,7 +45,9 @@ export default (props: PreviewProps) => {
     ) : (
       <div style={{ minWidth: 200 }}>
         <Typography.Title level={5} style={{ marginBottom: 8 }}>
-          Пока нет участников
+          {!data[0] || data[0].expand.user
+            ? "Ещё никто не участвует"
+            : "Авторизуйтесь, чтобы увидеть список участников"}
         </Typography.Title>
       </div>
     );
@@ -104,9 +104,9 @@ export default (props: PreviewProps) => {
         </Typography.Text>
       ) : null}
       <Space size="small" wrap style={{ marginBottom: 8, marginTop: 8 }}>
-        <Tag>{props.session.genre.text}</Tag>
-        <Tag>{props.session.system.text}</Tag>
-        <Tag>{props.session.company?.title || "OneShot"}</Tag>
+        <Tag>{props.session.expand.genre.name}</Tag>
+        <Tag>{props.session.expand.system.name}</Tag>
+        <Tag>{props.session.expand.company.name}</Tag>
       </Space>
     </Card>
   );

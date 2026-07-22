@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { getById, updateByPath, create } from "../../API/Fetcher";
+import { getById } from "../../API/Fetcher";
 import type { SessionGet, SessionPost } from "../../types/Session";
 import AttributeEditor from "../../components/AttributeEditor";
 import MainLayout from "../../components/MainLayout";
 import { App, Button, Card, Form, Input } from "antd";
 import NavButton from "../../components/NavButton";
+import { useAuth } from "../../hooks/useAuth";
+import { pb } from "../../API/PocketBase";
 
 interface SessionFormProps {
   mode: "create" | "edit";
@@ -18,10 +20,11 @@ export default ({ mode }: SessionFormProps) => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const { message } = App.useApp();
+  const { user } = useAuth();
 
   const { data, error, isLoading, mutate } = useSWR<SessionGet>(
-    isEditMode && id ? ["/sessions", id] : null,
-    ([url, targetId]) => getById<SessionGet>(url as string, Number(targetId)),
+    isEditMode && id ? ["sessions", id] : null,
+    ([url, targetId]) => getById<SessionGet>(url as string, targetId as string),
   );
 
   useEffect(() => {
@@ -29,28 +32,31 @@ export default ({ mode }: SessionFormProps) => {
       form.setFieldsValue({
         title: data.title,
         description: data.description,
-        system_id: data.system.id,
-        genre_id: data.genre.id,
-        company_id: data.company?.id,
+        system: data.system,
+        genre: data.genre,
+        company: data.company,
         scheduled_at: data.scheduled_at,
       });
     }
   }, [isEditMode, data, form]);
 
-  // Хэндлер срабатывает ТОЛЬКО если форма прошла всю встроенную валидацию rules={...}
-  const onFinish = async (values: SessionPost) => {
+  const onFinish = async (values: Omit<SessionPost, "master">) => {
     try {
+      const body = {
+        ...values,
+        master: user?.id,
+      };
+
       if (isEditMode && id) {
-        const response = await updateByPath<SessionPost, SessionGet>(
-          "/sessions",
-          Number(id),
-          values,
-        );
+        const response: SessionGet = await pb
+          .collection("sessions")
+          .update(id, body);
+
         mutate(response);
 
         message.success("Успешно!");
       } else {
-        await create<SessionPost, SessionGet>("/sessions", values);
+        await pb.collection("sessions").create(body);
         message.success("Успешно!");
       }
       navigate("/manage/sessions");
@@ -109,21 +115,28 @@ export default ({ mode }: SessionFormProps) => {
             <Input.TextArea autoSize />
           </Form.Item>
 
-          {/* Теперь Form.Item сам передаст value и onChange внутрь AttributeEditor */}
           <Form.Item<SessionPost>
             label="Жанр"
-            name="genre_id"
+            name="genre"
             rules={[{ required: true, message: "Выберите жанр" }]}
           >
-            <AttributeEditor type="genre" />
+            <AttributeEditor type="genres" />
           </Form.Item>
 
           <Form.Item<SessionPost>
             label="Система"
-            name="system_id"
+            name="system"
             rules={[{ required: true, message: "Выберите систему" }]}
           >
-            <AttributeEditor type="system" />
+            <AttributeEditor type="systems" />
+          </Form.Item>
+
+          <Form.Item<SessionPost>
+            label="Компания"
+            name="company"
+            rules={[{ required: true, message: "Выберите компанию" }]}
+          >
+            <AttributeEditor type="companies" />
           </Form.Item>
         </Card>
       </Form>

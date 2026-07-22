@@ -4,27 +4,33 @@ import { useState, useEffect } from "react";
 import type { EntityCreate } from "../types/Entity";
 import { App, Button, Flex, Popconfirm, Select, type SelectProps } from "antd";
 
-type attributeType = "genre" | "system";
+type attributeType = "genres" | "systems" | "companies";
 
 type Entity = {
-  id: number;
-  text: string;
+  id: string;
+  name: string;
 };
 
 // Пропсы, которые Antd Form автоматически прокинет в компонент
 interface AttributeEditorProps {
   type: attributeType;
-  value?: number; // Текущее id из формы
-  onChange?: (value: number | undefined) => void; // Колбэк для формы
+  value?: string; // Текущее id из формы
+  onChange?: (value: string | undefined) => void; // Колбэк для формы
 }
 
 const typeToStr = (value: attributeType) => {
-  return value === "genre" ? "Жанр" : "Система";
+  const typeToStr = {
+    genres: "Жанр",
+    systems: "Система",
+    companies: "Компания",
+  };
+
+  return typeToStr[value];
 };
 
 export default ({ type, value, onChange }: AttributeEditorProps) => {
   const { data, isLoading, error, mutate } = useSWR<Entity[]>(
-    `/${type}`,
+    `${type}`,
     getAll,
   );
   const [options, setOptions] = useState<SelectProps["options"]>([]);
@@ -34,19 +40,19 @@ export default ({ type, value, onChange }: AttributeEditorProps) => {
     if (!data) return;
     const mapped = data.map((x) => ({
       value: x.id.toString(),
-      label: x.text,
+      label: x.name,
     }));
     setOptions(mapped);
   }, [data]);
 
   const handleDelete = async () => {
-    if (!value || value === 0) {
+    if (!value) {
       message.warning("Нет выбранного элемента для удаления");
       return;
     }
 
     try {
-      await deleteById(`/${type}`, value);
+      await deleteById(`${type}`, value);
       await mutate();
       message.destroy("Удалено");
 
@@ -70,16 +76,16 @@ export default ({ type, value, onChange }: AttributeEditorProps) => {
     const existingEntity = data?.find(
       (x) =>
         x.id.toString() === inputValue ||
-        x.text.toLowerCase() === inputValue.toLowerCase(),
+        x.name.toLowerCase() === inputValue.toLowerCase(),
     );
 
     if (existingEntity) {
       if (onChange) onChange(existingEntity.id);
     } else {
       try {
-        const newEntity: EntityCreate = { text: inputValue };
+        const newEntity: EntityCreate = { name: inputValue };
         const createdEntity = await create<EntityCreate, Entity>(
-          `/${type}`,
+          `${type}`,
           newEntity,
         );
 
@@ -97,8 +103,7 @@ export default ({ type, value, onChange }: AttributeEditorProps) => {
     return <div style={{ width: "100%" }}>Загрузка {typeToStr(type)}...</div>;
   }
 
-  // Переводим числовой value из формы в строку для Select (или оставляем undefined)
-  const selectValue = value ? [value.toString()] : [];
+  const selectValue = value ? [value] : [];
 
   return (
     <Flex vertical={false} style={{ width: "100%", gap: "8px" }} align="center">

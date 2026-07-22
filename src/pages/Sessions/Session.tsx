@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useSWR from "swr";
-import { getById } from "../../API/Fetcher";
 import type { SessionGet } from "../../types/Session";
 import {
   Button,
@@ -15,6 +14,7 @@ import {
 } from "antd";
 import MainLayout from "../../components/MainLayout";
 import { ApplySessionModal } from "./ApplySessionModal";
+import { pb } from "../../API/PocketBase";
 
 export default () => {
   const { id } = useParams<{ id: string }>();
@@ -25,8 +25,10 @@ export default () => {
     error: sessionError,
     isLoading: isSessionLoading,
     mutate: mutateSession,
-  } = useSWR<SessionGet>(id ? ["/sessions", id] : null, ([url, targetId]) =>
-    getById<SessionGet>(url as string, Number(targetId)),
+  } = useSWR<SessionGet>(id ? ["sessions", id] : null, ([url, targetId]) =>
+    pb
+      .collection(url)
+      .getOne(targetId as string, { expand: "company,genre,system,master" }),
   );
 
   if (sessionError) {
@@ -55,11 +57,11 @@ export default () => {
                   {sessionData.title}
                 </Typography.Title>
                 <Space size="large">
-                  <Tag>{sessionData.genre.text}</Tag>
-                  <Tag>{sessionData.system.text}</Tag>
-                  <Tag>{sessionData.company?.title || "OneShot"}</Tag>
+                  <Tag>{sessionData.expand.genre.name}</Tag>
+                  <Tag>{sessionData.expand.system.name}</Tag>
+                  <Tag>{sessionData.expand.company.name}</Tag>
                   <Tag>{sessionData.scheduled_at}</Tag>
-                  <Tag>{sessionData.master.login}</Tag>
+                  <Tag>{sessionData.expand.master.login}</Tag>
                 </Space>
                 <Button type="dashed">
                   <Link to="/sessions">Закрыть</Link>
@@ -67,7 +69,7 @@ export default () => {
               </Flex>
 
               <Divider />
-              <p>{sessionData.description}</p>
+              <p>{sessionData.description ? sessionData.description : "Мастер игры ещё не составил описания, но наверняка будет крайне интересно."}</p>
               <Divider />
 
               <Button type="primary" onClick={() => setIsModalOpen(true)}>
@@ -80,7 +82,7 @@ export default () => {
         {id && (
           <ApplySessionModal
             open={isModalOpen}
-            sessionId={Number(id)}
+            sessionId={id}
             onClose={() => setIsModalOpen(false)}
             onSuccess={() => mutateSession()}
           />

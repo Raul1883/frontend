@@ -14,7 +14,11 @@ export type ApplicationGet = {
 };
 
 export type ApplicationDataItem = {
-  login: string;
-  contact_info: string;
+  expand: {
+    user: {
+      login: string;
+      contact_info: string;
+    };
+  };
+  comment: string;
 };
-

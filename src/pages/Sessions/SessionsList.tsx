@@ -1,16 +1,24 @@
 import useSWR from "swr";
 import type { SessionGet } from "../../types/Session";
 import SessionPreview from "./SessionPreview";
-import { deleteById, getAll } from "../../API/Fetcher";
+import { deleteById } from "../../API/Fetcher";
 import { Empty, Space, Spin } from "antd";
+import { pb } from "../../API/PocketBase";
+import { data } from "react-router-dom";
 
 export default ({ master = false }: { master: boolean }) => {
-  const { data, error, isLoading, mutate } = useSWR<SessionGet[]>(
-    "/sessions",
-    getAll,
+  const {
+    data: sessionsData,
+    error: sessionsError,
+    isLoading: isSessionsLoading,
+    mutate,
+  } = useSWR<SessionGet[]>(["sessions"], ([url]) =>
+    pb.collection(url).getFullList({
+      expand: "company,genre,system,master,applications_via_session.user",
+    }),
   );
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(`Точно?`);
     if (!confirmDelete) return;
 
@@ -18,14 +26,15 @@ export default ({ master = false }: { master: boolean }) => {
     await mutate();
   };
 
-  if (isLoading) return <Spin />;
+  if (isSessionsLoading) return <Spin />;
 
-  if (error || !data || data?.length == 0)
+  if (sessionsError || !sessionsData || sessionsData?.length == 0)
     return <Empty description="Нет данных" />;
+
 
   return (
     <Space wrap align="start">
-      {data?.map((session) => (
+      {sessionsData?.map((session) => (
         <SessionPreview
           key={session.id}
           session={session}

@@ -3,7 +3,6 @@ export type CharacterGet = {
   user_id: number;
 
   name: string;
-  description: string;
   data_fields: Record<string, any>;
 };
 

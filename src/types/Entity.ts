@@ -4,5 +4,5 @@ export type Entity = {
 };
 
 export type EntityCreate = {
-  text: string;
+  name: string;
 }

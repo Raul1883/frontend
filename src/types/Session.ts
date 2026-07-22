@@ -1,34 +1,47 @@
 export type SessionPost = {
   title: string;
   description: string;
-  system_id: number;
-  genre_id: number;
-  company_id?: number;
   scheduled_at: string;
+  company: string;
+  genre: string;
+  system: string;
+  master: string;
 };
 
+export interface ApplicationPayload {
+  comment: string;
+  expand: { user: { login: string; contact_info: string } };
+}
+
 export type SessionGet = {
-  id: number;
+  id: string;
   title: string;
   description: string;
   scheduled_at: string;
-  master: {
-    id: number;
-    login: string;
-    contact_info: string;
-    role: string;
-  };
-  system: {
-    id: number;
-    text: string;
-  };
-  genre: {
-    id: number;
-    text: string;
-  };
-  company?: {
-    id: number;
-    title: string;
-    description?: string;
+  company: string;
+  genre: string;
+  system: string;
+  master: string;
+  expand: {
+    applications_via_session: ApplicationPayload[];
+    company: {
+      id: string;
+      name: string;
+      description?: string;
+    };
+    master: {
+      id: string;
+      login: string;
+      contact_info: string;
+      role: string;
+    };
+    system: {
+      id: string;
+      name: string;
+    };
+    genre: {
+      id: string;
+      name: string;
+    };
   };
 };

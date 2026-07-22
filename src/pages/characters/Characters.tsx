@@ -2,12 +2,11 @@ import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { deleteById, getAll } from "../../API/Fetcher";
 import type { CharacterGet } from "../../types/Character";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
 import {
   Button,
   Card,
-  Divider,
   Empty,
   Flex,
   Modal,
@@ -18,6 +17,7 @@ import {
 } from "antd";
 import CharacterImport from "./CharacterImport";
 import MainLayout from "../../components/MainLayout";
+import { pb } from "../../API/PocketBase";
 
 export default function CharacterList() {
   const navigate = useNavigate();
@@ -27,13 +27,17 @@ export default function CharacterList() {
     isLoading: chrIsLoading,
     error: chrError,
     mutate,
-  } = useSWR<CharacterGet[]>("/characters", getAll);
+  } = useSWR<CharacterGet[]>(["characters"], ([url]) =>
+    pb.collection(url).getFullList(),
+  );
 
-  const {
+  let {
     data: schemaData,
     isLoading: schemaIsLoading,
     error: schemaError,
-  } = useSWR<SystemSchemaPreview[]>("systems-schemas", getAll);
+  } = useSWR<SystemSchemaPreview[]>(["list_schemas"], ([url]) =>
+    pb.collection(url).getFullList({ fields: "id,name" }),
+  );
 
   if (chrIsLoading || schemaIsLoading)
     return (
@@ -59,8 +63,8 @@ export default function CharacterList() {
 
   const schemaNames: string[] = schemaData?.map((x) => x.name) || [];
 
-  const deleteChar = async (id: number) => {
-    await deleteById(`/characters`, id);
+  const deleteChar = async (id: string) => {
+    await deleteById(`characters`, id);
     await mutate();
   };
 
