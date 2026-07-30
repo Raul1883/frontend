@@ -63,7 +63,7 @@ export default () => {
 
   const saveJson = () => {
     const values = {
-      list_schema: id,
+      list_schema: data.list_schema,
       name: data.name,
       ...form.getFieldsValue(),
     };

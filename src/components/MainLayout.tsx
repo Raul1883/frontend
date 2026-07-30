@@ -13,7 +13,17 @@ interface LayoutProps {
 }
 
 const getHeaderItems = () => {
-  const { role: userRole } = useAuth();
+  const { user, role: userRole } = useAuth();
+
+  if (!user) {
+    return [
+      { key: "sessions", label: <Link to="/sessions">Игры</Link> },
+      { key: "characters", label: <Link to="/login">Персонажи</Link> },
+      { key: "tools", label: <Link to="/tools">Инструменты</Link> },
+      { key: "exit", label: <AuthButton /> },
+    ];
+  }
+
   if (userRole == "master") {
     return [
       { key: "sessions", label: <Link to="/sessions">Игры</Link> },

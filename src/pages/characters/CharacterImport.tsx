@@ -1,13 +1,14 @@
 import React, { useRef } from "react";
-import type { CharacterGet, CharacterPost } from "../../types/Character";
-import { create } from "../../API/Fetcher";
+
 import { Button } from "antd";
 import { pb } from "../../API/PocketBase";
 import { useAuth } from "../../contexts/AuthContext";
+import useApp from "antd/es/app/useApp";
 
 export default ({ mutate }: { mutate: any }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
+  const { message } = useApp();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -47,10 +48,12 @@ export default ({ mutate }: { mutate: any }) => {
       list_schema: data.list_schema,
     };
 
-    console.log(body);
-
-    await pb.collection("characters").create(body);
-    mutate();
+    try {
+      await pb.collection("characters").create(body);
+      mutate();
+    } catch {
+      message.error("Что-то пошло не так. Уникальное имя? Старая версия?");
+    }
   };
 
   return (

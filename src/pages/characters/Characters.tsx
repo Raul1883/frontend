@@ -1,17 +1,12 @@
 import useSWR from "swr";
 import { deleteById } from "../../API/Fetcher";
 import { useState } from "react";
-import type { ListSchemaPreview } from "../../types/ListSchemasTypes";
 import {
   Button,
   Card,
   Empty,
   Flex,
-  Form,
-  Input,
-  Modal,
   Popconfirm,
-  Select,
   Space,
   Spin,
   Typography,
@@ -19,42 +14,35 @@ import {
 import CharacterImport from "./CharacterImport";
 import MainLayout from "../../components/MainLayout";
 import { pb } from "../../API/PocketBase";
-import { useForm } from "antd/es/form/Form";
 import type { Character } from "../../types/Character";
 import NavButton from "../../components/NavButton";
+import SystemsModal from "./SystemsModal";
 import { useAuth } from "../../contexts/AuthContext";
 
 export default function CharacterList() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [form] = useForm();
   const { user } = useAuth();
   const {
     data: characterData,
     isLoading: chrIsLoading,
     error: chrError,
     mutate,
-  } = useSWR<Character[]>(["characters"], ([url]) =>
+  } = useSWR<Character[]>(user ? ["characters", user.id] : null, ([url]) =>
     pb.collection(url).getFullList({
       fields: "id,name",
     }),
   );
 
-  const {
-    data: schemaData,
-    isLoading: schemaIsLoading,
-    error: schemaError,
-  } = useSWR<ListSchemaPreview[]>(["list_schemas"], ([url]) =>
-    pb.collection(url).getFullList({ fields: "id,name" }),
-  );
+  console.log(characterData);
 
-  if (chrIsLoading || schemaIsLoading)
+  if (chrIsLoading || !user)
     return (
       <MainLayout>
         <Spin />
       </MainLayout>
     );
 
-  if (chrError || schemaError)
+  if (chrError)
     return (
       <MainLayout>
         <Empty>Ошибка загрузки</Empty>
@@ -72,22 +60,6 @@ export default function CharacterList() {
   const deleteChar = async (id: string) => {
     await deleteById(`characters`, id);
     await mutate();
-  };
-
-  const onFinish = async (
-    values: Omit<Character, "id" | "owner" | "data_fiels">,
-  ) => {
-    setIsModalOpen(false);
-    form.resetFields();
-
-    const body = {
-      owner: user?.id,
-      data_fiels: { name: values.name },
-      ...values,
-    };
-
-    await pb.collection("characters").create(body);
-    mutate();
   };
 
   return (
@@ -126,9 +98,7 @@ export default function CharacterList() {
                   title={character.name}
                   style={{ width: 300 }}
                   actions={[
-                    <NavButton to={`${character.id}`} >
-                      Подробнее
-                    </NavButton>,
+                    <NavButton to={`${character.id}`}>Подробнее</NavButton>,
 
                     <Popconfirm
                       title="Точно?"
@@ -146,44 +116,11 @@ export default function CharacterList() {
           )}
         </div>
 
-        <Modal
-          title="Выберите систему"
-          open={isModalOpen}
-          onCancel={() => {
-            setIsModalOpen(false);
-          }}
-          onOk={form.submit}
-        >
-          <Form form={form} onFinish={onFinish}>
-            <Form.Item
-              label="Имя персонажа"
-              name="name"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Form.Item
-              label="система"
-              name="list_schema"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Select
-                options={schemaData?.map((item) => ({
-                  label: item.name,
-                  value: item.id,
-                }))}
-              />
-            </Form.Item>
-          </Form>
-        </Modal>
+        <SystemsModal
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          mutate={mutate}
+        />
       </div>
     </MainLayout>
   );

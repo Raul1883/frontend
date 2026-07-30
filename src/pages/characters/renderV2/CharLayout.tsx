@@ -2,6 +2,7 @@ import { Button, ConfigProvider, Space, Typography } from "antd";
 
 import { Layout } from "antd";
 import NavButton from "../../../components/NavButton";
+import Dice from "./Dice";
 
 const { Header, Content } = Layout;
 
@@ -13,7 +14,13 @@ interface CharLayoutProps {
   saveJson: () => void;
 }
 
-export default ({ children, systemName, save, resetLayout, saveJson }: CharLayoutProps) => {
+export default ({
+  children,
+  systemName,
+  save,
+  resetLayout,
+  saveJson,
+}: CharLayoutProps) => {
   const theme = {
     token: {
       borderRadius: 2,
@@ -62,6 +69,7 @@ export default ({ children, systemName, save, resetLayout, saveJson }: CharLayou
             <Button onClick={save}>Сохранить</Button>
             <Button onClick={resetLayout}>Разметка по умолчанию</Button>
             <Button onClick={saveJson}>Скачать json</Button>
+            <Dice />
             <NavButton to="/characters">Домой</NavButton>
           </Space>
           <Typography.Title style={{ margin: 0 }}>
