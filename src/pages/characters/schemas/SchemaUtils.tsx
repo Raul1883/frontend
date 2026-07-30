@@ -1,4 +1,4 @@
-import type { CharacterSchema } from "../types/CharacterSheet";
+import type { ListSchema } from "../types/CharacterSheet";
 
 function setDeep(obj: any, path: string, value: any) {
   const keys = path.split(".");
@@ -14,7 +14,7 @@ function setDeep(obj: any, path: string, value: any) {
   });
 }
 
-export function buildDefaultValues(schema: CharacterSchema) {
+export function buildDefaultValues(schema: ListSchema) {
   const result: any = {};
   schema.sections.forEach((section) => {
     section.fields.forEach((f) => {

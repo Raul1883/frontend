@@ -1,9 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../contexts/AuthContext';
 
 export const AuthButton: React.FC = () => {
-  const { isAuthenticated, logout, isLoading } = useAuth();
+  const { logout, isLoading, role } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,7 +19,7 @@ export const AuthButton: React.FC = () => {
     return <button disabled className="loading">Загрузка...</button>;
   }
 
-  if (isAuthenticated) {
+  if (role) {
     return (
       <div className="auth-info">
         <button onClick={handleLogout} className="logout-btn">

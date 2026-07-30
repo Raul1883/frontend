@@ -8,6 +8,7 @@ import Popover from "antd/es/popover";
 import Tag from "antd/es/tag";
 import Space from "antd/es/space";
 import { Avatar, Badge } from "antd";
+import { useAuth } from "../../contexts/AuthContext";
 
 type PreviewProps = {
   session: SessionGet;
@@ -17,7 +18,9 @@ type PreviewProps = {
 
 export default (props: PreviewProps) => {
   let data: ApplicationPayload[] = [];
+  const { user } = useAuth();
 
+  
   if (props.session.expand.applications_via_session) {
     data = props.session.expand.applications_via_session;
   } else {
@@ -25,6 +28,13 @@ export default (props: PreviewProps) => {
   }
 
   const number = data.length;
+
+  const myApplicationFilter =
+    props.session.expand.applications_via_session?.filter(
+      (x) => x.user == user?.id,
+    );
+
+  const myApplication = myApplicationFilter ? myApplicationFilter[0] : null;
 
   const popoverContent =
     data.length != 0 && data[0].expand.user ? (
@@ -87,7 +97,7 @@ export default (props: PreviewProps) => {
           trigger="hover"
           placement="bottomLeft"
         >
-          <Badge count={number} color="#71bc78">
+          <Badge count={number} color={myApplication ? "#71bc78" : "gray"}>
             <Avatar shape="square" icon={<UserOutlined />} />
           </Badge>
         </Popover>

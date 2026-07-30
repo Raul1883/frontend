@@ -15,10 +15,12 @@ import {
 import MainLayout from "../../components/MainLayout";
 import { ApplySessionModal } from "./ApplySessionModal";
 import { pb } from "../../API/PocketBase";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default () => {
   const { id } = useParams<{ id: string }>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { user } = useAuth();
 
   const {
     data: sessionData,
@@ -26,9 +28,9 @@ export default () => {
     isLoading: isSessionLoading,
     mutate: mutateSession,
   } = useSWR<SessionGet>(id ? ["sessions", id] : null, ([url, targetId]) =>
-    pb
-      .collection(url)
-      .getOne(targetId as string, { expand: "company,genre,system,master" }),
+    pb.collection(url).getOne(targetId as string, {
+      expand: "company,genre,system,master,applications_via_session.user",
+    }),
   );
 
   if (sessionError) {
@@ -46,6 +48,12 @@ export default () => {
     );
   }
 
+  const myApplicationFilter =
+    sessionData?.expand.applications_via_session?.filter(
+      (x) => x.user == user?.id,
+    );
+
+  const myApplication = myApplicationFilter ? myApplicationFilter[0] : null;
   return (
     <MainLayout>
       <div className="flex flex-col items-center mt-10">
@@ -61,7 +69,7 @@ export default () => {
                   <Tag>{sessionData.expand.system.name}</Tag>
                   <Tag>{sessionData.expand.company.name}</Tag>
                   <Tag>{sessionData.scheduled_at}</Tag>
-                  <Tag>{sessionData.expand.master.login}</Tag>
+                  <Tag>{sessionData.expand.master?.login}</Tag>
                 </Space>
                 <Button type="dashed">
                   <Link to="/sessions">Закрыть</Link>
@@ -69,11 +77,15 @@ export default () => {
               </Flex>
 
               <Divider />
-              <p>{sessionData.description ? sessionData.description : "Мастер игры ещё не составил описания, но наверняка будет крайне интересно."}</p>
+              <p>
+                {sessionData.description
+                  ? sessionData.description
+                  : "Мастер игры ещё не составил описания, но наверняка будет крайне интересно."}
+              </p>
               <Divider />
 
               <Button type="primary" onClick={() => setIsModalOpen(true)}>
-                Хочу играть!
+                {myApplication ? "Редактировать заявку" : "Хочу играть!"}
               </Button>
             </>
           )}
@@ -85,6 +97,7 @@ export default () => {
             sessionId={id}
             onClose={() => setIsModalOpen(false)}
             onSuccess={() => mutateSession()}
+            myApplication={myApplication}
           />
         )}
       </div>

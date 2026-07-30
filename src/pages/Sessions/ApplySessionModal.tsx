@@ -3,20 +3,21 @@ import { Form, Modal, Select, Input, Alert, App } from "antd";
 import useSWR from "swr";
 import { useNavigate } from "react-router-dom";
 import { getAll } from "../../API/Fetcher";
-import { createApplications } from "../../API/Applications";
 import type { CharacterGet } from "../../types/Character";
 import { pb } from "../../API/PocketBase";
-import { useAuth } from "../../hooks/useAuth";
+import type { ApplicationPayload } from "../../types/Session";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface ApplySessionModalProps {
   open: boolean;
   sessionId: string;
   onClose: () => void;
   onSuccess?: () => void;
+  myApplication: ApplicationPayload | null;
 }
 
 interface FormValues {
-  character_id: number;
+  character: number;
   comment?: string;
 }
 
@@ -25,6 +26,7 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
   sessionId,
   onClose,
   onSuccess,
+  myApplication,
 }) => {
   const navigate = useNavigate();
   const [form] = Form.useForm<FormValues>();
@@ -47,12 +49,17 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
       }
 
       const body = {
-        user_id: user?.id,
-        session_id: sessionId,
+        user: user?.id,
+        session: sessionId,
         ...values,
       };
 
-      await pb.collection("applications").create(body);
+
+      if (myApplication) {
+        await pb.collection("applications").update(myApplication.id, body);
+      } else {
+        await pb.collection("applications").create(body);
+      }
 
       message.success("Заявка успешно создана");
       form.resetFields();
@@ -97,10 +104,15 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
           description="Кажется, у вас нет ни одного персонажа! Создайте нового и снова возвращайтесь сюда!"
         />
       ) : (
-        <Form form={form} layout="vertical" requiredMark={false}>
+        <Form
+          form={form}
+          layout="vertical"
+          requiredMark={false}
+          initialValues={myApplication ? myApplication : {}}
+        >
           <Form.Item<FormValues>
             label="Выберите персонажа"
-            name="character_id"
+            name="character"
             rules={[{ required: true, message: "Выберите персонажа" }]}
           >
             <Select

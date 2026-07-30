@@ -1,16 +1,17 @@
 import useSWR from "swr";
-import { useNavigate } from "react-router-dom";
-import { deleteById, getAll } from "../../API/Fetcher";
-import type { CharacterGet } from "../../types/Character";
-import { useEffect, useState } from "react";
-import type { SystemSchemaPreview } from "../../types/CharacterSchemasTypes";
+import { deleteById } from "../../API/Fetcher";
+import { useState } from "react";
+import type { ListSchemaPreview } from "../../types/ListSchemasTypes";
 import {
   Button,
   Card,
   Empty,
   Flex,
+  Form,
+  Input,
   Modal,
   Popconfirm,
+  Select,
   Space,
   Spin,
   Typography,
@@ -18,24 +19,31 @@ import {
 import CharacterImport from "./CharacterImport";
 import MainLayout from "../../components/MainLayout";
 import { pb } from "../../API/PocketBase";
+import { useForm } from "antd/es/form/Form";
+import type { Character } from "../../types/Character";
+import NavButton from "../../components/NavButton";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function CharacterList() {
-  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [form] = useForm();
+  const { user } = useAuth();
   const {
     data: characterData,
     isLoading: chrIsLoading,
     error: chrError,
     mutate,
-  } = useSWR<CharacterGet[]>(["characters"], ([url]) =>
-    pb.collection(url).getFullList(),
+  } = useSWR<Character[]>(["characters"], ([url]) =>
+    pb.collection(url).getFullList({
+      fields: "id,name",
+    }),
   );
 
-  let {
+  const {
     data: schemaData,
     isLoading: schemaIsLoading,
     error: schemaError,
-  } = useSWR<SystemSchemaPreview[]>(["list_schemas"], ([url]) =>
+  } = useSWR<ListSchemaPreview[]>(["list_schemas"], ([url]) =>
     pb.collection(url).getFullList({ fields: "id,name" }),
   );
 
@@ -61,11 +69,25 @@ export default function CharacterList() {
     );
   }
 
-  const schemaNames: string[] = schemaData?.map((x) => x.name) || [];
-
   const deleteChar = async (id: string) => {
     await deleteById(`characters`, id);
     await mutate();
+  };
+
+  const onFinish = async (
+    values: Omit<Character, "id" | "owner" | "data_fiels">,
+  ) => {
+    setIsModalOpen(false);
+    form.resetFields();
+
+    const body = {
+      owner: user?.id,
+      data_fiels: { name: values.name },
+      ...values,
+    };
+
+    await pb.collection("characters").create(body);
+    mutate();
   };
 
   return (
@@ -104,9 +126,9 @@ export default function CharacterList() {
                   title={character.name}
                   style={{ width: 300 }}
                   actions={[
-                    <Button onClick={() => navigate(`${character.id}`)}>
+                    <NavButton to={`${character.id}`} >
                       Подробнее
-                    </Button>,
+                    </NavButton>,
 
                     <Popconfirm
                       title="Точно?"
@@ -118,11 +140,7 @@ export default function CharacterList() {
                       <Button danger>Удалить</Button>
                     </Popconfirm>,
                   ]}
-                >
-                  {!character.description ? null : (
-                    <p>{character.description}</p>
-                  )}
-                </Card>
+                ></Card>
               ))}
             </Flex>
           )}
@@ -131,18 +149,40 @@ export default function CharacterList() {
         <Modal
           title="Выберите систему"
           open={isModalOpen}
-          footer={null}
           onCancel={() => {
             setIsModalOpen(false);
           }}
+          onOk={form.submit}
         >
-          <Flex gap="medium">
-            {schemaNames.map((name) => (
-              <Button key={name} onClick={() => navigate(name)}>
-                {name}
-              </Button>
-            ))}
-          </Flex>
+          <Form form={form} onFinish={onFinish}>
+            <Form.Item
+              label="Имя персонажа"
+              name="name"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="система"
+              name="list_schema"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Select
+                options={schemaData?.map((item) => ({
+                  label: item.name,
+                  value: item.id,
+                }))}
+              />
+            </Form.Item>
+          </Form>
         </Modal>
       </div>
     </MainLayout>

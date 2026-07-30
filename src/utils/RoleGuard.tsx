@@ -1,4 +1,4 @@
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/AuthContext";
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -11,10 +11,9 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   allowedRoles,
   fallback = null,
 }) => {
-  const { userRole, isAuthenticated, isLoading } = useAuth();
+  const { role: userRole, isLoading } = useAuth();
 
   if (isLoading) return <></>;
-  if (!isAuthenticated) return <>{fallback}</>;
   if (!userRole) return <>{fallback}</>;
   if (!allowedRoles.includes(userRole)) return <>{fallback}</>;
 

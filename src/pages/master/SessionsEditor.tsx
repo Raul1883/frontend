@@ -7,8 +7,8 @@ import AttributeEditor from "../../components/AttributeEditor";
 import MainLayout from "../../components/MainLayout";
 import { App, Button, Card, Form, Input } from "antd";
 import NavButton from "../../components/NavButton";
-import { useAuth } from "../../hooks/useAuth";
 import { pb } from "../../API/PocketBase";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface SessionFormProps {
   mode: "create" | "edit";

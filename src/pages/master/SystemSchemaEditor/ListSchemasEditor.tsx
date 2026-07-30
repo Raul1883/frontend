@@ -7,9 +7,9 @@ import useSWR from "swr";
 import { getById } from "../../../API/Fetcher";
 import axiosInstance from "../../../API/AxiosInstance";
 import type {
-  SystemSchemaCreate,
-  SystemSchemaRead,
-} from "../../../types/CharacterSchemasTypes";
+  ListSchemaCreate,
+  ListSchemaRead,
+} from "../../../types/ListSchemasTypes";
 import { linter, type Diagnostic } from "@codemirror/lint";
 
 import Ajv, { type ErrorObject } from "ajv";
@@ -20,11 +20,13 @@ import Modal from "../../../components/Modal";
 import Help from "./Help";
 import type {
   ArrayField,
-  CharacterSchema,
+  ListSchema,
   Field,
   Section,
 } from "../../characters/types/CharacterSheet";
 import { useUnsavedChangesWarning } from "../../../hooks/useUnsavedChangesWarning";
+import { pb } from "../../../API/PocketBase";
+import { message } from "antd";
 
 const ajv = new Ajv({
   allErrors: true,
@@ -40,12 +42,20 @@ export default () => {
   const [modalOpen, setModalOpen] = useState(false);
   useUnsavedChangesWarning();
 
-  const { data, isLoading, error, mutate } = useSWR<SystemSchemaRead>(
-    ["systems-schemas", id],
-    ([path, id]) => {
-      return getById(path, Number(id));
-    },
-  );
+  const {
+    data: rawData,
+    isLoading,
+    error,
+    mutate,
+  } = useSWR<ListSchemaRead>(["list_schemas", id], ([path, id]) => {
+    return getById(path, id as string);
+  });
+
+  const data = {
+    id: rawData?.id,
+    name: rawData?.name,
+    schema: rawData?.schema,
+  };
 
   const jsonSchemaLinter = linter((view): any[] => {
     const text = view.state.doc.toString();
@@ -126,11 +136,13 @@ export default () => {
     try {
       const parsed = JSON.parse(text);
 
-      await axiosInstance.put<SystemSchemaCreate>(
-        `systems-schemas/${id}`,
-        parsed,
-      );
+      if (!id) {
+        return;
+      }
+      await pb.collection("list_schemas").update(id, parsed);
+
       mutate();
+      message.info("Сохранено");
     } catch (err) {
       console.error("Invalid JSON", err);
     }
@@ -188,12 +200,12 @@ type DuplicateEntry = {
 };
 
 const getDublicateKeys = (
-  schemaRead: SystemSchemaRead,
+  schemaRead: ListSchema,
   pointers: Record<string, Pointer>,
 ): Diagnostic[] => {
   if (!schemaRead) return [];
 
-  const schema = schemaRead.schema as CharacterSchema;
+  const schema = schemaRead.schema;
 
   const diagnostics: Diagnostic[] = [];
 

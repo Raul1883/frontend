@@ -15,11 +15,7 @@
           "$ref": "#/definitions/CharacterSchema"
         }
       },
-      "required": [
-        "id",
-        "name",
-        "schema"
-      ],
+      "required": ["id", "name", "schema"],
       "additionalProperties": false
     },
     "CharacterSchema": {
@@ -88,16 +84,7 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "enum": [
-                    "s",
-                    "w",
-                    "e",
-                    "n",
-                    "sw",
-                    "nw",
-                    "se",
-                    "ne"
-                  ],
+                  "enum": ["s", "w", "e", "n", "sw", "nw", "se", "ne"],
                   "description": "Axis identifiers for resize handles.\n- Cardinal: 'n', 's', 'e', 'w' (north, south, east, west)\n- Diagonal: 'ne', 'nw', 'se', 'sw'"
                 },
                 "description": "Which resize handles to show for this item. Overrides grid-level resizeHandles for this item."
@@ -120,31 +107,21 @@
                       "description": "Constraint identifier for debugging"
                     }
                   },
-                  "required": [
-                    "name"
-                  ],
+                  "required": ["name"],
                   "additionalProperties": false,
                   "description": "Interface for layout constraints.\n\nImplement this interface to create custom position/size constraints. Built-in constraints: gridBounds, minMaxSize, containerBounds, boundedX, boundedY."
                 },
                 "description": "Per-item layout constraints. Applied in addition to grid-level constraints."
               }
             },
-            "required": [
-              "i",
-              "x",
-              "y",
-              "w",
-              "h"
-            ],
+            "required": ["i", "x", "y", "w", "h"],
             "additionalProperties": false,
             "description": "A single item in the grid layout.\n\nPosition (x, y) is in grid units, not pixels. Size (w, h) is in grid units."
           },
           "description": "A layout is a readonly array of layout items. Layouts should be treated as immutable."
         }
       },
-      "required": [
-        "sections"
-      ],
+      "required": ["sections"],
       "additionalProperties": false
     },
     "Section": {
@@ -161,20 +138,13 @@
         },
         "layout": {
           "type": "string",
-          "enum": [
-            "unbound",
-            "compact",
-            "list"
-          ]
+          "enum": ["unbound", "compact", "list"]
         },
         "columns": {
           "type": "number"
         }
       },
-      "required": [
-        "title",
-        "fields"
-      ],
+      "required": ["title", "fields"],
       "additionalProperties": false
     },
     "Field": {
@@ -216,21 +186,13 @@
             },
             "ui": {
               "type": "string",
-              "enum": [
-                "row",
-                "column",
-                "compact"
-              ]
+              "enum": ["row", "column", "compact"]
             },
             "array_col": {
               "type": "number"
             }
           },
-          "required": [
-            "key",
-            "label",
-            "type"
-          ]
+          "required": ["label", "type"]
         }
       ]
     },
@@ -253,21 +215,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["label", "type"]
     },
     "TextField": {
       "type": "object",
@@ -288,21 +242,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["label", "type"]
     },
     "TextareaField": {
       "type": "object",
@@ -323,21 +269,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["label", "type"]
     },
     "SelectField": {
       "type": "object",
@@ -364,22 +302,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "options",
-        "type"
-      ]
+      "required": ["label", "options", "type"]
     },
     "CheckboxField": {
       "type": "object",
@@ -400,21 +329,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["label", "type"]
     },
     "ArrayField": {
       "type": "object",
@@ -442,22 +363,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "itemSchema",
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["itemSchema", "label", "type"]
     },
     "MinMaxField": {
       "type": "object",
@@ -478,21 +390,13 @@
         },
         "ui": {
           "type": "string",
-          "enum": [
-            "row",
-            "column",
-            "compact"
-          ]
+          "enum": ["row", "column", "compact"]
         },
         "array_col": {
           "type": "number"
         }
       },
-      "required": [
-        "key",
-        "label",
-        "type"
-      ]
+      "required": ["label", "type"]
     }
   }
 }

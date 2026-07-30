@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Alert, Layout, Card } from "antd";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/AuthContext";
+import { pb } from "../API/PocketBase";
 
 const { Title } = Typography;
 
@@ -9,7 +10,6 @@ export const Login: React.FC = () => {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const { login: authLogin } = useAuth();
   const navigate = useNavigate();
 
   const onFinish = async (values: { login: string; password: string }) => {
@@ -17,7 +17,9 @@ export const Login: React.FC = () => {
     setIsLoading(true);
 
     try {
-      await authLogin(values.login, values.password);
+      await pb
+        .collection("users")
+        .authWithPassword(values.login, values.password);
       navigate("/");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Login failed");

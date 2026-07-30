@@ -1,78 +1,56 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  type ReactNode,
-} from "react";
-import { authAPI, type User } from "../API/auth";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { pb } from "../API/PocketBase";
+import type { RecordModel } from "pocketbase";
 
 interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
+  user: RecordModel | null;
+  role: string | null;
   isLoading: boolean;
-  userRole: string | null;
-  login: (login: string, password: string) => Promise<void>;
-  logout: () => Promise<void>;
+  logout: () => void;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
-);
+const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUser] = useState<RecordModel | null>(pb.authStore.model);
   const [isLoading, setIsLoading] = useState(true);
-  const [userRole, setUserRole] = useState<string | null>(null);
-
-  const isAuthenticated = !!user;
 
   useEffect(() => {
-    const initAuth = async () => {
+    // 1. При монтировании обновляем токен на сервере (если есть)
+    async function initAuth() {
       if (pb.authStore.isValid) {
         try {
-          const response = await authAPI.refresh();
-          setUser(response.user);
-          setUserRole(response.user.role);
-        } catch (error) {
+          // Обновит данные пользователя, если они изменились на сервере
+          await pb.collection("users").authRefresh();
+        } catch {
           pb.authStore.clear();
-          setUser(null);
-          setUserRole(null);
         }
       }
-
       setIsLoading(false);
-    };
+    }
 
     initAuth();
+
+    // 2. Подписываемся на изменения AuthStore (login/logout в любом месте)
+    const unsubscribe = pb.authStore.onChange((token, model) => {
+      setUser(model);
+    });
+
+    return () => {
+      unsubscribe(); // Отписка при размонтировании
+    };
   }, []);
 
-  const login = async (login: string, password: string) => {
-    const response = await authAPI.login(login, password);
-    setUser(response.user);
-    setUserRole(response.user.role);
-  };
+  const logout = () => pb.authStore.clear();
 
-  const logout = async () => {
-    await authAPI.logout();
-    setUser(null);
-    setUserRole(null);
-  };
+  // Допустим, роль хранится в поле 'role' коллекции users (например, "admin" | "user")
+  const role = user?.role || null;
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated,
-        isLoading,
-        userRole,
-        login,
-        logout,
-      }}
-    >
-      {children}
+    <AuthContext.Provider value={{ user, role, isLoading, logout }}>
+      {!isLoading && children}
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/AuthContext";
 
 interface PrivateRouteProps {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ export const PrivateRoute: React.FC<PrivateRouteProps> = ({
   children,
   requiredRole,
 }) => {
-  const { isAuthenticated, isLoading, userRole } = useAuth();
+  const { isLoading, role: userRole } = useAuth();
 
   if (isLoading) {
     return <div>Loading...</div>; // Или ваш компонент загрузки

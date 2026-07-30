@@ -9,7 +9,9 @@ export type SessionPost = {
 };
 
 export interface ApplicationPayload {
+  id: string;
   comment: string;
+  user: string;
   expand: { user: { login: string; contact_info: string } };
 }
 

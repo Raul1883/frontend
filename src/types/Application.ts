@@ -13,6 +13,13 @@ export type ApplicationGet = {
   status: string;
 };
 
+export interface ApplicationViaSession {
+  character: string;
+  comment: string;
+  session: string;
+  user: "8l4verotoy9h5dd";
+}
+
 export type ApplicationDataItem = {
   expand: {
     user: {

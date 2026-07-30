@@ -2,9 +2,12 @@ import React, { useRef } from "react";
 import type { CharacterGet, CharacterPost } from "../../types/Character";
 import { create } from "../../API/Fetcher";
 import { Button } from "antd";
+import { pb } from "../../API/PocketBase";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default ({ mutate }: { mutate: any }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -31,6 +34,25 @@ export default ({ mutate }: { mutate: any }) => {
     fileInputRef.current?.click();
   };
 
+  const uploadCharacter = async (data: any, mutate: any) => {
+    if (!user) {
+      return;
+    }
+    const body = {
+      name: data.name,
+      owner: user.id,
+      data_fiels: {
+        ...data,
+      },
+      list_schema: data.list_schema,
+    };
+
+    console.log(body);
+
+    await pb.collection("characters").create(body);
+    mutate();
+  };
+
   return (
     <div>
       <input
@@ -44,14 +66,4 @@ export default ({ mutate }: { mutate: any }) => {
       <Button onClick={handleButtonClick}>Загрузить из JSON</Button>
     </div>
   );
-};
-const uploadCharacter = async (data: any, mutate: any) => {
-  const payload: CharacterPost = {
-    name: data.name,
-    description: "",
-    data_fields: data,
-  };
-
-  await create<CharacterPost, CharacterGet>("/characters", payload);
-  mutate();
 };

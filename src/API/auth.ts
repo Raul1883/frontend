@@ -37,9 +37,7 @@ export const authAPI = {
     return { user, token: authData.token };
   },
 
-  // Выход
   logout: async () => {
-    // В PocketBase достаточно очистить локальное хранилище токена
     pb.authStore.clear();
   },
 };

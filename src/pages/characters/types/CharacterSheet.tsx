@@ -3,7 +3,6 @@ import type { Layout } from "react-grid-layout";
 import type { FieldValues, UseFormReturn } from "react-hook-form";
 
 type BaseField = {
-  key: string;
   label: string;
   ui?: "row" | "column" | "compact";
   array_col?: number; // Кол-во колонок, которое занимает элемент в массиве (12 - полная ширина)
@@ -67,10 +66,14 @@ export type Section = {
   columns?: number;
 };
 
-export type CharacterSchema = {
-  sections: Section[];
-  layout?: Layout;
-};
+export interface ListSchema {
+  id?: string;
+  name: string;
+  schema: {
+    sections: Section[];
+    layout?: Layout;
+  };
+}
 
 export interface SectionProps {
   section: Section;

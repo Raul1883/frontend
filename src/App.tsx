@@ -12,9 +12,8 @@ import { RoleGuard } from "./utils/RoleGuard";
 import Characters from "./pages/characters/Characters";
 
 import Users from "./pages/master/Users";
-import { CharacterForm } from "./pages/characters/render/SchemaRender";
 import Reg from "./pages/Reg";
-import CharacterSchemas from "./pages/master/SystemSchemaEditor/CharacterSchemas";
+import CharacterSchemas from "./pages/master/SystemSchemaEditor/ListSchemas";
 import ToolsMainPage from "./pages/tools/ToolsMainPage";
 import City from "./pages/tools/dnd-guild/City/City";
 import GuildMainPage from "./pages/tools/dnd-guild/GuildMainPage";
@@ -24,9 +23,10 @@ import MainPage from "./pages/MainPage";
 
 import React, { Suspense } from "react";
 import MasterPanel from "./pages/master/MasterPanel";
+import CharacterMain from "./pages/characters/renderV2/CharacterMain";
 
 const CharacterSchemasEditor = React.lazy(
-  () => import("./pages/master/SystemSchemaEditor/CharacterSchemasEditor"),
+  () => import("./pages/master/SystemSchemaEditor/ListSchemasEditor"),
 );
 
 const WikiPage = React.lazy(() => import("./pages/tools/wiki/WikiPage"));
@@ -126,7 +126,7 @@ function App() {
                   path="/characters/:id"
                   element={
                     <PrivateRoute>
-                      <CharacterForm />
+                      <CharacterMain />
                     </PrivateRoute>
                   }
                 />

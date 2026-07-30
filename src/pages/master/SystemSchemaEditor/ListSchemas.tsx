@@ -1,13 +1,10 @@
 import useSWR from "swr";
-import { create, deleteById, getAll } from "../../../API/Fetcher";
+import { deleteById, getAll } from "../../../API/Fetcher";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type {
-  SystemSchemaCreate,
-  SystemSchemaPreview,
-  SystemSchemaRead,
-} from "../../../types/CharacterSchemasTypes";
-import type { CharacterSchema } from "../../characters/types/CharacterSheet";
+  ListSchemaPreview,
+} from "../../../types/ListSchemasTypes";
 import MainLayout from "../../../components/MainLayout";
 import {
   Button,
@@ -22,28 +19,16 @@ import {
   Spin,
   Typography,
 } from "antd";
-
-const EmptySchema: CharacterSchema = {
-  sections: [
-    {
-      title: "Главное",
-      fields: [
-        { type: "text", key: "name", label: "Имя", defaultValue: "" },
-        { type: "text", key: "race", label: "Раса", defaultValue: "" },
-        { type: "text", key: "gender", label: "Пол", defaultValue: "" },
-        { type: "text", key: "age", label: "Возраст", defaultValue: "" },
-      ],
-    },
-  ],
-};
+import type { ListSchema } from "../../characters/types/CharacterSheet";
+import { pb } from "../../../API/PocketBase";
 
 export default () => {
   const [newName, setNewName] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const { data, isLoading, error, mutate } = useSWR<SystemSchemaPreview[]>(
-    "systems-schemas",
+  const { data, isLoading, error, mutate } = useSWR<ListSchemaPreview[]>(
+    "list_schemas",
     getAll,
   );
 
@@ -68,21 +53,28 @@ export default () => {
     );
   }
 
-  const handleDelete = async (id: number) => {
-    await deleteById("systems-schemas", id);
+  const handleDelete = async (id: string) => {
+    await deleteById("list_schemas", id);
     mutate();
   };
 
   const handleCreate = async () => {
-    const newSchema: SystemSchemaCreate = {
-      name: newName,
-      schema: EmptySchema,
-    };
     setIsModalOpen(false);
-    await create<SystemSchemaCreate, SystemSchemaRead>(
-      "systems-schemas",
-      newSchema,
-    );
+
+    const body: Omit<ListSchema, "id"> = {
+      name: newName,
+      schema: {
+        sections: [
+          {
+            title: "Название секции",
+            fields: [],
+          },
+        ],
+        layout: [],
+      },
+    };
+
+    await pb.collection("list_schemas").create(body);
     mutate();
   };
 
@@ -99,7 +91,7 @@ export default () => {
       </Divider>
       <div className="flex items-center justify-center">
         <Flex style={{ width: "60%" }} vertical gap="medium">
-          {data?.map((schema: SystemSchemaPreview) => (
+          {data?.map((schema: ListSchemaPreview) => (
             <Card
               title={schema.name}
               key={schema.id}

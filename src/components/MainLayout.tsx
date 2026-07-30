@@ -1,7 +1,7 @@
 import { Button, Layout, Menu } from "antd";
 import { Link, useLocation } from "react-router-dom";
 import { AuthButton } from "./AuthButton";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../contexts/AuthContext";
 
 const { Header, Content, Footer } = Layout;
 
@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 const getHeaderItems = () => {
-  const { userRole } = useAuth();
+  const { role: userRole } = useAuth();
   if (userRole == "master") {
     return [
       { key: "sessions", label: <Link to="/sessions">Игры</Link> },
@@ -27,8 +27,14 @@ const getHeaderItems = () => {
             label: <Link to="/manage/sessions">Сессии</Link>,
             key: "manage/sessions",
           },
-          { label: <Link to="/manage/users">Игроки</Link>, key: "manage/users" },
-          { label: <Link to="/manage/schemas">Схемы</Link>, key: "manage/schemas" },
+          {
+            label: <Link to="/manage/users">Игроки</Link>,
+            key: "manage/users",
+          },
+          {
+            label: <Link to="/manage/schemas">Схемы</Link>,
+            key: "manage/schemas",
+          },
         ],
       },
       { key: "exit", label: <AuthButton /> },
