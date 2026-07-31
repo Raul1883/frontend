@@ -30,20 +30,6 @@ export const update = async <P, R>(
     .update<R>(id, data as Record<string, unknown>);
 };
 
-export const updateByPath = async <P, R>(
-  url: string,
-  id: number,
-  data: Partial<P>,
-): Promise<R> => {
-  return await update(url, id, data);
-};
-
-export const updateByBody = async <P, R>(
-  url: string,
-  data: Partial<P>,
-): Promise<R> => {
-  return await update(url, data.id, data);
-};
 
 export const deleteById = async (
   collectionName: string,

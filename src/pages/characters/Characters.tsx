@@ -33,8 +33,6 @@ export default function CharacterList() {
     }),
   );
 
-  console.log(characterData);
-
   if (chrIsLoading || !user)
     return (
       <MainLayout>

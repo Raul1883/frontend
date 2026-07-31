@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     initAuth();
 
-    // 2. Подписываемся на изменения AuthStore (login/logout в любом месте)
     const unsubscribe = pb.authStore.onChange((token, model) => {
+      token;
       setUser(model);
     });
 

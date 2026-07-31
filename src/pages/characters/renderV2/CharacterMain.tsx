@@ -20,7 +20,7 @@ export default () => {
   const [form] = useForm();
   const { message } = useApp();
 
-  const { data, isLoading, error } = useSWR<CharacterWithSchema>(
+  const { data, isLoading, error, mutate } = useSWR<CharacterWithSchema>(
     user && id ? ["characters", id] : null,
     ([collection, targetId]) =>
       pb.collection(collection).getOne(targetId as string, {
@@ -55,6 +55,7 @@ export default () => {
 
     try {
       await pb.collection("characters").update(id, body);
+      mutate();
       message.success("Сохранено");
     } catch {
       message.error("Что-то пошло не так");

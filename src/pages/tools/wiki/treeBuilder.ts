@@ -1,37 +1,30 @@
 import type { TreeDataNode } from "antd";
+import type { WikiRecord } from "./types";
 
 // Временный интерфейс для построения сырого дерева
 interface RawBuilderNode {
   title: string;
   isLeaf: boolean;
-  fullPath: string; // нужен, чтобы гарантировать уникальность ключа папки
+  key: string; // нужен, чтобы гарантировать уникальность ключа папки
+  slug: string;
   children: Record<string, RawBuilderNode>;
 }
 
-/**
- * Преобразует плоский массив путей напрямую в формат TreeDataNode для Ant Design
- * @param paths массив строк вида ['folder/subfolder/page.md', 'root-page.md']
- */
-export function buildAntdTree(paths: string[]): TreeDataNode[] {
+export function buildAntdTree(records: WikiRecord[]): TreeDataNode[] {
   // 1. Создаем корневой объект сборщика
   const rootChildren: Record<string, RawBuilderNode> = {};
 
-  paths.forEach((path) => {
-    const parts = path.split("/");
+  records.forEach((record) => {
+    const parts = record.slug.split("/");
     let currentChildren = rootChildren;
-    let accumulatedPath = "";
 
-    parts.forEach((part, index) => {
-      const isLast = index === parts.length - 1;
-      
-      // Накапливаем путь для текущего уровня (чтобы ключ папки был уникальным)
-      accumulatedPath = accumulatedPath ? `${accumulatedPath}/${part}` : part;
-
+    parts.forEach((part) => {
       if (!currentChildren[part]) {
         currentChildren[part] = {
-          title: isLast ? part.replace(".md", "") : part,
-          isLeaf: isLast,
-          fullPath: accumulatedPath,
+          title: record.title,
+          isLeaf: !record.isFolder,
+          key: record.id,
+          slug: record.slug,
           children: {},
         };
       }
@@ -41,16 +34,16 @@ export function buildAntdTree(paths: string[]): TreeDataNode[] {
   });
 
   // 2. Рекурсивная функция для конвертации во внутренний формат Antd и сортировки
-  const convertAndSort = (childrenMap: Record<string, RawBuilderNode>): TreeDataNode[] => {
+  const convertAndSort = (
+    childrenMap: Record<string, RawBuilderNode>,
+  ): TreeDataNode[] => {
     const nodes = Object.values(childrenMap);
     if (nodes.length === 0) return [];
 
     return nodes
       .map((node) => {
         // Для файлов делаем привычный url-путь, для папок — уникальный внутренний fullPath
-        const key = node.isLeaf
-          ? `/tools/wiki/${encodeURIComponent(node.fullPath)}`
-          : `folder://${node.fullPath}`;
+        const key = node.key;
 
         const hasChildren = Object.keys(node.children).length > 0;
 
@@ -58,14 +51,13 @@ export function buildAntdTree(paths: string[]): TreeDataNode[] {
           title: node.title,
           key: key,
           isLeaf: node.isLeaf,
+          slug: node.slug,
           children: hasChildren ? convertAndSort(node.children) : undefined,
         };
       })
       .sort((a, b) => {
-        // Папки всегда идут выше файлов
         if (!a.isLeaf && b.isLeaf) return -1;
         if (a.isLeaf && !b.isLeaf) return 1;
-        // Внутри своей группы сортируем по алфавиту
         return (a.title as string).localeCompare(b.title as string);
       });
   };

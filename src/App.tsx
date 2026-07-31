@@ -24,6 +24,7 @@ import MainPage from "./pages/MainPage";
 import React, { Suspense } from "react";
 import MasterPanel from "./pages/master/MasterPanel";
 import CharacterMain from "./pages/characters/renderV2/CharacterMain";
+import MdEditor from "./pages/tools/wiki/MdEditor";
 
 const CharacterSchemasEditor = React.lazy(
   () => import("./pages/master/SystemSchemaEditor/ListSchemasEditor"),
@@ -228,6 +229,19 @@ function App() {
                 <Route path="/tools" element={<ToolsMainPage />} />
                 <Route path="/tools/wiki" element={<WikiPage />} />
                 <Route path="/tools/wiki/:id" element={<WikiPage />} />
+                <Route
+                  path="/tools/wiki/edit/:id"
+                  element={
+                    <PrivateRoute>
+                      <RoleGuard
+                        allowedRoles={["master"]}
+                        fallback={<UnauthorizedPage />}
+                      >
+                        <MdEditor />
+                      </RoleGuard>
+                    </PrivateRoute>
+                  }
+                />
 
                 <Route path="/tools/guild" element={<GuildMainPage />} />
                 <Route path="/tools/guild/city" element={<City />} />

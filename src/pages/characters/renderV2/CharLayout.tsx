@@ -1,8 +1,8 @@
-import { Button, ConfigProvider, Space, Typography } from "antd";
+import { Button, ConfigProvider, message, Space, Typography } from "antd";
 
 import { Layout } from "antd";
-import NavButton from "../../../components/NavButton";
 import Dice from "./Dice";
+import { useNavigate } from "react-router-dom";
 
 const { Header, Content } = Layout;
 
@@ -21,6 +21,8 @@ export default ({
   resetLayout,
   saveJson,
 }: CharLayoutProps) => {
+  const navigate = useNavigate();
+
   const theme = {
     token: {
       borderRadius: 2,
@@ -52,6 +54,16 @@ export default ({
     },
   };
 
+  const hadleExit = () => {
+    save();
+
+    message.warning(
+      "Если вернешься в того же персонажа — перезагрузи страницу.",
+    );
+    message.warning("!");
+    navigate(-1);
+  };
+
   return (
     <ConfigProvider theme={theme}>
       <Layout style={{ minHeight: "100vh" }}>
@@ -70,7 +82,7 @@ export default ({
             <Button onClick={resetLayout}>Разметка по умолчанию</Button>
             <Button onClick={saveJson}>Скачать json</Button>
             <Dice />
-            <NavButton to="/characters">Домой</NavButton>
+            <Button onClick={hadleExit}>Домой</Button>
           </Space>
           <Typography.Title style={{ margin: 0 }}>
             {systemName}

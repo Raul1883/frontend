@@ -1,4 +1,4 @@
-import { Form, Input, Select, Space, Table, Typography } from "antd";
+import { Form, Input, Select, Space, Typography } from "antd";
 import type { Field } from "../types/CharacterSheet";
 import Checkbox from "antd/es/checkbox/Checkbox";
 import { InventoryTableField } from "./fields/ArrayField";

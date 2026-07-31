@@ -5,9 +5,7 @@ import { json } from "@codemirror/lang-json";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { getById } from "../../../API/Fetcher";
-import axiosInstance from "../../../API/AxiosInstance";
 import type {
-  ListSchemaCreate,
   ListSchemaRead,
 } from "../../../types/ListSchemasTypes";
 import { linter, type Diagnostic } from "@codemirror/lint";
@@ -233,15 +231,15 @@ const getDublicateKeys = (
 
     section.fields.forEach((field: Field, fieldIndex: number) => {
       const fieldEntry = {
-        key: field.key,
+        key: field.label,
         path: `/schema/sections/${sectionIndex}/fields/${fieldIndex}/key`,
       };
 
-      const existing = globalFields.get(field.key) || [];
+      const existing = globalFields.get(field.label) || [];
 
       existing.push(fieldEntry);
 
-      globalFields.set(field.key, existing);
+      globalFields.set(field.label, existing);
 
       // array scoped fields
 
@@ -251,15 +249,15 @@ const getDublicateKeys = (
         (field as ArrayField).itemSchema.forEach(
           (arrField: Field, arrFieldIndex: number) => {
             const arrEntry = {
-              key: arrField.key,
+              key: arrField.label,
               path: `/schema/sections/${sectionIndex}/fields/${fieldIndex}/itemSchema/${arrFieldIndex}/key`,
             };
 
-            const existingArr = arrayScoped.get(arrField.key) || [];
+            const existingArr = arrayScoped.get(arrField.label) || [];
 
             existingArr.push(arrEntry);
 
-            arrayScoped.set(arrField.key, existingArr);
+            arrayScoped.set(arrField.label, existingArr);
           },
         );
 

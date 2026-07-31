@@ -4,7 +4,6 @@ import SessionPreview from "./SessionPreview";
 import { deleteById } from "../../API/Fetcher";
 import { Empty, Space, Spin } from "antd";
 import { pb } from "../../API/PocketBase";
-import { data } from "react-router-dom";
 
 export default ({ master = false }: { master: boolean }) => {
   const {

@@ -1,49 +1,118 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import useSWR from "swr";
-import { Tree, Spin, Alert, Typography } from "antd";
+import { Tree, Spin, Alert, Typography, Button, Space, Menu } from "antd";
+import type { MenuProps } from "antd";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FolderOutlined, FileTextOutlined } from "@ant-design/icons";
-import axiosInstance from "../../../API/AxiosInstance";
 import { buildAntdTree } from "./treeBuilder";
-
-interface NodeListResponse {
-  pages: string[];
-}
+import { pb } from "../../../API/PocketBase";
+import type { WikiRecord } from "./types";
+import FileTextOutlined from "@ant-design/icons/es/icons/FileTextOutlined";
+import FolderOutlined from "@ant-design/icons/es/icons/FolderOutlined";
+import PlusCircleOutlined from "@ant-design/icons/es/icons/PlusCircleOutlined";
+import { RoleGuard } from "../../../utils/RoleGuard";
+import CreateModal from "./CreateModal";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const fetcher = (url: string) =>
-  axiosInstance.get<NodeListResponse>(url).then((res) => res.data.pages);
+  pb
+    .collection<WikiRecord>(url)
+    .getFullList({ fields: "id,title,slug,isFolder" });
 
 export const WikiSidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [slug, setSetSlug] = useState<string>("");
+
+  // Состояния для контекстного меню
+  const [menuVisible, setMenuVisible] = useState<boolean>(false);
+  const [menuPosition, setMenuPosition] = useState<{ x: number; y: number }>({
+    x: 0,
+    y: 0,
+  });
+  const [currentNode, setCurrentNode] = useState<any>(null);
+
+  const { user } = useAuth(); // получаем текущего пользователя, чтобы проверить роль
+  const isMaster = user?.role === "master";
 
   const {
     data: paths,
     error,
     isLoading,
-  } = useSWR("/wiki", fetcher, {
+    mutate,
+  } = useSWR("wiki", fetcher, {
     revalidateOnFocus: false,
-    dedupingInterval: 60000,
+    dedupingInterval: 10000,
   });
 
-  // Формируем данные для Antd Tree
   const antdTreeData = useMemo(() => {
     if (!paths) return [];
     return buildAntdTree(paths);
   }, [paths]);
 
-  // Обработка клика по элементу дерева
   const handleSelect = (selectedKeys: React.Key[], info: any) => {
-    if (!info.node.isLeaf) return;
     selectedKeys;
-
+    if (!info.node.isLeaf) return;
     const targetUrl = info.node.key as string;
-    navigate(targetUrl);
+    navigate(`/tools/wiki/${targetUrl}`);
   };
 
-  // Декодируем pathname для точного сопоставления с key в дереве
   const selectedKey = decodeURIComponent(location.pathname);
 
+  // ---- Контекстное меню ----
+  const handleRightClick = ({
+    event,
+    node,
+  }: {
+    event: React.MouseEvent;
+    node: any;
+  }) => {
+    event.preventDefault();
+    if (!isMaster) return;
+
+    setCurrentNode(node);
+    setMenuPosition({ x: event.clientX, y: event.clientY });
+    setMenuVisible(true);
+  };
+
+  const handleMenuClick: MenuProps["onClick"] = (e) => {
+    const { key } = e;
+    switch (key) {
+      case "create":
+        if (currentNode?.isLeaf) {
+          setSetSlug(currentNode.slug); // предположим, что в node есть parentId
+        } else {
+          setSetSlug(currentNode.slug); // для папки – создаём внутри
+        }
+        setIsModalOpen(true);
+        break;
+      case "edit":
+        navigate(`/tools/wiki/edit/${currentNode.key}`);
+        // здесь можно открыть модалку редактирования
+        break;
+
+      default:
+        break;
+    }
+    setMenuVisible(false);
+  };
+
+  // Закрываем меню при клике вне его
+  useEffect(() => {
+    const closeMenu = () => setMenuVisible(false);
+    if (menuVisible) {
+      document.addEventListener("click", closeMenu);
+      return () => document.removeEventListener("click", closeMenu);
+    }
+  }, [menuVisible]);
+
+  // Сбрасываем modalParentId при закрытии модалки
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSetSlug("");
+  };
+
+  // --- Рендер ---
   if (isLoading) {
     return (
       <aside className="overflow-y-auto pt-8">
@@ -74,19 +143,66 @@ export const WikiSidebar: React.FC = () => {
 
   return (
     <aside className="overflow-y-auto pt-8">
-      <Typography.Title level={4} className="ml-4">
-        TTR wiki
-      </Typography.Title>
+      <Space>
+        <Typography.Title level={4} className="ml-4">
+          TTR wiki
+        </Typography.Title>
+        <RoleGuard allowedRoles={["master"]}>
+          <Button
+            icon={<PlusCircleOutlined />}
+            onClick={() => {
+              setSetSlug(""); // создаём корневой элемент
+              setIsModalOpen(true);
+            }}
+          />
+        </RoleGuard>
+      </Space>
 
       <Tree
         treeData={antdTreeData}
         selectedKeys={[selectedKey]}
         onSelect={handleSelect}
         showIcon
+        onRightClick={handleRightClick}
         expandAction="click"
         icon={(props) =>
           props.isLeaf ? <FileTextOutlined /> : <FolderOutlined />
         }
+      />
+
+      {/* Контекстное меню */}
+      {menuVisible && (
+        <RoleGuard allowedRoles={["master"]}>
+          <Menu
+            style={{
+              position: "fixed",
+              left: menuPosition.x,
+              top: menuPosition.y,
+              zIndex: 1000,
+              boxShadow:
+                "0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08)",
+            }}
+            onClick={handleMenuClick}
+            items={[
+              {
+                key: "create",
+                label: "Создать",
+                icon: <PlusCircleOutlined />,
+              },
+              {
+                key: "edit",
+                label: "Редактировать",
+              },
+            ]}
+          />
+        </RoleGuard>
+      )}
+
+      <CreateModal
+        isModalOpen={isModalOpen}
+        closeModal={handleCloseModal}
+        mutate={mutate}
+        slug={`${slug}/`} // передаём в модалку
       />
     </aside>
   );

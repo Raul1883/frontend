@@ -3,8 +3,9 @@ import React from "react";
 import { Layout, Splitter } from "antd";
 import { WikiSidebar } from "./WikiSidebar";
 import MainLayout from "../../../components/MainLayout";
+import "../../../css/markdown.css";
 
-const { Content, Sider } = Layout;
+const { Content } = Layout;
 
 export const WikiLayout: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -25,17 +26,6 @@ export const WikiLayout: React.FC<{ children: React.ReactNode }> = ({
           <Content>{children}</Content>
         </Splitter.Panel>
       </Splitter>
-    </MainLayout>
-  );
-
-  return (
-    <MainLayout fluid footer={false}>
-      <Layout style={{ background: "#fcf5e4", borderRadius: "4px" }}>
-        <Sider width={250}>
-          <WikiSidebar />
-        </Sider>
-        <Content>{children}</Content>
-      </Layout>
     </MainLayout>
   );
 };

@@ -1,81 +1,57 @@
 import useSWR from "swr";
-import axiosInstance from "../../../API/AxiosInstance";
-import { useParams, Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkCallouts from "remark-callouts";
-import "../../../css/markdown.css";
-import { remarkWikiLinks } from "../../../utils/remarkWikiLinks";
-import { Empty, Skeleton } from "antd";
+import { useParams } from "react-router-dom";
+import { pb } from "../../../API/PocketBase";
+import type { WikiRecord } from "./types";
+import NavButton from "../../../components/NavButton";
+import EditOutlined from "@ant-design/icons/es/icons/EditOutlined";
+import { Empty, Skeleton, Space, Tag } from "antd";
+import { RoleGuard } from "../../../utils/RoleGuard";
+import MdLayout from "../../../components/MdLayout";
 
-interface DocumentResponse {
-  title: string;
-  content: string;
-}
+const fetcher = async (id: string) => {
+  try {
+    const res = await pb.collection<WikiRecord>("wiki").getOne(id);
+    return res;
+  } catch {
+    const secondRes = await pb
+      .collection<WikiRecord>("wiki")
+      .getFullList({ filter: `title = "${id}"` });
 
-const fetcher = (url: string) =>
-  axiosInstance.get<DocumentResponse>(url).then((res) => res.data);
+    return secondRes[0];
+  }
+};
 
 export default () => {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams();
 
-  const decodedId = id ? decodeURIComponent(id) : null;
-
-  const { data, error, isLoading } = useSWR(
-    decodedId ? `/wiki/${encodeURIComponent(decodedId)}` : null,
+  const { data, error, isLoading } = useSWR<WikiRecord>(
+    id ? id : null,
     fetcher,
   );
 
-  if (isLoading || error) return <Skeleton active />;
+  if (isLoading || error)
+    return (
+      <div className="markdown-body mx-8 mt-4 max-w-[80%] w-250">
+        <Skeleton active />
+      </div>
+    );
 
   if (!id || !data?.content)
     return <Empty description="Пусто!" className="pt-10" />;
 
   return (
-    <div className="markdown-body mx-8 mt-4 max-w-[80%] w-250">
-      <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkWikiLinks, remarkCallouts]}
-        components={{
-          a: ({ href, children, ...props }) => {
-            if (!href) return <span {...props}>{children}</span>;
+    <div className="mx-8 mt-4 max-w-[80%] w-250">
+      <div className="flex justify-between  flex-row">
+        <div></div>
+        <Space align="center">
+          <Tag>{data?.slug}</Tag>
+          <RoleGuard allowedRoles={["master"]}>
+            <NavButton to={`/tools/wiki/edit/${id}`} icon={<EditOutlined />} />
+          </RoleGuard>
+        </Space>
+      </div>
 
-            // Декодируем ссылку, чтобы точно работать с понятным текстом
-            const decodedHref = decodeURIComponent(href);
-
-            // Проверяем: если ссылка начинается с http/https — она внешняя
-            const isExternal =
-              decodedHref.startsWith("http://") || href.startsWith("https://");
-
-            if (!isExternal) {
-              // Все внутренние ссылки (начинаются с /wiki или просто с названия статьи)
-              // пускаем через Link без перезагрузки страницы и в той же вкладке
-              return (
-                <Link
-                  to={href} // Передаем оригинальный (закодированный) href для роутера
-                  {...props}
-                  className="text-blue-500 hover:underline"
-                >
-                  {children}
-                </Link>
-              );
-            }
-
-            return (
-              <a
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-400 hover:underline"
-                {...props}
-              >
-                {children}
-              </a>
-            );
-          },
-        }}
-      >
-        {data?.content || "Документ пуст"}
-      </ReactMarkdown>
+      <MdLayout content={data?.content || "Документ пуст"} />
     </div>
   );
 };

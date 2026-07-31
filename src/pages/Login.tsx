@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Form, Input, Button, Typography, Alert, Layout, Card } from "antd";
-import { useAuth } from "../contexts/AuthContext";
 import { pb } from "../API/PocketBase";
 
 const { Title } = Typography;
@@ -49,9 +48,9 @@ export const Login: React.FC = () => {
 
           <Form.Item
             name="login"
-            rules={[{ required: true, message: "Пожалуйста, введите логин" }]}
+            rules={[{ required: true, message: "Пожалуйста, введите почту" }]}
           >
-            <Input placeholder="Логин" size="large" />
+            <Input placeholder="Почта" size="large" />
           </Form.Item>
 
           <Form.Item
