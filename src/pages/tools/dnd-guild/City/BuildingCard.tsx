@@ -17,6 +17,7 @@ const levelToBills = [1, 3, 5, 7, 9];
 export default ({ data }: { data: BuildingData }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
+  
   return (
     <>
       <Card
