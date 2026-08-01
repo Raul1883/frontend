@@ -18,6 +18,7 @@ import type { Character } from "../../types/Character";
 import NavButton from "../../components/NavButton";
 import SystemsModal from "./SystemsModal";
 import { useAuth } from "../../contexts/AuthContext";
+import CharacterEditButton from "./CharacterEditButton";
 
 export default function CharacterList() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -95,9 +96,14 @@ export default function CharacterList() {
                   key={character.id}
                   title={character.name}
                   style={{ width: 300 }}
+                  extra={
+                    <CharacterEditButton
+                      character={character}
+                      mutate={mutate}
+                    />
+                  }
                   actions={[
                     <NavButton to={`${character.id}`}>Подробнее</NavButton>,
-
                     <Popconfirm
                       title="Точно?"
                       onConfirm={() => deleteChar(character.id)}
