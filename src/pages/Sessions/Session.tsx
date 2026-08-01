@@ -11,16 +11,19 @@ import {
   Tag,
   Typography,
   Alert,
+  Popconfirm,
 } from "antd";
 import MainLayout from "../../components/MainLayout";
 import { ApplySessionModal } from "./ApplySessionModal";
 import { pb } from "../../API/PocketBase";
 import { useAuth } from "../../contexts/AuthContext";
+import useApp from "antd/es/app/useApp";
 
 export default () => {
   const { id } = useParams<{ id: string }>();
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { user } = useAuth();
+  const { message } = useApp();
 
   const {
     data: sessionData,
@@ -54,6 +57,18 @@ export default () => {
     );
 
   const myApplication = myApplicationFilter ? myApplicationFilter[0] : null;
+
+  const deleteApplication = async () => {
+    if (myApplication)
+      try {
+        await pb.collection("applications").delete(myApplication.id);
+        mutateSession();
+        message.success("удалено!");
+      } catch {
+        message.error("что-то пошло не так!");
+      }
+  };
+
   return (
     <MainLayout>
       <div className="flex flex-col items-center mt-10">
@@ -84,9 +99,20 @@ export default () => {
               </p>
               <Divider />
 
-              <Button type="primary" onClick={() => setIsModalOpen(true)}>
-                {myApplication ? "Редактировать заявку" : "Хочу играть!"}
-              </Button>
+              {myApplication ? (
+                <Space>
+                  <Button type="primary" onClick={() => setIsModalOpen(true)}>
+                    Редактировать заявку
+                  </Button>
+                  <Popconfirm title="Точно?" onConfirm={deleteApplication}>
+                    <Button danger>Удалить заявку</Button>
+                  </Popconfirm>
+                </Space>
+              ) : (
+                <Button type="primary" onClick={() => setIsModalOpen(true)}>
+                  Хочу играть!
+                </Button>
+              )}
             </>
           )}
         </Card>
