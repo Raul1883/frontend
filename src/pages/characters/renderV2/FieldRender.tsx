@@ -74,9 +74,13 @@ export default ({ field, prefix }: { field: Field; prefix: string }) => {
 
     case "textarea":
       return (
-        <Form.Item name={fullName} label={field.label}>
-          <Input.TextArea autoSize />
-        </Form.Item>
+        <div>
+          <Typography.Title level={5}>{field.label}</Typography.Title>
+
+          <Form.Item name={fullName}>
+            <Input.TextArea autoSize />
+          </Form.Item>
+        </div>
       );
 
     case "select":

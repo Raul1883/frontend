@@ -3,6 +3,7 @@ import { Button, ConfigProvider, message, Space, Typography } from "antd";
 import { Layout } from "antd";
 import Dice from "./Dice";
 import { useNavigate } from "react-router-dom";
+import { RoleGuard } from "../../../utils/RoleGuard";
 
 const { Header, Content } = Layout;
 
@@ -12,6 +13,7 @@ interface CharLayoutProps {
   save: () => void;
   resetLayout: () => void;
   saveJson: () => void;
+  copyLayout: () => void;
 }
 
 export default ({
@@ -20,6 +22,7 @@ export default ({
   save,
   resetLayout,
   saveJson,
+  copyLayout,
 }: CharLayoutProps) => {
   const navigate = useNavigate();
 
@@ -83,6 +86,9 @@ export default ({
             <Button onClick={saveJson}>Скачать json</Button>
             <Dice />
             <Button onClick={hadleExit}>Домой</Button>
+            <RoleGuard allowedRoles={["master"]}>
+              <Button onClick={copyLayout}>Copy Layout</Button>
+            </RoleGuard>
           </Space>
           <Typography.Title style={{ margin: 0 }}>
             {systemName}

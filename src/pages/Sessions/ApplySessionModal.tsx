@@ -68,7 +68,6 @@ export const ApplySessionModal: React.FC<ApplySessionModalProps> = ({
     } catch (err) {
       if (!(err as any).errorFields) {
         message.error("Ошибка при отправке заявки. Попробуйте позже.");
-        console.error(err);
       }
     }
   };

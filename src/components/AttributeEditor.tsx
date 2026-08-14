@@ -58,7 +58,6 @@ export default ({ type, value, onChange }: AttributeEditorProps) => {
 
       if (onChange) onChange(undefined);
     } catch (error) {
-      console.error("Ошибка при удалении:", error);
       message.error(
         "Не удалось удалить элемент. Возможно он используется в сохраненной версии этой или другой сессии?",
       );
@@ -93,7 +92,6 @@ export default ({ type, value, onChange }: AttributeEditorProps) => {
 
         if (onChange) onChange(createdEntity.id);
       } catch (error) {
-        console.error("Ошибка при создании:", error);
         message.error("Не удалось создать элемент");
       }
     }

@@ -1,16 +1,17 @@
+import { Typography } from "antd";
 import { useState } from "react";
 
 export default () => {
   return (
-    <div className="w-180 max-w-[90vw] max-h-[80vh] overflow-y-auto text-sm text-gray-800">
+    <div>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold mb-2">Шпаргалка по JSON-схеме</h2>
+          <Typography.Title level={3}>Шпаргалка по JSON-схеме</Typography.Title>
 
-          <p className="text-gray-600">
+          <Typography.Text>
             Схема состоит из секций (`sections`), а секции — из полей
             (`fields`).
-          </p>
+          </Typography.Text>
         </div>
 
         <section className="space-y-3">

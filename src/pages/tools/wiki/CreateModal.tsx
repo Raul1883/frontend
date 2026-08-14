@@ -1,4 +1,4 @@
-import { Checkbox, Form, Input, Modal } from "antd";
+import { Checkbox, Form, Input, Modal, Typography } from "antd";
 import type { WikiRecord, WikiRecordCreate } from "./types";
 import FormItem from "antd/es/form/FormItem";
 import { useForm } from "antd/es/form/Form";
@@ -6,37 +6,48 @@ import useApp from "antd/es/app/useApp";
 import { pb } from "../../../API/PocketBase";
 import { useNavigate } from "react-router-dom";
 
+const { Text } = Typography;
+
 interface ModalProps {
   isModalOpen: boolean;
   closeModal: () => void;
   mutate: () => void;
-  slug: string;
+  slug: string; // родительский путь (папка, в которой создаём)
 }
 
-const validate = (values: WikiRecordCreate) => {
-  const parts = values.slug.split("/");
-  if (parts[parts.length - 1] != values.title) {
-    return false;
-  }
-  return true;
-};
-
-export default ({
-  isModalOpen,
-  closeModal: setisModalOpen,
-  mutate,
-  slug
-}: ModalProps) => {
+export default ({ isModalOpen, closeModal, mutate, slug }: ModalProps) => {
   const [form] = useForm();
   const { message } = useApp();
   const navigate = useNavigate();
 
-  const onFinish = async (values: WikiRecordCreate) => {
-    if (!validate(values)) {
-      message.warning("Название и последний элемент пути должны совпадать");
-      return;
-    }
-    const res = await pb.collection<WikiRecord>("wiki").create(values);
+  // Следим за значениями полей, чтобы обновлять отображение склеенного пути
+  const path = Form.useWatch("path", form);
+  const title = Form.useWatch("title", form);
+
+  // Формируем итоговый slug для отображения и отправки
+  const fullSlug = path
+    ? `${path.replace(/\/+$/, "")}/${title || ""}`
+    : title || "";
+
+  const onFinish = async (values: {
+    path: string;
+    title: string;
+    isFolder: boolean;
+  }) => {
+    // Склеиваем путь и имя в один slug
+    const slug = values.path
+      ? `${values.path.replace(/\/+$/, "")}/${values.title}`
+      : values.title;
+
+    // Создаём объект для отправки (поля title и slug обязательны в WikiRecordCreate)
+    const payload: WikiRecordCreate = {
+      title: values.title,
+      slug: slug,
+      isFolder: values.isFolder,
+      content: "",
+    };
+
+    const res = await pb.collection<WikiRecord>("wiki").create(payload);
     message.success("Создано!");
     navigate(`/tools/wiki/edit/${res.id}`);
     mutate();
@@ -45,17 +56,36 @@ export default ({
   return (
     <Modal
       open={isModalOpen}
-      onCancel={setisModalOpen}
+      onCancel={closeModal}
       title="Создать"
       onOk={form.submit}
     >
-      <Form onFinish={onFinish} form={form} initialValues={{slug: slug}}>
-        <FormItem name="title" label="Название" required>
-          <Input />
+      <Form
+        onFinish={onFinish}
+        form={form}
+        initialValues={{
+          path: slug || "", // переданный родительский путь
+          title: "",
+          isFolder: false,
+        }}
+      >
+        <FormItem name="path" label="Путь (каталоги)">
+          <Input placeholder="папка/подпапка" />
         </FormItem>
-        <FormItem name="slug" label="Путь" required>
-          <Input placeholder="папка/папка/файл" />
+
+        <FormItem
+          name="title"
+          label="Имя"
+          rules={[{ required: true, message: "Введите имя" }]}
+        >
+          <Input placeholder="название страницы" />
         </FormItem>
+
+        {/* Отображение склеенного значения */}
+        <FormItem label="Полный путь (будет сохранён)">
+          <Text code>{fullSlug || "—"}</Text>
+        </FormItem>
+
         <FormItem name="isFolder" label="Папка?" valuePropName="checked">
           <Checkbox />
         </FormItem>

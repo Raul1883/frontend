@@ -61,7 +61,6 @@ export default ({ mode }: SessionFormProps) => {
       }
       navigate("/manage/sessions");
     } catch (error) {
-      console.error("Ошибка при сохранении:", error);
       message.error("Ошибка при сохранении данных");
     }
   };

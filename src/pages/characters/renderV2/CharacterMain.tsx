@@ -43,8 +43,13 @@ export default () => {
     setLayout(data?.expand.list_schema.schema.layout);
   };
 
+  const copyLayout = async () => {
+    await navigator.clipboard.writeText(JSON.stringify(layout));
+    message.success("Скопировано!");
+  };
+
   if (isLoading || error || !user || !data || !layout || !id)
-    return <div>err</div>;
+    return <div>Что-то пошло не так :(. Попробуйте вернутся на главную и перелогиниться</div>;
 
   const onFinish = async (values: any) => {
     const body = {
@@ -81,6 +86,7 @@ export default () => {
       save={form.submit}
       resetLayout={layoutReset}
       saveJson={saveJson}
+      copyLayout={copyLayout}
     >
       <Form form={form} onFinish={onFinish} initialValues={character}>
         <SheetLayout

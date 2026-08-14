@@ -7,6 +7,16 @@ const items: menuItem[] = [
     path: "city",
     description: "Хоумрулы и инструменты для гильдийских ваншотов",
   },
+  {
+    title: "Оружие и доспехи",
+    path: "weapon",
+    description: "Генератор оружия и доспехов",
+  },
+  {
+    title: "Архив",
+    path: "history",
+    description: "История заданий",
+  },
 ];
 
 export default () => {

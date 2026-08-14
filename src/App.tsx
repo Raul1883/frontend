@@ -25,6 +25,8 @@ import React, { Suspense } from "react";
 import MasterPanel from "./pages/master/MasterPanel";
 import CharacterMain from "./pages/characters/renderV2/CharacterMain";
 import MdEditor from "./pages/tools/wiki/MdEditor";
+import GuildWeapon from "./pages/tools/dnd-guild/WeaponGen/GuildWeapon";
+import HistoryMain from "./pages/tools/dnd-guild/History/HistoryMain";
 
 const CharacterSchemasEditor = React.lazy(
   () => import("./pages/master/SystemSchemaEditor/ListSchemasEditor"),
@@ -41,7 +43,6 @@ const TypewriterTheme = {
     fontFamilyCode: '"iA Writer Mono V", "Courier New", Courier, monospace',
 
     colorPrimary: "#979795",
-    colorSuccess: "#4b7a47",
     colorWarning: "#c99635",
     colorError: "#b04a4a",
     colorInfo: "#4a708b",
@@ -245,6 +246,8 @@ function App() {
 
                 <Route path="/tools/guild" element={<GuildMainPage />} />
                 <Route path="/tools/guild/city" element={<City />} />
+                <Route path="/tools/guild/weapon" element={<GuildWeapon />} />
+                <Route path="/tools/guild/history" element={<HistoryMain />} />
 
                 <Route path="/unauthorized" element={<UnauthorizedPage />} />
               </Routes>

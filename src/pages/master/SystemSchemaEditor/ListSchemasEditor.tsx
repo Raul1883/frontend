@@ -5,16 +5,13 @@ import { json } from "@codemirror/lang-json";
 import { useNavigate, useParams } from "react-router-dom";
 import useSWR from "swr";
 import { getById } from "../../../API/Fetcher";
-import type {
-  ListSchemaRead,
-} from "../../../types/ListSchemasTypes";
+import type { ListSchemaRead } from "../../../types/ListSchemasTypes";
 import { linter, type Diagnostic } from "@codemirror/lint";
 
 import Ajv, { type ErrorObject } from "ajv";
 import { parse, type Pointer } from "json-source-map";
 
 import schema from "../../characters/schemas/system-schema.json";
-import Modal from "../../../components/Modal";
 import Help from "./Help";
 import type {
   ArrayField,
@@ -24,7 +21,7 @@ import type {
 } from "../../characters/types/CharacterSheet";
 import { useUnsavedChangesWarning } from "../../../hooks/useUnsavedChangesWarning";
 import { pb } from "../../../API/PocketBase";
-import { message } from "antd";
+import { message, Modal } from "antd";
 
 const ajv = new Ajv({
   allErrors: true,
@@ -173,7 +170,7 @@ export default () => {
       <div ref={containerRef} className="pt-12">
         {" "}
       </div>
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+      <Modal open={modalOpen} onCancel={() => setModalOpen(false)}>
         <Help />
       </Modal>
     </div>
